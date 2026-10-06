@@ -1,0 +1,8 @@
+{
+  "name": "repo-standard-scripts",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "opentype.js": "1.3.4"
+  }
+}
