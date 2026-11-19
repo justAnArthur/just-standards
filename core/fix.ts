@@ -1,0 +1,213 @@
+import { mkdir } from 'node:fs/promises'
+import { homedir } from 'node:os'
+import { join, resolve } from 'node:path'
+import { cellsOf } from './cells.ts'
+import { cleanEnv } from './checks/ai.ts'
+import { run } from './checks/github.ts'
+import { expandHome, type Workspace } from './load.ts'
+import { fixPrompt } from './prompt.ts'
+import { createWorktree, ghBin, lines, RunError, runsDir, writeRecord } from './runs.ts'
+import type { Business, RunRecord, Worker } from './schema.ts'
+
+export type RunEvent = { type: 'run'; event: 'started' | 'finished'; run: RunRecord } | { type: 'claude'; line: string }
+
+export interface FixOptions {
+  worker: string
+  interactive?: boolean
+  /** With `interactive`, lines for Claude Code's stdin: the app's control responses. */
+  input?: AsyncIterable<string>
+  signal?: AbortSignal
+  emit: (event: RunEvent) => void
+}
+
+interface Result {
+  subtype: string
+  is_error: boolean
+  result?: string
+  total_cost_usd?: number
+  session_id?: string
+}
+
+const KILL_AFTER_MS = 5000
+const PR_URL = /https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/pull\/(\d+)/g
+
+const claudeBin = () => process.env.STANDARDS_CLAUDE_BIN ?? 'claude'
+const stamp = (date: Date) => date.toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15)
+
+function killGroup(pid: number, signal: NodeJS.Signals) {
+  try {
+    process.kill(-pid, signal)
+  } catch {}
+}
+
+function parse(line: string) {
+  try {
+    return JSON.parse(line) as { type?: string; subtype?: string; session_id?: string }
+  } catch {
+    return undefined
+  }
+}
+
+function args(worker: Worker, interactive: boolean, packDirs: string[]) {
+  return [
+    claudeBin(),
+    ...['-p', '--input-format', 'stream-json', '--output-format', 'stream-json', '--verbose', '--model', worker.model],
+    ...(worker.effort ? ['--effort', worker.effort] : []),
+    ...['--permission-mode', worker.permission_mode],
+    ...(interactive ? ['--permission-prompt-tool', 'stdio'] : []),
+    ...(worker.allow.length > 0 ? ['--allowedTools', ...worker.allow] : []),
+    // a recipe can point at files in its pack (the repo pack's skill), which live outside the worktree
+    ...packDirs.flatMap(dir => ['--add-dir', dir]),
+  ]
+}
+
+const packDirsOf = (ws: Workspace, items: string[]) =>
+  [...new Set(items.map(key => ws.packs.get(key.split('/')[0] as string)?.dir).filter((dir): dir is string => !!dir))]
+
+function env(worker: Worker) {
+  const profile = resolve(expandHome(worker.profile))
+  return profile === join(homedir(), '.claude') ? cleanEnv() : { ...cleanEnv(), CLAUDE_CONFIG_DIR: profile }
+}
+
+async function findPr(text: string, branch: string, worktree: string): Promise<RunRecord['pr']> {
+  const url = [...text.matchAll(PR_URL)].at(-1)
+  if (url) return { url: url[0], number: Number(url[1]), state: 'open' }
+  try {
+    const listed = await run([ghBin(), 'pr', 'list', '--head', branch, '--json', 'url,number'], worktree)
+    const [pr] = listed.ok ? (JSON.parse(listed.stdout) as { url: string; number: number }[]) : []
+    return pr && { url: pr.url, number: pr.number, state: 'open' }
+  } catch {
+    return undefined
+  }
+}
+
+/** Two runs of one item started in the same second would share an id. */
+async function newRunDir(ws: Workspace, base: string) {
+  await mkdir(runsDir(ws), { recursive: true })
+  for (let n = 1; ; n++) {
+    const id = n === 1 ? base : `${base}-${n}`
+    const created = await mkdir(join(runsDir(ws), id)).then(
+      () => true,
+      error => (error.code === 'EEXIST' ? false : Promise.reject(error)),
+    )
+    if (created) return id
+  }
+}
+
+function validate(ws: Workspace, business: Business, assetId: string, items: string[], workerId: string) {
+  const worker = ws.workers.find(w => w.id === workerId)
+  if (!worker) throw new RunError(`no worker ${workerId} in workers.yml`)
+  const asset = business.assets.find(a => a.id === assetId)
+  if (!asset) throw new RunError(`${business.id} has no asset ${assetId}`)
+  if (!asset.path) throw new RunError(`${business.id}/${assetId} has no path: no local checkout`)
+  if (!asset.repo) throw new RunError(`${business.id}/${assetId} has no repo`)
+  const applies = new Set(cellsOf(business, ws).filter(cell => cell.asset.id === assetId).map(cell => cell.item.key))
+  const stray = items.find(key => !applies.has(key))
+  if (stray) throw new RunError(`${stray} does not apply to ${business.id}/${assetId}`)
+  return { worker, path: expandHome(asset.path) }
+}
+
+/** Runs a worker on failing items of one asset, in a fresh worktree, until it opens a PR. Resolves with the final record. */
+export async function fix(ws: Workspace, business: Business, assetId: string, items: string[], options: FixOptions) {
+  const { worker, path } = validate(ws, business, assetId, items, options.worker)
+  const itemId = items[0]!.split('/')[1]!
+  const { branch, worktree } = await createWorktree(path, itemId)
+  const prompt = await fixPrompt(ws, business, assetId, items, branch)
+
+  const started = new Date()
+  const id = await newRunDir(ws, `${stamp(started)}-${business.id}-${itemId}`)
+  const record: RunRecord = {
+    id,
+    business: business.id,
+    asset: assetId,
+    items,
+    worker: worker.id,
+    model: worker.model,
+    branch,
+    worktree,
+    started_at: started.toISOString(),
+    state: 'running',
+  }
+  await writeRecord(ws, record)
+  options.emit({ type: 'run', event: 'started', run: record })
+
+  const finish = async (state: RunRecord['state'], error?: string) => {
+    const finished = new Date()
+    Object.assign(record, { finished_at: finished.toISOString(), ms: finished.getTime() - started.getTime(), state, error })
+    options.signal?.removeEventListener('abort', stop)
+    await writeRecord(ws, record)
+    options.emit({ type: 'run', event: 'finished', run: record })
+    return record
+  }
+
+  let stopped: string | undefined
+  let open = true
+  let proc: Bun.Subprocess<'pipe', 'pipe', 'pipe'>
+  try {
+    proc = Bun.spawn(args(worker, !!options.interactive, packDirsOf(ws, items)), {
+      cwd: worktree,
+      env: env(worker),
+      stdin: 'pipe',
+      stdout: 'pipe',
+      stderr: 'pipe',
+      detached: true,
+    })
+  } catch (error) {
+    return finish('failed', `couldn't start ${claudeBin()}: ${(error as Error).message}`)
+  }
+  const stderr = new Response(proc.stderr).text()
+  void proc.exited.then(() => {
+    open = false
+    // Whatever Claude Code left behind would otherwise hold its stdout open.
+    killGroup(proc.pid, 'SIGTERM')
+  })
+
+  function stop() {
+    stopped = String(options.signal!.reason ?? 'abort')
+    killGroup(proc.pid, 'SIGTERM')
+    setTimeout(() => killGroup(proc.pid, 'SIGKILL'), KILL_AFTER_MS).unref()
+  }
+  if (options.signal?.aborted) stop()
+  options.signal?.addEventListener('abort', stop, { once: true })
+
+  const send = (line: string) => {
+    if (!open) return
+    try {
+      proc.stdin.write(`${line}\n`)
+      proc.stdin.flush()
+    } catch {}
+  }
+  send(JSON.stringify({ type: 'user', message: { role: 'user', content: [{ type: 'text', text: prompt }] }, parent_tool_use_id: null }))
+  if (options.interactive && options.input) {
+    void (async () => {
+      for await (const line of options.input!) if (line.trim()) send(line)
+    })()
+  }
+
+  const events = Bun.file(join(runsDir(ws), id, 'events.ndjson')).writer()
+  let result: Result | undefined
+  for await (const line of lines(proc.stdout)) {
+    events.write(`${line}\n`)
+    events.flush()
+    options.emit({ type: 'claude', line })
+    const message = parse(line)
+    if (message?.type === 'system' && message.subtype === 'init') record.session_id = message.session_id
+    if (message?.type === 'result' && open) {
+      result = message as Result
+      open = false
+      proc.stdin.end()
+    }
+  }
+  await events.end()
+  const code = await proc.exited
+
+  if (stopped) return finish('stopped', `stopped by ${stopped}`)
+  if (!result) return finish('failed', `claude exited ${code} without a result ${(await stderr).trim().slice(-300)}`.trim())
+  record.cost_usd = result.total_cost_usd
+  record.session_id = result.session_id ?? record.session_id
+  record.pr = await findPr(result.result ?? '', branch, worktree)
+  if (stopped) return finish('stopped', `stopped by ${stopped}`)
+  if (result.is_error || result.subtype !== 'success') return finish('failed', (result.result || result.subtype).slice(0, 300))
+  if (!record.pr) return finish('failed', 'no pull request')
+  return finish('done')
+}

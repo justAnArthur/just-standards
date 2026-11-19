@@ -32,9 +32,14 @@ bun cli/standards.ts check [business…]                 run the checks and save
 bun cli/standards.ts status [business…]                the saved state of every cell
 bun cli/standards.ts prompt <business> <asset> <item>  the fix instructions for a worker
 bun cli/standards.ts validate                          load the workspace and every pack
+bun cli/standards.ts fix <business> <asset> <item…> --worker <id> [--interactive]
+                                                       a worker fixes the items in a new worktree and opens a PR
+bun cli/standards.ts runs [business…]                  the fix runs, newest first
+bun cli/standards.ts runs transcript <id>              everything Claude Code printed in a run
+bun cli/standards.ts runs sync                         read open PRs; clean up after merged and closed ones
 ```
 
-Output is a table in a terminal and one JSON object per line when piped (or with `--json`).
+Output is a table in a terminal and one JSON object per line when piped (or with `--json`). `fix` and `runs` always print NDJSON. A fix run works in `<path>/.worktrees/std-<item>`, records itself in `<workspace>/.state/runs/<id>/`, and exits 0 only when it ends with a PR; the protocol is in [docs/fix-runs.md](docs/fix-runs.md).
 
 A business, for example:
 

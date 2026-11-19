@@ -137,3 +137,26 @@ export interface Result extends Outcome {
   checked_at: string
   ms: number
 }
+
+/** One fix run, as `standards fix` records it in `.state/runs/<id>/run.json`. */
+export interface RunRecord {
+  id: string
+  business: string
+  asset: string
+  /** `pack/item` */
+  items: string[]
+  worker: string
+  model: string
+  branch: string
+  worktree: string
+  started_at: string
+  finished_at?: string
+  /** Left out while it runs. */
+  ms?: number
+  state: 'running' | 'done' | 'failed' | 'stopped'
+  pr?: { url: string; number: number; state: 'open' | 'merged' | 'closed' }
+  cost_usd?: number
+  session_id?: string
+  /** Why it failed or stopped. */
+  error?: string
+}

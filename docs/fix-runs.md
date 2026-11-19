@@ -16,7 +16,7 @@ The engine owns the run: the `standards` CLI creates the worktree, starts Claude
 3. **Records the run** under `<workspace>/.state/runs/<id>/`:
    - `run.json` holds the run record (below). It is updated when the run ends.
    - `events.ndjson` holds every line Claude Code printed, as is.
-   - `<id>` is `<UTC yyyymmdd-hhmmss>-<business>-<first item id>`.
+   - `<id>` is `<UTC yyyymmdd-hhmmss>-<business>-<first item id>`, with `-2`, `-3`… when two runs would share it.
 4. **Starts Claude Code** in the worktree:
    - **Flags:** `claude -p --input-format stream-json --output-format stream-json --verbose --model <worker.model> [--effort <worker.effort>] --permission-mode <worker.permission_mode> [--allowedTools <worker.allow…>]`. With `--interactive` it adds `--permission-prompt-tool stdio`, so permission questions arrive as `control_request` lines.
    - **Environment:** the `CLAUDE*` and `ANTHROPIC_*` variables are removed. `CLAUDE_CONFIG_DIR` is set to `worker.profile`, unless that is `~/.claude`.
@@ -30,10 +30,10 @@ The engine owns the run: the `standards` CLI creates the worktree, starts Claude
    - `{"type":"run","event":"finished","run":<record>}`
 7. **Exit:**
    - **Exit code:** 0 when the run ends `done`, otherwise 1.
-   - **On SIGTERM or SIGINT:** it kills Claude Code's process group, records `stopped` and exits.
+   - **On SIGTERM or SIGINT:** it kills Claude Code's process group, records `stopped` (error `stopped by SIGTERM` or `stopped by SIGINT`) and exits.
 
 ### `standards runs [business…]`
-Prints the run records as NDJSON, newest first.
+Prints the run records as NDJSON, newest first: one bare `RunRecord` per line, without the `type` wrapper `fix` uses.
 
 ### `standards runs transcript <id>`
 Prints that run's `events.ndjson`.
@@ -41,7 +41,7 @@ Prints that run's `events.ndjson`.
 ### `standards runs sync`
 - For every run whose PR is `open`, it reads the PR's state with `gh pr view`.
 - When the PR is `merged` or `closed`, it updates the record, removes the worktree (`git worktree remove`) and deletes the local branch if it was merged.
-- It prints the records it changed.
+- It prints the records it changed, as bare records like `standards runs`.
 
 ## Run record
 

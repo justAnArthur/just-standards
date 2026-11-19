@@ -34,7 +34,7 @@ export async function fixPrompt(ws: Workspace, business: Business, assetId: stri
         `Why: ${cell.item.why}`,
         result ? `Last check (${result.checked_at.slice(0, 10)}): **${result.state}**: ${result.evidence}` : 'Not checked yet.',
         `The check:\n\n\`\`\`json\n${JSON.stringify(cell.item.check, null, 2)}\n\`\`\``,
-        (await recipe.exists()) ? `### Recipe\n\n${(await recipe.text()).trim()}` : '',
+        (await recipe.exists()) ? `### Recipe\n\n${(await recipe.text()).trim()}\n\nFiles the recipe names are in its pack: \`${ws.packs.get(cell.item.pack)?.dir}\`.` : '',
       ]
         .filter(Boolean)
         .join('\n\n')

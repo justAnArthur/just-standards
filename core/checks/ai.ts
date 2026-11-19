@@ -13,7 +13,7 @@ const SCHEMA = JSON.stringify({
 const TOOLS = ['Read', 'Grep', 'Glob', 'WebFetch']
 
 // Markers of a Claude Code session this process may run inside; a nested `claude` would join it.
-const cleanEnv = () => Object.fromEntries(Object.entries(process.env).filter(([name]) => !/^(CLAUDE|ANTHROPIC_)/.test(name)))
+export const cleanEnv = () => Object.fromEntries(Object.entries(process.env).filter(([name]) => !/^(CLAUDE|ANTHROPIC_)/.test(name)))
 
 function prompt(check: AiCheck, { asset, item }: Context) {
   const where = [asset.url && `URL: ${asset.url}`, asset.path && 'Local checkout: the current directory', asset.repo && `GitHub: ${asset.repo}`]
