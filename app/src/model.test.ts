@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test'
 import { itemsOf } from '@justanarthur/modo-ui-standards'
-import { type CliWorkspace, toModel, toStatus } from './model'
+import { type CliWorkspace, tildify, toModel, toStatus } from './model'
 import workspace from './native/fixtures/workspace.json'
 
 const status = await Bun.file(`${import.meta.dir}/native/fixtures/status.ndjson`).text()
@@ -13,6 +13,10 @@ test('packs: the printed items become the entries, their ids the items', () => {
   expect(website.items[0]).toEqual({ id: 'meta-basics', since: 1 })
   expect(website.items.length).toBe(website.entries.length)
   expect(website.changelog.length).toBeGreaterThan(0)
+})
+
+test('packs: each entry keeps its recipe', () => {
+  for (const pack of model.packs) for (const item of pack.entries) expect(item.recipe).toBeString()
 })
 
 test('packs: a business pinned to an older version gets only its items', () => {
@@ -35,4 +39,12 @@ test('status: skips blank and stray lines', () => {
   expect(toStatus(`\nnot json\n${line}\n{"type":"other"}\n`)).toEqual({
     b: [{ asset: 'site', item: 'website/icons', title: 'Icons', state: 'unchecked' }],
   })
+})
+
+test('tildify: the home folder becomes ~, other paths stay', () => {
+  expect(tildify('/Users/you/Projects/standards-workspace', '/Users/you')).toBe('~/Projects/standards-workspace')
+  expect(tildify('/Users/you', '/Users/you')).toBe('~')
+  expect(tildify('/Users/young/workspace', '/Users/you')).toBe('/Users/young/workspace')
+  expect(tildify('/opt/workspace', '/Users/you')).toBe('/opt/workspace')
+  expect(tildify('/opt/workspace', '')).toBe('/opt/workspace')
 })

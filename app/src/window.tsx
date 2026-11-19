@@ -1,11 +1,24 @@
 import { CommandPalette, useCommand, useHost, useRoute } from '@just-apps/app-kit'
-import { Button, DesktopShell } from '@justanarthur/modo-ui'
-import { useIcon } from '@justanarthur/modo-ui/lib/icon-context'
-import { ago, CellDetail, cellKey } from '@justanarthur/modo-ui-standards'
+import { Button, DesktopShell, Sidebar } from '@justanarthur/modo-ui'
+import { type IconName, useIcon } from '@justanarthur/modo-ui/lib/icon-context'
+import { ago, cellKey } from '@justanarthur/modo-ui-standards'
 import { useEffect, useState } from 'react'
 import { checkingCount, lastChecked } from './checks'
-import type { Model, Status } from './model'
-import { BUSINESS, Business, Businesses, FIX_RUNS_NEXT, Loading, LoadError, RunFailure } from './screens'
+import type { Model } from './model'
+import { PANE_LABEL, type Pane, PaneContent } from './pane'
+import {
+  BUSINESS,
+  Business,
+  Businesses,
+  businessRoute,
+  Loading,
+  LoadError,
+  PACKS,
+  Packs,
+  RunFailure,
+  WORKERS,
+  Workers,
+} from './screens'
 import { type Standards, useStandards } from './use-standards'
 
 function useOpenSettings() {
@@ -17,21 +30,80 @@ function useOpenSettings() {
   return open
 }
 
-function Title({ business }: { business?: string }) {
+const TITLES: Record<string, string> = { [PACKS]: 'Packs', [WORKERS]: 'Workers' }
+
+function Title({ route, business }: { route: string; business?: string }) {
   const [, go] = useRoute()
   if (!business)
     return (
-      <span data-tauri-drag-region className="mx-auto truncate text-caption text-muted-foreground">
-        Businesses
+      <span data-tauri-drag-region className="truncate text-body weight-medium text-foreground">
+        {TITLES[route] ?? 'Businesses'}
       </span>
     )
   return (
-    <span data-tauri-drag-region className="mx-auto flex min-w-0 items-center gap-1.5 text-caption text-muted-foreground">
+    <span data-tauri-drag-region className="flex min-w-0 items-center gap-1.5 text-body weight-medium text-muted-foreground">
       <button type="button" className="cursor-pointer hover:text-foreground" onClick={() => go('/')}>
         Businesses
       </button>
       ›<span className="truncate text-foreground">{business}</span>
     </span>
+  )
+}
+
+interface Row {
+  route: string
+  label: string
+  icon: IconName
+  count?: number
+  disabled?: boolean
+}
+
+function NavRow({ route, label, icon, count, disabled }: Row) {
+  const Icon = useIcon(icon)
+  return (
+    <Sidebar.MenuItem>
+      <Sidebar.MenuButton icon={Icon} value={route} disabled={disabled}>
+        {label}
+      </Sidebar.MenuButton>
+      {(disabled || count !== undefined) && <Sidebar.MenuBadge>{disabled ? 'next version' : count}</Sidebar.MenuBadge>}
+    </Sidebar.MenuItem>
+  )
+}
+
+/** The window's sections, with the workspace's counts once it has loaded; the business routes sit under Businesses. */
+function Nav({ route, model }: { route: string; model?: Model }) {
+  const [, go] = useRoute()
+  const groups: { label: string; rows: Row[] }[] = [
+    {
+      label: 'Status',
+      rows: [
+        { route: '/', label: 'Businesses', icon: 'folder', count: model?.businesses.length },
+        { route: '/runs', label: 'Runs', icon: 'timer', disabled: true },
+      ],
+    },
+    {
+      label: 'Library',
+      rows: [
+        { route: PACKS, label: 'Packs', icon: 'square-library', count: model?.packs.length },
+        { route: WORKERS, label: 'Workers', icon: 'brain', count: model?.workers.length },
+      ],
+    },
+  ]
+  return (
+    <Sidebar variant="inset" value={route.startsWith(BUSINESS) ? '/' : route} onValueChange={go}>
+      <Sidebar.Content>
+        {groups.map(group => (
+          <Sidebar.Group key={group.label}>
+            <Sidebar.GroupLabel>{group.label}</Sidebar.GroupLabel>
+            <Sidebar.Menu>
+              {group.rows.map(row => (
+                <NavRow key={row.route} {...row} />
+              ))}
+            </Sidebar.Menu>
+          </Sidebar.Group>
+        ))}
+      </Sidebar.Content>
+    </Sidebar>
   )
 }
 
@@ -67,90 +139,82 @@ function RunChecks({ standards, onSettings }: { standards: Standards; onSettings
   )
 }
 
-interface CellPaneProps {
-  model: Model
-  status: Status
-  business: string
-  open: string
-  onRecheck: (asset: string, item: string) => void
-  onClose: () => void
+interface Opened {
+  route: string
+  pane: Pane
 }
 
-function CellPane({ model, status, business: id, open, onRecheck, onClose }: CellPaneProps) {
-  const business = model.businesses.find(b => b.id === id)
-  const cell = status[id]?.find(c => cellKey(c.asset, c.item) === open)
-  const pack = cell && model.packs.find(p => cell.item.startsWith(`${p.id}/`))
-  const item = pack?.entries.find(i => i.key === cell?.item)
-  const asset = business?.assets.find(a => a.id === cell?.asset)
-  if (!business || !cell || !pack || !item || !asset) return null
-
-  return (
-    <CellDetail
-      cell={cell}
-      item={item}
-      pack={pack}
-      asset={asset}
-      business={business}
-      workers={model.workers}
-      fixDisabled
-      fixDisabledReason={FIX_RUNS_NEXT}
-      waiveDisabled
-      waiveDisabledReason={FIX_RUNS_NEXT}
-      onRecheck={() => onRecheck(cell.asset, cell.item)}
-      onClose={onClose}
-      className="h-full select-text"
-    />
-  )
-}
-
-/** The main window: the Businesses screen or one business, the cell's detail in the side pane. */
+/** The main window: the sidebar's sections, and a cell, item or pack in the side pane. */
 export default function StandardsWindow() {
   const host = useHost()
   const standards = useStandards()
   const openSettings = useOpenSettings()
-  const [route] = useRoute()
-  const [open, setOpen] = useState<string>()
+  const [route, go] = useRoute()
+  // The pane belongs to the route it was opened on, so a cell opened for another business's screen shows once you get there.
+  const [opened, setOpened] = useState<Opened>()
+  const pane = opened?.route === route ? opened.pane : undefined
+  const setPane = (next: Pane | undefined) => setOpened(next && { route, pane: next })
 
   const id = route.startsWith(BUSINESS) ? decodeURIComponent(route.slice(BUSINESS.length)) : undefined
-  useEffect(() => setOpen(undefined), [id])
-
   const { load, status, failure } = standards
   const model = load.kind === 'ready' ? load.model : undefined
-  const pane = model && id && open && (
-    <CellPane
-      key={open}
+  const content = model && pane && (id || route === PACKS) && (
+    <PaneContent
+      key={`${pane.kind}:${pane.key}`}
+      pane={pane}
       model={model}
       status={status}
       business={id}
-      open={open}
-      onRecheck={(asset, item) => standards.check({ business: id, asset, item })}
-      onClose={() => setOpen(undefined)}
+      onPane={setPane}
+      onOpenCell={(cell, business) => {
+        const next: Pane = { kind: 'cell', key: cellKey(cell.asset, cell.item) }
+        const to = businessRoute(business)
+        if (to === route) return setPane(next)
+        setOpened({ route: to, pane: next })
+        go(to)
+      }}
+      onOpenBusiness={business => go(businessRoute(business))}
+      onRecheck={(business, asset, item) => standards.check({ business, asset, item })}
     />
   )
-  // Tauri windows use titleBarStyle overlay on macOS: the traffic lights sit over the title bar.
+  // Tauri windows use titleBarStyle overlay on macOS: the traffic lights sit over the sidebar's corner.
   const macInset = host.kind === 'tauri' && host.os.platform === 'macos'
 
   return (
     <DesktopShell
       className="select-none"
-      size="compact"
+      titleBar="card"
       platform={macInset ? 'mac' : 'linux'}
-      title={<Title business={id && (model?.businesses.find(b => b.id === id)?.name ?? id)} />}
+      title={<Title route={route} business={id && (model?.businesses.find(b => b.id === id)?.name ?? id)} />}
       trailing={<RunChecks standards={standards} onSettings={openSettings} />}
+      left={<Nav route={route} model={model} />}
       main={
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           {failure && <RunFailure message={failure} onSettings={openSettings} onDismiss={standards.dismissFailure} />}
           {load.kind === 'loading' && <Loading />}
           {load.kind === 'error' && <LoadError message={load.message} onSettings={openSettings} onRetry={standards.reload} />}
-          {model && id && <Business model={model} status={status} id={id} open={open} onOpen={setOpen} />}
-          {model && !id && <Businesses model={model} status={status} />}
+          {model &&
+            (id ? (
+              <Business model={model} status={status} id={id} pane={pane} onPane={setPane} />
+            ) : route === PACKS ? (
+              <Packs
+                model={model}
+                status={status}
+                active={pane && (pane.kind === 'pack' ? pane.key : pane.key.split('/')[0])}
+                onOpenPack={key => setPane({ kind: 'pack', key })}
+              />
+            ) : route === WORKERS ? (
+              <Workers model={model} />
+            ) : (
+              <Businesses model={model} status={status} />
+            ))}
         </div>
       }
-      right={pane || undefined}
-      rightOpen={Boolean(pane)}
-      onRightOpenChange={next => !next && setOpen(undefined)}
+      right={content || undefined}
+      rightOpen={Boolean(content)}
+      onRightOpenChange={next => !next && setPane(undefined)}
       defaultPaneSize={36}
-      rightLabel="Cell"
+      rightLabel={pane ? PANE_LABEL[pane.kind] : 'Side pane'}
     />
   )
 }

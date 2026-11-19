@@ -15,6 +15,7 @@ export interface CliWorkspace {
 
 /** What the screens read: the workspace with its packs shaped as the kit takes them. */
 export interface Model {
+  /** The workspace's folder, `~` for the home folder. */
   dir: string
   businesses: Business[]
   packs: LoadedPack[]
@@ -52,3 +53,7 @@ export function toStatus(ndjson: string): Status {
   }
   return status
 }
+
+/** `path` with the `home` folder as `~`. */
+export const tildify = (path: string, home: string) =>
+  home && (path === home || path.startsWith(`${home}/`)) ? `~${path.slice(home.length)}` : path

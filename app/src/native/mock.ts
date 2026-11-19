@@ -47,7 +47,8 @@ export const mockCommands = {
   standards_json(paths: Paths) {
     check(paths)
     const [command] = paths.args
-    if (command === 'workspace') return JSON.stringify(workspace)
+    // The CLI prints the workspace's folder absolute.
+    if (command === 'workspace') return JSON.stringify({ ...workspace, dir: home(workspace.dir) })
     if (command === 'status') return statusLines()
     throw new Error(`unknown command ${command}`)
   },
@@ -91,6 +92,8 @@ export const mockCommands = {
     }, spread + 400))
     runs.set(key, timers)
   },
+
+  home_dir: () => home('~'),
 
   standards_kill({ key }: { key: string }, { emit }: Context) {
     const timers = runs.get(key)

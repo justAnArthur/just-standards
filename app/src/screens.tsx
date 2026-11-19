@@ -1,19 +1,28 @@
 import { useRoute } from '@just-apps/app-kit'
 import { Button, EmptyState, Spinner } from '@justanarthur/modo-ui'
 import { useIcon } from '@justanarthur/modo-ui/lib/icon-context'
-import { adoptedVersion, BusinessesOverview, BusinessGrid, type CellStatus, cellKey } from '@justanarthur/modo-ui-standards'
+import { cn } from '@justanarthur/modo-ui/lib/utils'
+import {
+  adoptedVersion,
+  BusinessesOverview,
+  BusinessGrid,
+  type CellStatus,
+  cellKey,
+  PackList,
+  WorkerList,
+} from '@justanarthur/modo-ui-standards'
 import type { ReactNode } from 'react'
 import type { Model, Status } from './model'
-
-/** Until fix runs land (M5), Fix and Waive show disabled with this reason. */
-export const FIX_RUNS_NEXT = 'Fix runs and waivers come in the next version.'
+import { FIX_RUNS_NEXT, type Pane } from './pane'
 
 export const BUSINESS = '/business/'
+export const PACKS = '/packs'
+export const WORKERS = '/workers'
 
 export const businessRoute = (id: string) => `${BUSINESS}${encodeURIComponent(id)}`
 
-function Screen({ children }: { children: ReactNode }) {
-  return <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-5 p-6 select-text">{children}</div>
+function Screen({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn('flex min-h-0 min-w-0 flex-1 flex-col gap-5 p-6 select-text', className)}>{children}</div>
 }
 
 function ScreenHeader({ title, lead }: { title: string; lead?: string }) {
@@ -91,12 +100,12 @@ interface BusinessProps {
   model: Model
   status: Status
   id: string
-  /** The cell open in the side pane, as `asset:pack/item`. */
-  open?: string
-  onOpen: (key: string) => void
+  /** What the side pane shows: its cell, item or pack is lit in the grid. */
+  pane?: Pane
+  onPane: (pane: Pane) => void
 }
 
-export function Business({ model, status, id, open, onOpen }: BusinessProps) {
+export function Business({ model, status, id, pane, onPane }: BusinessProps) {
   const [, go] = useRoute()
   const Building = useIcon('folder')
   const business = model.businesses.find(b => b.id === id)
@@ -115,6 +124,7 @@ export function Business({ model, status, id, open, onOpen }: BusinessProps) {
     .filter(pack => adoptedVersion(business, pack) !== undefined)
     .map(pack => `${pack.title} v${adoptedVersion(business, pack)}`)
   const assets = `${business.assets.length} ${business.assets.length === 1 ? 'asset' : 'assets'}`
+  const keyOf = (kind: Pane['kind']) => (pane?.kind === kind ? pane.key : undefined)
   const lead = [assets, ...adopted, business.worker && `default worker ${business.worker}`].filter(Boolean).join(' · ')
 
   return (
@@ -125,12 +135,42 @@ export function Business({ model, status, id, open, onOpen }: BusinessProps) {
         packs={model.packs}
         cells={status[id] ?? []}
         workers={model.workers}
-        active={open}
-        onOpenCell={(cell: CellStatus) => onOpen(cellKey(cell.asset, cell.item))}
+        active={keyOf('cell')}
+        activeItem={keyOf('item')}
+        activePack={keyOf('pack')}
+        onOpenCell={(cell: CellStatus) => onPane({ kind: 'cell', key: cellKey(cell.asset, cell.item) })}
+        onOpenItem={key => onPane({ kind: 'item', key })}
+        onOpenPack={key => onPane({ kind: 'pack', key })}
         fixDisabled
         fixDisabledReason={FIX_RUNS_NEXT}
         className="flex-1"
       />
+    </Screen>
+  )
+}
+
+interface PacksProps {
+  model: Model
+  status: Status
+  /** The pack open in the side pane, or the open item's. */
+  active?: string
+  onOpenPack: (pack: string) => void
+}
+
+export function Packs({ model, status, active, onOpenPack }: PacksProps) {
+  return (
+    <Screen className="overflow-y-auto">
+      <ScreenHeader title="Packs" lead="The standards a business adopts, each a versioned set of items." />
+      <PackList packs={model.packs} businesses={model.businesses} status={status} activePack={active} onOpenPack={onOpenPack} />
+    </Screen>
+  )
+}
+
+export function Workers({ model }: { model: Model }) {
+  return (
+    <Screen className="overflow-y-auto">
+      <ScreenHeader title="Workers" lead="The Claude Code setups that fix runs start." />
+      <WorkerList workers={model.workers} />
     </Screen>
   )
 }

@@ -122,6 +122,12 @@ pub fn run_json(checkout: &str, workspace: &str, args: &[String]) -> Result<Stri
     Err(if stderr.is_empty() { format!("standards {} exited with {}", args.join(" "), out.status) } else { stderr })
 }
 
+/// The home folder, for showing paths with `~`.
+#[tauri::command]
+pub fn home_dir() -> String {
+    home().to_string_lossy().into_owned()
+}
+
 #[tauri::command]
 pub async fn standards_json(checkout: String, workspace: String, args: Vec<String>) -> Result<String, String> {
     tauri::async_runtime::spawn_blocking(move || run_json(&checkout, &workspace, &args)).await.map_err(|e| e.to_string())?

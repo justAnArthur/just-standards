@@ -11,6 +11,8 @@ export type NativeCommands = {
   standards_start: { args: Paths & { key: string; args: string[] }; result: void }
   /** Stops run `key` and whatever it spawned. */
   standards_kill: { args: { key: string }; result: void }
+  /** The home folder, to show paths with `~`. */
+  home_dir: { args: undefined; result: string }
 }
 
 export const STANDARDS_LINE = 'standards://line'

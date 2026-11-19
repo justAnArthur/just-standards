@@ -11,6 +11,7 @@ fn main() {
             standards::standards_json,
             standards::standards_start,
             standards::standards_kill,
+            standards::home_dir,
         ])
         .build(tauri::generate_context!())
         .expect("error while building Standards")

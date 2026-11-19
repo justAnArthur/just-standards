@@ -1,7 +1,7 @@
 import { useHost, useStore } from '@just-apps/app-kit'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { applyLine, argsOf, endChecks, type Scope, startChecks } from './checks'
-import { type CliWorkspace, type Model, type Status, toModel, toStatus } from './model'
+import { type CliWorkspace, type Model, type Status, tildify, toModel, toStatus } from './model'
 import { native, STANDARDS_EXIT, STANDARDS_LINE, type StandardsExit, type StandardsLine } from './native/commands'
 
 export const DEFAULT_CHECKOUT = '~/Projects/justanarthur/just-standards'
@@ -40,10 +40,11 @@ export function useStandards() {
     setLoad({ kind: 'loading' })
     const json = (args: string[]) => call('standards_json', { checkout, workspace, args })
     try {
-      const [model, cells] = await Promise.all([json(['workspace']), json(['status'])])
+      const [printed, cells, home] = await Promise.all([json(['workspace']), json(['status']), call('home_dir')])
       if (seq !== loads.current) return
+      const cli = JSON.parse(printed) as CliWorkspace
       setStatus(toStatus(cells))
-      setLoad({ kind: 'ready', model: toModel(JSON.parse(model) as CliWorkspace) })
+      setLoad({ kind: 'ready', model: toModel({ ...cli, dir: tildify(cli.dir, home) }) })
     } catch (error) {
       if (seq === loads.current) setLoad({ kind: 'error', message: messageOf(error) })
     }
