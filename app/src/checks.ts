@@ -1,4 +1,4 @@
-import type { CellRun, CellStatus, Result } from '@justanarthur/modo-ui-standards'
+import type { CellStatus, Result } from '@justanarthur/modo-ui-standards'
 import { parseLine, type Status } from './model'
 
 /** What one `standards check` covers: everything, a business, or one cell of it. */
@@ -9,10 +9,7 @@ export interface Scope {
   item?: string
 }
 
-// The kit has no "checking" state: a pending cell borrows the running look, and an empty worker draws "…" in it.
-const CHECKING: CellRun = { state: 'running', worker: '' }
-
-export const isChecking = (cell: CellStatus) => cell.run?.state === 'running' && cell.run.worker === ''
+export const isChecking = (cell: CellStatus) => cell.checking ?? false
 
 export function argsOf({ business, asset, item }: Scope): string[] {
   return ['check', ...(business ? [business] : []), ...(item ? ['--item', item] : []), ...(asset ? ['--asset', asset] : [])]
@@ -27,16 +24,14 @@ function mapCells(status: Status, f: (business: string, cell: CellStatus) => Cel
   return Object.fromEntries(Object.entries(status).map(([business, cells]) => [business, cells.map(cell => f(business, cell))]))
 }
 
-function settle({ run: _, ...cell }: CellStatus): CellStatus {
+/** The cell as its last result left it. */
+function settled({ checking: _, ...cell }: CellStatus): CellStatus {
   return cell
 }
 
-/** The cell as its last result left it: the drawer would read a checking mark as a worker on it. */
-export const settled = (cell: CellStatus) => (isChecking(cell) ? settle(cell) : cell)
-
 /** Marks the cells a run will check. The engine skips waived cells, so they keep their look. */
 export const startChecks = (status: Status, scope: Scope): Status =>
-  mapCells(status, (business, cell) => (cell.state !== 'waived' && inScope(scope, business, cell) ? { ...cell, run: CHECKING } : cell))
+  mapCells(status, (business, cell) => (cell.state !== 'waived' && inScope(scope, business, cell) ? { ...cell, checking: true } : cell))
 
 /** Folds one line of `standards check` in: a result becomes its cell's state, fresh, so never stale or older. */
 export function applyLine(status: Status, line: string): Status {
@@ -58,9 +53,6 @@ export function applyLine(status: Status, line: string): Status {
 /** After a run: the cells it never reported (it failed or was stopped) go back to their last state. */
 export const endChecks = (status: Status, scope: Scope): Status =>
   mapCells(status, (business, cell) => (inScope(scope, business, cell) ? settled(cell) : cell))
-
-/** The cells without the checking marks, for the totals: a cell being checked is not work in flight. */
-export const withoutChecking = (status: Status): Status => mapCells(status, (_, cell) => settled(cell))
 
 export const checkingCount = (status: Status) => Object.values(status).flat().filter(isChecking).length
 

@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test'
 import type { CellStatus, Result } from '@justanarthur/modo-ui-standards'
-import { applyLine, argsOf, checkingCount, endChecks, isChecking, lastChecked, startChecks, withoutChecking } from './checks'
+import { applyLine, argsOf, checkingCount, endChecks, isChecking, lastChecked, startChecks } from './checks'
 import type { Status } from './model'
 
 const result = (asset: string, item: string, state: Result['state'], at = '2026-11-19T10:00:00.000Z'): Result => ({
@@ -80,5 +80,5 @@ test('end: cells the run never reported go back to their last state', () => {
 })
 
 test('totals leave the checking marks out', () => {
-  expect(withoutChecking(startChecks(status, {}))).toEqual(status)
+  expect(endChecks(startChecks(status, {}), {})).toEqual(status)
 })

@@ -3,8 +3,10 @@ import { Button, EmptyState, Spinner } from '@justanarthur/modo-ui'
 import { useIcon } from '@justanarthur/modo-ui/lib/icon-context'
 import { adoptedVersion, BusinessesOverview, BusinessGrid, type CellStatus, cellKey } from '@justanarthur/modo-ui-standards'
 import type { ReactNode } from 'react'
-import { withoutChecking } from './checks'
 import type { Model, Status } from './model'
+
+/** Until fix runs land (M5), Fix and Waive show disabled with this reason. */
+export const FIX_RUNS_NEXT = 'Fix runs and waivers come in the next version.'
 
 export const BUSINESS = '/business/'
 
@@ -77,7 +79,7 @@ export function Businesses({ model, status }: { model: Model; status: Status }) 
       <BusinessesOverview
         businesses={model.businesses}
         packs={model.packs}
-        status={withoutChecking(status)}
+        status={status}
         onOpenBusiness={id => go(businessRoute(id))}
         className="flex-1"
       />
@@ -125,6 +127,8 @@ export function Business({ model, status, id, open, onOpen }: BusinessProps) {
         workers={model.workers}
         active={open}
         onOpenCell={(cell: CellStatus) => onOpen(cellKey(cell.asset, cell.item))}
+        fixDisabled
+        fixDisabledReason={FIX_RUNS_NEXT}
         className="flex-1"
       />
     </Screen>

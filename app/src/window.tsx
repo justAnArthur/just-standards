@@ -3,10 +3,9 @@ import { Button, DesktopShell } from '@justanarthur/modo-ui'
 import { useIcon } from '@justanarthur/modo-ui/lib/icon-context'
 import { ago, CellDetail, cellKey } from '@justanarthur/modo-ui-standards'
 import { useEffect, useState } from 'react'
-import { checkingCount, lastChecked, settled } from './checks'
-import { useFixRunsNext } from './coming-soon'
+import { checkingCount, lastChecked } from './checks'
 import type { Model, Status } from './model'
-import { BUSINESS, Business, Businesses, Loading, LoadError, RunFailure } from './screens'
+import { BUSINESS, Business, Businesses, FIX_RUNS_NEXT, Loading, LoadError, RunFailure } from './screens'
 import { type Standards, useStandards } from './use-standards'
 
 function useOpenSettings() {
@@ -87,12 +86,16 @@ function CellPane({ model, status, business: id, open, onRecheck, onClose }: Cel
 
   return (
     <CellDetail
-      cell={settled(cell)}
+      cell={cell}
       item={item}
       pack={pack}
       asset={asset}
       business={business}
       workers={model.workers}
+      fixDisabled
+      fixDisabledReason={FIX_RUNS_NEXT}
+      waiveDisabled
+      waiveDisabledReason={FIX_RUNS_NEXT}
       onRecheck={() => onRecheck(cell.asset, cell.item)}
       onClose={onClose}
       className="h-full select-text"
@@ -107,7 +110,6 @@ export default function StandardsWindow() {
   const openSettings = useOpenSettings()
   const [route] = useRoute()
   const [open, setOpen] = useState<string>()
-  useFixRunsNext()
 
   const id = route.startsWith(BUSINESS) ? decodeURIComponent(route.slice(BUSINESS.length)) : undefined
   useEffect(() => setOpen(undefined), [id])
