@@ -62,6 +62,10 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
+      # only this app is checked out: the platform's other apps are workspaces bun can't find
+      - name: Keep the workspaces that are here
+        run: bun -e 'const p = await Bun.file("package.json").json(); p.workspaces = p.workspaces.filter(w => w.includes("*") || require("node:fs").existsSync(w)); await Bun.write("package.json", JSON.stringify(p, null, 2))'
+
       - run: bun install
 
       - name: Build the app
