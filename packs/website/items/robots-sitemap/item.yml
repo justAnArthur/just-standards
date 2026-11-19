@@ -1,6 +1,7 @@
 id: robots-sitemap
 version: 2
 title: robots.txt allows crawling and points at a sitemap
+label: robots + sitemap
 why: crawlers, including AI crawlers, find every page from the sitemap instead of guessing from links; a site-wide Disallow hides the site from search
 applies_to: [website]
 owner_role: seo

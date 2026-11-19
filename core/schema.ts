@@ -65,6 +65,8 @@ export const Item = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   version: z.number().int().positive(),
   title: z.string(),
+  /** a column head in the grid, under 20 characters */
+  label: z.string().max(20).optional(),
   why: z.string(),
   applies_to: z.array(AssetKind).min(1),
   owner_role: z.string().optional(),

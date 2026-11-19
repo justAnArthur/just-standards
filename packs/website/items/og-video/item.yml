@@ -1,6 +1,7 @@
 id: og-video
 version: 1
 title: og:video on the home page
+label: "og:video"
 why: link previews on LinkedIn and X can play a short loop instead of a still, which gets more clicks
 applies_to: [website]
 owner_role: content

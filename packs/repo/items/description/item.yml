@@ -1,6 +1,7 @@
 id: description
 version: 1
 title: One-line description
+label: description
 why: the description is what GitHub search, link previews and profile pages show
 applies_to: [repo]
 owner_role: engineering

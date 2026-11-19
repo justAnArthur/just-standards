@@ -1,6 +1,7 @@
 id: topics
 version: 1
 title: 3–8 topics
+label: topics
 why: topics put the repo in GitHub's topic pages and search filters
 applies_to: [repo]
 owner_role: engineering

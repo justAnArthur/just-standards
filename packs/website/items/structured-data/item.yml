@@ -1,6 +1,7 @@
 id: structured-data
 version: 1
 title: Structured data (JSON-LD)
+label: structured data
 why: search engines and AI answers read who is behind the site and what it offers from schema.org data
 applies_to: [website]
 owner_role: seo
