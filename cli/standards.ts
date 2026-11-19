@@ -13,6 +13,7 @@ const USAGE = `standards <command> [options]
   prompt <business> <asset> <item…>  the fix instructions for a worker
         --branch <name>              (default standards/<first item>)
   validate                           load the workspace and every pack
+  workspace                          the whole model as one JSON object: businesses, packs and their items, workers
 
   --workspace <dir>   default $STANDARDS_WORKSPACE, then the current directory
   --json              one JSON object per line (also when stdout is not a terminal)`
@@ -87,6 +88,15 @@ async function status(ws: Workspace, ids: string[]) {
   }
 }
 
+/** What an app needs to draw the grid: the config as loaded, items without their folder paths. */
+function model(ws: Workspace) {
+  const packs = [...ws.packs.values()].map(({ dir: _, entries, ...pack }) => ({
+    ...pack,
+    items: entries.map(({ dir: _dir, ...item }) => item),
+  }))
+  return { dir: ws.dir, businesses: ws.businesses, packs, workers: ws.workers }
+}
+
 async function main() {
   const [command, ...rest] = positionals
   if (flags.help || !command) return console.log(USAGE)
@@ -98,6 +108,7 @@ async function main() {
     const items = [...ws.packs.values()].reduce((sum, pack) => sum + pack.entries.length, 0)
     return console.log(`${ws.businesses.length} businesses, ${ws.workers.length} workers, ${ws.packs.size} packs, ${items} items: valid`)
   }
+  if (command === 'workspace') return console.log(JSON.stringify(model(ws)))
   if (command === 'prompt') {
     const [businessId, assetId, ...items] = rest
     if (!businessId || !assetId || items.length === 0) throw new PromptError('usage: standards prompt <business> <asset> <item…>')
