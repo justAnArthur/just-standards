@@ -4,11 +4,49 @@
 
 Standards for everything I run, written as packs. Each standard in a pack is a check that measures it and a recipe that fixes it. A business adopts packs. Every asset it owns (a website, a web app, a repo) is checked against them, and a failing cell goes to Claude Code, which comes back with a pull request.
 
-**Status:** the first pack, `repo`, works today as a Claude Code skill. The CLI, the website pack and the desktop app (a [just-apps](https://github.com/justAnArthur/just-apps) app) are in progress; see the [MVP spec](docs/mvp-spec.md).
+**Status:** the CLI and two packs (`website`, `repo`) work. The desktop app (a [just-apps](https://github.com/justAnArthur/just-apps) app) that turns a failing cell into a Claude Code run and a pull request is next; see the [MVP spec](docs/mvp-spec.md).
 
 ```text
-packs/repo/     the repo pack: a Claude Code skill that brings a GitHub repo up to one standard
+core/           model, pack loader, check runners (http, repo, github, script, ai), fix prompts
+cli/            the `standards` CLI
+packs/website/  og tags, og:video, icons, robots + sitemap, sitemap health (script), JSON-LD, llms.txt, security headers, hero copy (AI)
+packs/repo/     README, banner, description, topics, homepage, license; its fixer is the repo-standard skill
 docs/           the MVP spec
+```
+
+## CLI
+
+Needs [Bun](https://bun.sh) and, for the repo pack, `gh`. A workspace is a folder with `businesses/*.yml` and `workers.yml` (format in the [spec](docs/mvp-spec.md#3-files)).
+
+```bash
+bun install
+```
+
+```bash
+export STANDARDS_WORKSPACE=~/Projects/standards-workspace
+```
+
+```text
+bun cli/standards.ts check [business…]                 run the checks and save the results
+bun cli/standards.ts status [business…]                the saved state of every cell
+bun cli/standards.ts prompt <business> <asset> <item>  the fix instructions for a worker
+bun cli/standards.ts validate                          load the workspace and every pack
+```
+
+Output is a table in a terminal and one JSON object per line when piped (or with `--json`).
+
+A business, for example:
+
+```yaml
+id: acme
+name: Acme
+assets:
+  - { id: site, kind: website, url: https://acme.example, repo: acme/site, path: ~/Projects/acme/site, stack: next }
+  - { id: repo, kind: repo, repo: acme/site, path: ~/Projects/acme/site }
+packs: [website@1, repo@1]
+worker: sonnet-fixer
+waivers:
+  - { item: website/og-video, asset: site, reason: no brand video yet, until: 2027-01-31 }
 ```
 
 ## The repo pack
