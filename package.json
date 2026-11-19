@@ -7,7 +7,7 @@
   "bin": { "standards": "./cli/standards.ts" },
   "scripts": {
     "check": "tsc -p . --noEmit",
-    "test": "bun test",
+    "test": "bun test ./core",
     "standards": "bun cli/standards.ts"
   },
   "dependencies": {

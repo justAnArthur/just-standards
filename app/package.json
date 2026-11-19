@@ -1,0 +1,32 @@
+{
+  "name": "just-standards-app",
+  "version": "0.1.0",
+  "private": true,
+  "properties": {
+    "gitCommitScopeRelatedNames": "just-standards,standards,app,ui,native"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "check": "tsc -p . --noEmit",
+    "tauri": "bun ../../../packages/cli/src/cli.ts dev standards",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@just-apps/app-kit": "workspace:*",
+    "@just-apps/host-contract": "workspace:*",
+    "@just-apps/vite": "workspace:*",
+    "@justanarthur/modo-ui": "^2.7.0",
+    "@justanarthur/modo-ui-ai": "^0.5.0",
+    "@justanarthur/modo-ui-standards": "^0.2.0",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5.9.0",
+    "vite": "^7"
+  }
+}

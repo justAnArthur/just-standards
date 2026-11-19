@@ -1,0 +1,73 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "app": {
+    "macOSPrivateApi": true,
+    "security": {
+      "csp": {
+        "base-uri": "'self'",
+        "connect-src": "'self' ipc: http://ipc.localhost https:",
+        "default-src": "'self' ipc: http://ipc.localhost",
+        "font-src": "'self' data:",
+        "frame-ancestors": "'none'",
+        "img-src": "'self' asset: http://asset.localhost data: blob: https:",
+        "object-src": "'none'",
+        "script-src": "'self'",
+        "style-src": "'self' 'unsafe-inline'"
+      },
+      "devCsp": {
+        "base-uri": "'self'",
+        "connect-src": "'self' ipc: http://ipc.localhost https: ws://localhost:1420",
+        "default-src": "'self' ipc: http://ipc.localhost",
+        "font-src": "'self' data:",
+        "img-src": "'self' asset: http://asset.localhost data: blob: https:",
+        "object-src": "'none'",
+        "script-src": "'self' 'unsafe-inline'",
+        "style-src": "'self' 'unsafe-inline'"
+      }
+    },
+    "windows": [
+      {
+        "center": true,
+        "height": 720,
+        "hiddenTitle": true,
+        "label": "main",
+        "minHeight": 480,
+        "minWidth": 720,
+        "title": "Standards",
+        "titleBarStyle": "Overlay",
+        "transparent": true,
+        "visible": false,
+        "width": 1100
+      }
+    ]
+  },
+  "build": {
+    "beforeBuildCommand": "bun run build",
+    "beforeDevCommand": "bun run dev",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
+  },
+  "bundle": {
+    "active": true,
+    "category": "Productivity",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "13.0"
+    },
+    "targets": "all"
+  },
+  "identifier": "dev.justanarthur.standards",
+  "plugins": {
+    "opener": {
+      "requireLiteralLeadingDot": false
+    }
+  },
+  "productName": "Standards",
+  "version": "../package.json"
+}

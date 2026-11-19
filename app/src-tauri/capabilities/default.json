@@ -1,0 +1,44 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "description": "What the main and settings windows may call.",
+  "identifier": "default",
+  "permissions": [
+    "core:default",
+    "core:app:allow-set-app-theme",
+    "core:webview:allow-create-webview-window",
+    "core:window:allow-set-title",
+    "core:window:allow-set-theme",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-close",
+    "core:window:allow-show",
+    "core:window:allow-set-focus",
+    "core:window:allow-start-dragging",
+    "store:default",
+    "notification:default",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-register-all",
+    "global-shortcut:allow-unregister",
+    "global-shortcut:allow-unregister-all",
+    "global-shortcut:allow-is-registered",
+    "updater:default",
+    "process:default",
+    "deep-link:default",
+    "opener:default",
+    {
+      "allow": [
+        {
+          "app": true,
+          "path": "**"
+        }
+      ],
+      "identifier": "opener:allow-open-path"
+    },
+    "clipboard-manager:allow-read-text",
+    "clipboard-manager:allow-write-text"
+  ],
+  "windows": [
+    "main",
+    "settings"
+  ]
+}
