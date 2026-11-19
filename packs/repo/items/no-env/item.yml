@@ -1,0 +1,10 @@
+id: no-env
+version: 1
+title: No tracked .env
+why: a committed .env leaks secrets to everyone who can read the repo
+applies_to: [repo]
+owner_role: engineering
+check:
+  kind: repo
+  expect:
+    - untracked: .env

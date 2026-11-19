@@ -1,0 +1,12 @@
+id: readme
+version: 1
+title: README written from the code
+why: the README is the page people and AI tools read first; a thin or boilerplate one hides what the repo does
+applies_to: [repo]
+owner_role: engineering
+check:
+  kind: github
+  expect:
+    - field: readme
+      min_length: 400
+      not_matches: 'bootstrapped with|create-next-app|This template provides a minimal setup|Mintlify Starter Kit'

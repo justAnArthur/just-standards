@@ -1,0 +1,22 @@
+id: og-video
+version: 1
+title: og:video on the home page
+why: link previews on LinkedIn and X can play a short loop instead of a still, which gets more clicks
+applies_to: [website]
+owner_role: content
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        - select: meta[property="og:video"]
+          attr: content
+          absolute_url: true
+          follow: { status: 200, content_type: video/mp4, max_bytes: 8000000 }
+        - select: meta[property="og:video:type"]
+          attr: content
+          equals: video/mp4
+        - select: meta[property="og:video:width"]
+          attr: content
+        - select: meta[property="og:video:height"]
+          attr: content

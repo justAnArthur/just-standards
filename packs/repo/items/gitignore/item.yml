@@ -1,0 +1,10 @@
+id: gitignore
+version: 1
+title: .gitignore
+why: keeps build output, IDE files and local secrets out of the repo
+applies_to: [repo]
+owner_role: engineering
+check:
+  kind: repo
+  expect:
+    - file: .gitignore

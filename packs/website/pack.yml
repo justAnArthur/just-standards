@@ -1,0 +1,22 @@
+id: website
+version: 2
+title: Website
+description: What every public website I run carries, so it previews well, gets indexed and is readable by AI tools.
+items:
+  - meta-basics
+  - og-image
+  - og-video
+  - icons
+  - robots-sitemap
+  - structured-data
+  - llms-txt
+  - security-headers
+  - { id: sitemap-health, since: 2 }
+  - { id: hero, since: 2 }
+changelog:
+  - version: 2
+    date: 2026-11-19
+    notes: "robots-sitemap v2 also fails a site-wide Disallow. Added sitemap-health (every sampled sitemap URL answers 200 on the site's own host) and hero (an AI reads the first screen)."
+  - version: 1
+    date: 2026-11-19
+    notes: First version.

@@ -1,0 +1,17 @@
+id: robots-sitemap
+version: 2
+title: robots.txt allows crawling and points at a sitemap
+why: crawlers, including AI crawlers, find every page from the sitemap instead of guessing from links; a site-wide Disallow hides the site from search
+applies_to: [website]
+owner_role: seo
+check:
+  kind: http
+  requests:
+    - path: /robots.txt
+      expect:
+        - status: 200
+        - body: true
+          matches: 'sitemap:\s*https?://'
+        # `User-agent: *` followed by `Disallow: /` blocks the whole site
+        - body: true
+          not_matches: 'user-agent:\s*\*\s*disallow:\s*/(\s|$)'

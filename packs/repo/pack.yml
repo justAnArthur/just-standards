@@ -1,0 +1,17 @@
+id: repo
+version: 1
+title: Repo
+description: Every GitHub repo I keep reads well from the outside. The fixer for all of it is the repo-standard skill in this folder (SKILL.md).
+items:
+  - readme
+  - banner
+  - description
+  - topics
+  - homepage
+  - license
+  - gitignore
+  - no-env
+changelog:
+  - version: 1
+    date: 2026-11-19
+    notes: The repo-standard skill's checks as a pack.

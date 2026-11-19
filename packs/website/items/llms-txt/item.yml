@@ -1,0 +1,15 @@
+id: llms-txt
+version: 1
+title: llms.txt
+why: AI tools and agents get a short, curated map of the site instead of crawling it blind
+applies_to: [website]
+owner_role: seo
+check:
+  kind: http
+  requests:
+    - path: /llms.txt
+      expect:
+        - status: 200
+        - body: true
+          matches: '^\s*# \S'
+          min_length: 100

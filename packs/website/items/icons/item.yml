@@ -1,0 +1,17 @@
+id: icons
+version: 1
+title: Favicon and touch icon
+why: tabs, bookmarks, home-screen shortcuts and search results show the brand mark instead of a blank page
+applies_to: [website, webapp]
+owner_role: engineering
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        - select: link[rel~="icon"]
+          attr: href
+          follow: { status: 200 }
+        - select: link[rel="apple-touch-icon"]
+          attr: href
+          follow: { status: 200 }

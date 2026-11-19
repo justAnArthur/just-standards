@@ -1,0 +1,12 @@
+id: banner
+version: 1
+title: Banner at the top of the README
+why: one picture says what the repo is before anyone reads a line
+applies_to: [repo]
+owner_role: engineering
+check:
+  kind: repo
+  expect:
+    - file: .github/banner.svg
+    - file: README.md
+      matches: '\.github/banner\.svg'

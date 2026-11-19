@@ -1,0 +1,14 @@
+id: structured-data
+version: 1
+title: Structured data (JSON-LD)
+why: search engines and AI answers read who is behind the site and what it offers from schema.org data
+applies_to: [website]
+owner_role: seo
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        - select: script[type="application/ld+json"]
+          json: true
+          matches: '"@type"\s*:\s*"(Organization|WebSite|Person|SoftwareApplication|Product|LocalBusiness)"'

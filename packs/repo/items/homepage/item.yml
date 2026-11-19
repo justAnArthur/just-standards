@@ -1,0 +1,12 @@
+id: homepage
+version: 1
+title: Homepage that answers
+why: the homepage link is the way from the repo to the live thing; a dead one costs trust
+applies_to: [repo]
+owner_role: engineering
+check:
+  kind: github
+  expect:
+    - field: homepage
+      absolute_url: true
+      follow: { status: 200 }

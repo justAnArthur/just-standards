@@ -1,0 +1,22 @@
+id: og-image
+version: 1
+title: Open Graph image and card
+why: a link shared on LinkedIn, X, Slack or iMessage shows a large picture and title instead of a bare URL
+applies_to: [website, webapp]
+owner_role: seo
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        - select: meta[property="og:image"]
+          attr: content
+          absolute_url: true
+          follow: { status: 200, content_type: image/, max_bytes: 5000000 }
+        - select: meta[property="og:title"]
+          attr: content
+        - select: meta[property="og:description"]
+          attr: content
+        - select: meta[name="twitter:card"]
+          attr: content
+          equals: summary_large_image

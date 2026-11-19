@@ -1,0 +1,23 @@
+id: meta-basics
+version: 1
+title: Title, description, canonical, lang
+why: search results and AI answers quote the title and description; the canonical stops duplicate URLs from splitting ranking
+applies_to: [website, webapp]
+owner_role: seo
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        - select: title
+          min_length: 10
+          max_length: 70
+        - select: meta[name="description"]
+          attr: content
+          min_length: 50
+          max_length: 170
+        - select: link[rel="canonical"]
+          attr: href
+          absolute_url: true
+        - select: html
+          attr: lang
