@@ -52,6 +52,8 @@ function args(worker: Worker, interactive: boolean, packDirs: string[]) {
   return [
     claudeBin(),
     ...['-p', '--input-format', 'stream-json', '--output-format', 'stream-json', '--verbose', '--model', worker.model],
+    // echoes the prompt back, so the recorded transcript starts with what the worker was asked
+    '--replay-user-messages',
     ...(worker.effort ? ['--effort', worker.effort] : []),
     ...['--permission-mode', worker.permission_mode],
     ...(interactive ? ['--permission-prompt-tool', 'stdio'] : []),
