@@ -7,8 +7,16 @@ import type { RunRecord } from './schema.ts'
 
 export class RunError extends Error {}
 
+type WithPr = RunRecord & { pr: NonNullable<RunRecord['pr']> }
+
 export const ghBin = () => process.env.STANDARDS_GH_BIN ?? 'gh'
-export const runsDir = (ws: Workspace) => join(ws.dir, '.state', 'runs')
+export const runsDir = (ws: Pick<Workspace, 'dir'>) => join(ws.dir, '.state', 'runs')
+
+/** A run's folder; the id comes from outside, so it may not climb out of `runs/`. */
+export function runDir(ws: Pick<Workspace, 'dir'>, id: string) {
+  if (!/^[\w-]+$/.test(id)) throw new RunError(`no run ${id}`)
+  return join(runsDir(ws), id)
+}
 
 export async function writeRecord(ws: Workspace, record: RunRecord) {
   await Bun.write(join(runsDir(ws), record.id, 'run.json'), `${JSON.stringify(record, null, 2)}\n`)
@@ -39,9 +47,15 @@ export async function listRuns(ws: Workspace, businesses: string[] = []) {
 }
 
 export function transcriptOf(ws: Workspace, id: string) {
-  const path = join(runsDir(ws), id, 'events.ndjson')
-  if (!/^[\w-]+$/.test(id) || !existsSync(path)) throw new RunError(`no run ${id}`)
+  const path = join(runDir(ws, id), 'events.ndjson')
+  if (!existsSync(path)) throw new RunError(`no run ${id}`)
   return Bun.file(path)
+}
+
+export async function readRecord(ws: Workspace, id: string) {
+  const file = Bun.file(join(runDir(ws, id), 'run.json'))
+  if (!(await file.exists())) throw new RunError(`no run ${id}`)
+  return (await file.json()) as RunRecord
 }
 
 async function defaultBranch(checkout: string) {
@@ -85,23 +99,67 @@ async function cleanUp(record: RunRecord) {
   if (record.pr?.state === 'merged') await run(['git', 'branch', '-D', record.branch], checkout)
 }
 
-/** Reads the state of every open PR; merged or closed ones get their worktree removed. Returns the records it changed. */
+/** Reads the state of the run's PR; a merged or closed one gets its worktree removed. True when the record changed. */
+async function syncRun(ws: Workspace, record: WithPr) {
+  const view = await run([ghBin(), 'pr', 'view', record.pr.url, '--json', 'state'])
+  if (!view.ok) {
+    console.error(`${record.id}: gh pr view ${record.pr.url}: ${view.stderr}`)
+    return false
+  }
+  const state = (JSON.parse(view.stdout) as { state: string }).state.toLowerCase()
+  if (state !== 'merged' && state !== 'closed') return false
+  record.pr.state = state
+  const problem = await cleanUp(record)
+  if (problem) console.error(`${record.id}: left ${record.worktree} in place: ${problem}`)
+  await writeRecord(ws, record)
+  return true
+}
+
+/** Syncs every run whose PR is open. Returns the records it changed. */
 export async function syncRuns(ws: Workspace) {
   const changed: RunRecord[] = []
   for (const record of await listRuns(ws)) {
-    if (record.pr?.state !== 'open') continue
-    const view = await run([ghBin(), 'pr', 'view', record.pr.url, '--json', 'state'])
-    if (!view.ok) {
-      console.error(`${record.id}: gh pr view ${record.pr.url}: ${view.stderr}`)
-      continue
-    }
-    const state = (JSON.parse(view.stdout) as { state: string }).state.toLowerCase()
-    if (state !== 'merged' && state !== 'closed') continue
-    record.pr.state = state
-    const problem = await cleanUp(record)
-    if (problem) console.error(`${record.id}: left ${record.worktree} in place: ${problem}`)
-    await writeRecord(ws, record)
-    changed.push(record)
+    if (record.pr?.state === 'open' && (await syncRun(ws, record as WithPr))) changed.push(record)
   }
   return changed
+}
+
+async function withPr(ws: Workspace, id: string) {
+  const record = await readRecord(ws, id)
+  if (!record.pr) throw new RunError(`run ${id} has no pull request`)
+  return record as WithPr
+}
+
+const PR_FIELDS = 'number,url,title,state,isDraft,mergeable,mergeStateStatus,reviewDecision,statusCheckRollup,additions,deletions,changedFiles,files,body'
+
+type Rollup =
+  | { __typename: 'CheckRun'; name: string; status: string; conclusion: string }
+  | { __typename: 'StatusContext'; context: string; state: string }
+
+/** A check run's state is its progress and its conclusion the outcome; a commit status has one state for both. */
+function checkOf(check: Rollup) {
+  if (check.__typename === 'CheckRun') return { name: check.name, state: check.status, conclusion: check.conclusion }
+  const pending = check.state === 'PENDING' || check.state === 'EXPECTED'
+  return { name: check.context, state: pending ? 'PENDING' : 'COMPLETED', conclusion: pending ? '' : check.state }
+}
+
+/** The run's PR as `gh pr view` sees it, with the status rollup as `checks`. */
+export async function prView(ws: Workspace, id: string) {
+  const record = await withPr(ws, id)
+  const view = await run([ghBin(), 'pr', 'view', record.pr.url, '--json', PR_FIELDS])
+  if (!view.ok) throw new RunError(`gh pr view ${record.pr.url}: ${view.stderr}`)
+  const { statusCheckRollup, ...pr } = JSON.parse(view.stdout) as { statusCheckRollup: Rollup[] }
+  return { ...pr, checks: statusCheckRollup.map(checkOf) }
+}
+
+export const MERGE_METHODS = ['merge', 'squash', 'rebase']
+
+/** Merges the run's PR, then syncs the run. Returns the record. */
+export async function mergePr(ws: Workspace, id: string, method = 'merge') {
+  if (!MERGE_METHODS.includes(method)) throw new RunError(`--method is one of ${MERGE_METHODS.join(', ')}`)
+  const record = await withPr(ws, id)
+  const merged = await run([ghBin(), 'pr', 'merge', record.pr.url, `--${method}`])
+  if (!merged.ok) throw new RunError(`gh pr merge ${record.pr.url}: ${merged.stderr}`)
+  await syncRun(ws, record)
+  return record
 }

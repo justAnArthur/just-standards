@@ -31,6 +31,14 @@ export class ConfigError extends Error {}
 
 export const expandHome = (path: string) => (path.startsWith('~/') || path === '~' ? join(homedir(), path.slice(1)) : path)
 
+/** The data as the schema reads it, or a ConfigError that lists every issue under `where`. */
+export function parseWith<S extends z.ZodType>(schema: S, data: unknown, where: string): z.infer<S> {
+  const parsed = schema.safeParse(data)
+  if (parsed.success) return parsed.data
+  const issues = parsed.error.issues.map(issue => `  ${issue.path.join('.') || '(root)'}: ${issue.message}`)
+  throw new ConfigError(`${where}:\n${issues.join('\n')}`)
+}
+
 async function readYaml<S extends z.ZodType>(file: string, schema: S): Promise<z.infer<S>> {
   const text = await Bun.file(file).text()
   let data: unknown
@@ -39,12 +47,7 @@ async function readYaml<S extends z.ZodType>(file: string, schema: S): Promise<z
   } catch (error) {
     throw new ConfigError(`${file}: ${(error as Error).message}`)
   }
-  const parsed = schema.safeParse(data)
-  if (!parsed.success) {
-    const issues = parsed.error.issues.map(issue => `  ${issue.path.join('.') || '(root)'}: ${issue.message}`)
-    throw new ConfigError(`${file}:\n${issues.join('\n')}`)
-  }
-  return parsed.data
+  return parseWith(schema, data, file)
 }
 
 async function subdirs(dir: string) {
@@ -79,6 +82,17 @@ export async function loadPacks(dirs: string[]) {
   return packs
 }
 
+/** A business names only packs and a worker that exist. */
+export function checkRefs(business: Business, packs: Map<string, LoadedPack>, workers: Worker[]) {
+  for (const ref of business.packs) {
+    const id = ref.split('@')[0] as string
+    if (!packs.has(id)) throw new ConfigError(`businesses/${business.id}: no pack ${id}`)
+  }
+  if (business.worker && !workers.some(worker => worker.id === business.worker)) {
+    throw new ConfigError(`businesses/${business.id}: no worker ${business.worker} in workers.yml`)
+  }
+}
+
 export async function loadWorkspace(dir: string, bundled = BUNDLED_PACKS): Promise<Workspace> {
   const root = expandHome(dir)
   const businessDir = join(root, 'businesses')
@@ -88,14 +102,6 @@ export async function loadWorkspace(dir: string, bundled = BUNDLED_PACKS): Promi
   const workers = (await Bun.file(workersFile).exists()) ? await readYaml(workersFile, Worker.array()) : []
   const packs = await loadPacks([bundled, join(root, 'packs')])
 
-  for (const business of businesses) {
-    for (const ref of business.packs) {
-      const id = ref.split('@')[0] as string
-      if (!packs.has(id)) throw new ConfigError(`businesses/${business.id}: no pack ${id}`)
-    }
-    if (business.worker && !workers.some(worker => worker.id === business.worker)) {
-      throw new ConfigError(`businesses/${business.id}: no worker ${business.worker} in workers.yml`)
-    }
-  }
+  for (const business of businesses) checkRefs(business, packs, workers)
   return { dir: root, businesses, workers, packs }
 }

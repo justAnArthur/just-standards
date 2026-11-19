@@ -14,7 +14,8 @@ const RULES = (branch: string) => `## How to work
 - Push the branch and open a pull request with \`gh pr create\`. Its body says what changed and how to verify each standard.
 - Never push to the default branch, never force-push, never merge.
 - When a standard needs something only a person can give (an asset, a decision, a secret), do the rest, say what is missing in the PR body, and stop.
-- End with the pull request URL alone on the last line.`
+- End your last message with the pull request URL alone on its last line.
+- When you are done, call the \`finish\` tool (\`mcp__standards__finish\`) with the pull request URL, a short summary of what you changed, and anything a person must still do, then stop. Without a pull request, call it anyway, leave out the URL and say why in the summary.`
 
 /** The instructions a worker gets to fix one or more failing items on one asset. */
 export async function fixPrompt(ws: Workspace, business: Business, assetId: string, itemKeys: string[], branch: string) {

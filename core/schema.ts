@@ -110,13 +110,18 @@ export const Business = z.object({
 })
 export type Business = z.infer<typeof Business>
 
+/** Claude Code's `--permission-mode` values. */
+export const PermissionMode = z.enum(['manual', 'acceptEdits', 'auto', 'dontAsk', 'plan', 'bypassPermissions'])
+export type PermissionMode = z.infer<typeof PermissionMode>
+
 export const Worker = z.object({
   id: z.string(),
   runtime: z.literal('claude-code'),
   profile: z.string().default('~/.claude'),
   model: z.string(),
   effort: z.enum(['low', 'medium', 'high', 'xhigh', 'max']).optional(),
-  permission_mode: z.enum(['default', 'acceptEdits', 'plan']).default('acceptEdits'),
+  // Claude Code renamed `default` to `manual`; older workers.yml files still say `default`.
+  permission_mode: z.preprocess(mode => (mode === 'default' ? 'manual' : mode), PermissionMode.default('acceptEdits')),
   allow: z.array(z.string()).default([]),
 })
 export type Worker = z.infer<typeof Worker>
@@ -159,4 +164,8 @@ export interface RunRecord {
   session_id?: string
   /** Why it failed or stopped. */
   error?: string
+  /** What the worker said it did, through the `finish` tool. */
+  summary?: string
+  /** What a person must still do, through the `finish` tool. */
+  missing?: string[]
 }

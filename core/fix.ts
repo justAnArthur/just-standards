@@ -5,6 +5,7 @@ import { cellsOf } from './cells.ts'
 import { cleanEnv } from './checks/ai.ts'
 import { run } from './checks/github.ts'
 import { expandHome, type Workspace } from './load.ts'
+import { type Finish, finishFile } from './mcp.ts'
 import { fixPrompt } from './prompt.ts'
 import { createWorktree, ghBin, lines, RunError, runsDir, writeRecord } from './runs.ts'
 import type { Business, RunRecord, Worker } from './schema.ts'
@@ -31,6 +32,9 @@ interface Result {
 const KILL_AFTER_MS = 5000
 const PR_URL = /https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/pull\/(\d+)/g
 
+const CLI = join(import.meta.dir, '../cli/standards.ts')
+const FINISH_TOOL = 'mcp__standards__finish'
+
 const claudeBin = () => process.env.STANDARDS_CLAUDE_BIN ?? 'claude'
 const stamp = (date: Date) => date.toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15)
 
@@ -48,7 +52,11 @@ function parse(line: string) {
   }
 }
 
-function args(worker: Worker, interactive: boolean, packDirs: string[]) {
+/** This CLI's `mcp` command, started the way this process was, so the worker can call `finish`. */
+const mcpConfig = (ws: Workspace, id: string) =>
+  JSON.stringify({ mcpServers: { standards: { type: 'stdio', command: process.execPath, args: [CLI, 'mcp', '--run', id, '--workspace', ws.dir] } } })
+
+function args(worker: Worker, interactive: boolean, packDirs: string[], mcp: string) {
   return [
     claudeBin(),
     ...['-p', '--input-format', 'stream-json', '--output-format', 'stream-json', '--verbose', '--model', worker.model],
@@ -57,7 +65,8 @@ function args(worker: Worker, interactive: boolean, packDirs: string[]) {
     ...(worker.effort ? ['--effort', worker.effort] : []),
     ...['--permission-mode', worker.permission_mode],
     ...(interactive ? ['--permission-prompt-tool', 'stdio'] : []),
-    ...(worker.allow.length > 0 ? ['--allowedTools', ...worker.allow] : []),
+    ...['--mcp-config', mcp],
+    ...['--allowedTools', ...worker.allow, FINISH_TOOL],
     // a recipe can point at files in its pack (the repo pack's skill), which live outside the worktree
     ...packDirs.flatMap(dir => ['--add-dir', dir]),
   ]
@@ -146,7 +155,7 @@ export async function fix(ws: Workspace, business: Business, assetId: string, it
   let open = true
   let proc: Bun.Subprocess<'pipe', 'pipe', 'pipe'>
   try {
-    proc = Bun.spawn(args(worker, !!options.interactive, packDirsOf(ws, items)), {
+    proc = Bun.spawn(args(worker, !!options.interactive, packDirsOf(ws, items), mcpConfig(ws, id)), {
       cwd: worktree,
       env: env(worker),
       stdin: 'pipe',
@@ -202,12 +211,16 @@ export async function fix(ws: Workspace, business: Business, assetId: string, it
   }
   await events.end()
   const code = await proc.exited
+  const finished = (await Bun.file(finishFile(ws.dir, id)).json().catch(() => undefined)) as Finish | undefined
+  record.summary = finished?.summary
+  record.missing = finished?.missing
 
   if (stopped) return finish('stopped', `stopped by ${stopped}`)
   if (!result) return finish('failed', `claude exited ${code} without a result ${(await stderr).trim().slice(-300)}`.trim())
   record.cost_usd = result.total_cost_usd
   record.session_id = result.session_id ?? record.session_id
-  record.pr = await findPr(result.result ?? '', branch, worktree)
+  // A PR given to `finish` wins over one in the text.
+  record.pr = await findPr(finished?.pr_url ?? result.result ?? '', branch, worktree)
   if (stopped) return finish('stopped', `stopped by ${stopped}`)
   if (result.is_error || result.subtype !== 'success') return finish('failed', (result.result || result.subtype).slice(0, 300))
   if (!record.pr) return finish('failed', 'no pull request')

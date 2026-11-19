@@ -10,6 +10,7 @@ const CLI = join(import.meta.dir, '../cli/standards.ts')
 const FAKE_CLAUDE = join(import.meta.dir, 'fixtures/fake-claude.ts')
 const PR7 = 'https://github.com/acme/widgets/pull/7'
 const PR8 = 'https://github.com/acme/widgets/pull/8'
+const PR9 = 'https://github.com/acme/widgets/pull/9'
 
 const FAKE_GH = `#!/bin/sh
 if [ "$1 $2" = "pr list" ]; then echo "\${FAKE_GH_LIST:-[]}"; exit 0; fi
@@ -157,13 +158,20 @@ describe('standards fix', () => {
     expect(run).toMatchObject({ state: 'done', pr: { url: PR7, number: 7, state: 'open' }, cost_usd: 0.0123, session_id: 'fake-session' })
     expect(run.ms).toBeNumber()
     expect(run.error).toBeUndefined()
+    expect(run.summary).toBeUndefined()
 
     const [init, text] = claudeLines(seen)
     expect(init).toMatchObject({ subtype: 'init', cwd: worktree, model: 'haiku', config_dir: null, leaked: [] })
     expect(init.argv).toEqual(
       expect.arrayContaining(['-p', '--input-format', 'stream-json', '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits']),
     )
-    expect(init.argv.slice(-5, -2)).toEqual(['--allowedTools', 'Bash(git *)', 'Bash(gh pr *)'])
+    expect(init.argv.slice(-6, -2)).toEqual(['--allowedTools', 'Bash(git *)', 'Bash(gh pr *)', 'mcp__standards__finish'])
+    const mcp = JSON.parse(init.argv[init.argv.indexOf('--mcp-config') + 1])
+    expect(mcp.mcpServers.standards).toEqual({
+      type: 'stdio',
+      command: process.execPath,
+      args: [CLI, 'mcp', '--run', first.type === 'run' && first.run.id, '--workspace', ws],
+    })
     expect(init.argv.slice(-2)).toEqual(['--add-dir', join(import.meta.dir, '../packs/repo')])
     expect(init.argv).not.toContain('--permission-prompt-tool')
     expect(init.argv).not.toContain('--effort')
@@ -213,6 +221,17 @@ describe('standards fix', () => {
     expect(messages[0].argv).toEqual(expect.arrayContaining(['--effort', 'low', '--permission-prompt-tool', 'stdio']))
     expect(messages[0].config_dir).toBe(join(dir, 'profile'))
     expect(messages.find(m => m.type === 'user')?.message.content[0].content).toBe(PR7)
+  })
+
+  test('a PR given to finish wins over the one in the result, and its summary and missing are recorded', async () => {
+    const finish = { pr_url: PR9, summary: 'Added a .gitignore for Bun.', missing: ['Rotate the leaked key'] }
+    const { seen, code } = await standards(['fix', 'acme', 'widgets', 'repo/gitignore', '--worker', 'fake'], { FAKE_FINISH: JSON.stringify(finish) }).finish()
+    expect(code).toBe(0)
+    const run = finished(seen)
+    expect(run).toMatchObject({ state: 'done', pr: { url: PR9, number: 9, state: 'open' }, summary: finish.summary, missing: finish.missing })
+    expect(await Bun.file(join(ws, '.state/runs', run.id, 'finish.json')).json()).toEqual(finish)
+    const result = claudeLines(seen).find(m => m.type === 'user' && m.message.content[0].tool_use_id === 'toolu_2')
+    expect(result.message.content[0].content).toContain('Recorded')
   })
 
   test('SIGTERM kills the whole process tree and records stopped', async () => {

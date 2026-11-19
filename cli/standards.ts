@@ -2,10 +2,13 @@
 import { join } from 'node:path'
 import { parseArgs } from 'node:util'
 import { type CellStatus, cellsOf, checkBusiness, statusOf } from '../core/cells.ts'
+import { allowWorker, clone, initWorkspace, removeBusiness, removeWorker, setBusiness, setWorker } from '../core/config.ts'
 import { fix } from '../core/fix.ts'
+import { githubLogin, githubStatus } from '../core/github.ts'
 import { ConfigError, loadWorkspace, type Workspace } from '../core/load.ts'
+import { serveMcp } from '../core/mcp.ts'
 import { fixPrompt, PromptError } from '../core/prompt.ts'
-import { lines, listRuns, RunError, syncRuns, transcriptOf } from '../core/runs.ts'
+import { lines, listRuns, mergePr, prView, RunError, syncRuns, transcriptOf } from '../core/runs.ts'
 import type { Result } from '../core/schema.ts'
 
 const USAGE = `standards <command> [options]
@@ -20,8 +23,22 @@ const USAGE = `standards <command> [options]
   runs [business…]                   the fix runs, newest first
   runs transcript <id>               everything Claude Code printed in a run
   runs sync                          read open PRs; clean up the worktrees of merged and closed ones
+  pr view <run>                      the run's pull request: state, checks, files, body
+  pr merge <run>                     merge it, then sync the run
+        --method merge|squash|rebase (default merge)
   validate                           load the workspace and every pack
   workspace                          the whole model as one JSON object: businesses, packs and their items, workers
+  workspace init <dir>               make a workspace: businesses/, workers.yml with the presets, .gitignore
+  worker set --json '<Worker>'       add a worker to workers.yml, or replace the one with its id
+  worker remove <id>
+  worker allow <id> <rule>           add a rule such as 'Bash(python3 -)' to the worker's allow list
+  business set --json '<Business>'   write businesses/<id>.yml
+  business remove <id>
+  clone <business> <asset>           clone the asset's repo (or reuse a checkout) and set its path
+        --into <dir>                 (default ~/Projects/<owner>/<name>)
+  github status                      who gh is signed in as
+  github login                       sign gh in through the browser
+  mcp --run <id>                     the MCP server a fix run's worker calls finish on (stdio)
 
   --workspace <dir>   default $STANDARDS_WORKSPACE, then the current directory
   --json              one JSON object per line (also when stdout is not a terminal)`
@@ -36,6 +53,9 @@ const { values: flags, positionals } = parseArgs({
     branch: { type: 'string' },
     worker: { type: 'string' },
     interactive: { type: 'boolean' },
+    run: { type: 'string' },
+    into: { type: 'string' },
+    method: { type: 'string' },
     help: { type: 'boolean', short: 'h' },
   },
 })
@@ -117,7 +137,20 @@ async function model(ws: Workspace) {
 async function main() {
   const [command, ...rest] = positionals
   if (flags.help || !command) return console.log(USAGE)
-  const ws = await loadWorkspace(flags.workspace ?? process.env.STANDARDS_WORKSPACE ?? process.cwd())
+  const dir = flags.workspace ?? process.env.STANDARDS_WORKSPACE ?? process.cwd()
+
+  // These run without a loaded workspace: there may not be one yet, and the MCP server must start fast.
+  if (command === 'mcp') {
+    if (!flags.run) throw new RunError('usage: standards mcp --run <id>')
+    return serveMcp(dir, flags.run, lines(Bun.stdin.stream()), text => process.stdout.write(`${text}\n`))
+  }
+  if (command === 'github') return github(rest[0])
+  if (command === 'workspace' && rest[0] === 'init') {
+    if (!rest[1]) throw new ConfigError('usage: standards workspace init <dir>')
+    return line({ dir: await initWorkspace(rest[1]) })
+  }
+
+  const ws = await loadWorkspace(dir)
 
   if (command === 'check') return check(ws, rest)
   if (command === 'status') return status(ws, rest)
@@ -135,6 +168,14 @@ async function main() {
   }
   if (command === 'fix') return runFix(ws, rest)
   if (command === 'runs') return runs(ws, rest)
+  if (command === 'pr') return pr(ws, rest)
+  if (command === 'worker') return worker(ws, rest)
+  if (command === 'business') return business(ws, rest)
+  if (command === 'clone') {
+    const [businessId, assetId] = rest
+    if (!businessId || !assetId) throw new ConfigError('usage: standards clone <business> <asset> [--into <dir>]')
+    return line({ path: await clone(ws, businessId, assetId, flags.into) })
+  }
   throw new ConfigError(`unknown command ${command}\n\n${USAGE}`)
 }
 
@@ -163,6 +204,32 @@ async function runs(ws: Workspace, [sub, ...rest]: string[]) {
   }
   const records = sub === 'sync' ? await syncRuns(ws) : await listRuns(ws, sub ? [sub, ...rest] : [])
   for (const record of records) line(record)
+}
+
+async function pr(ws: Workspace, [sub, id]: string[]) {
+  if (sub === 'view' && id) return line(await prView(ws, id))
+  if (sub === 'merge' && id) return line(await mergePr(ws, id, flags.method))
+  throw new RunError('usage: standards pr view <run> | pr merge <run> [--method merge|squash|rebase]')
+}
+
+// `--json` is the output flag, so the object after it arrives as a positional.
+async function worker(ws: Workspace, [sub, ...args]: string[]) {
+  if (sub === 'set') return line(await setWorker(ws, args[0]))
+  if (sub === 'remove' && args[0]) return removeWorker(ws, args[0])
+  if (sub === 'allow' && args[0] && args[1]) return line(await allowWorker(ws, args[0], args[1]))
+  throw new ConfigError("usage: standards worker set --json '<Worker>' | worker remove <id> | worker allow <id> <rule>")
+}
+
+async function business(ws: Workspace, [sub, arg]: string[]) {
+  if (sub === 'set') return line(await setBusiness(ws, arg))
+  if (sub === 'remove' && arg) return removeBusiness(ws, arg)
+  throw new ConfigError("usage: standards business set --json '<Business>' | business remove <id>")
+}
+
+async function github(sub: string | undefined) {
+  if (sub === 'status') return line(await githubStatus())
+  if (sub === 'login') process.exit(await githubLogin())
+  throw new RunError('usage: standards github status | github login')
 }
 
 main().catch(error => {

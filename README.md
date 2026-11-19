@@ -40,9 +40,24 @@ bun cli/standards.ts fix <business> <asset> <item…> --worker <id> [--interacti
 bun cli/standards.ts runs [business…]                  the fix runs, newest first
 bun cli/standards.ts runs transcript <id>              everything Claude Code printed in a run
 bun cli/standards.ts runs sync                         read open PRs; clean up after merged and closed ones
+bun cli/standards.ts pr view <run>                     the run's pull request: state, checks, files, body
+bun cli/standards.ts pr merge <run> [--method merge|squash|rebase]
+                                                       merge it, then clean up like runs sync
+bun cli/standards.ts workspace init <dir>              businesses/, workers.yml with the presets, .gitignore
+bun cli/standards.ts worker set --json '<Worker>'      add or replace a worker in workers.yml
+bun cli/standards.ts worker remove <id>
+bun cli/standards.ts worker allow <id> <rule>          add a rule such as 'Bash(python3 -)' to its allow list
+bun cli/standards.ts business set --json '<Business>'  write businesses/<id>.yml
+bun cli/standards.ts business remove <id>
+bun cli/standards.ts clone <business> <asset> [--into <dir>]
+                                                       clone the asset's repo into ~/Projects/<owner>/<name> and set its path
+bun cli/standards.ts github status                     who gh is signed in as
+bun cli/standards.ts github login                      sign gh in through the browser
 ```
 
-Output is a table in a terminal and one JSON object per line when piped (or with `--json`). `fix` and `runs` always print NDJSON. A fix run works in `<path>/.worktrees/std-<item>`, records itself in `<workspace>/.state/runs/<id>/`, and exits 0 only when it ends with a PR; the protocol is in [docs/fix-runs.md](docs/fix-runs.md).
+Output is a table in a terminal and one JSON object per line when piped (or with `--json`). `fix` and `runs` always print NDJSON. A fix run works in `<path>/.worktrees/std-<item>`, records itself in `<workspace>/.state/runs/<id>/`, and exits 0 only when it ends with a PR; the worker reports the PR, a summary and what is still missing through the `finish` tool of `standards mcp`. The protocol is in [docs/fix-runs.md](docs/fix-runs.md) and [docs/m6.md](docs/m6.md).
+
+Writes (`worker`, `business`, `clone`) are validated first and rewrite the YAML file whole, so comments in it are lost.
 
 A business, for example:
 
