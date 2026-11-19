@@ -10,6 +10,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             standards::standards_json,
             standards::standards_start,
+            standards::standards_write,
             standards::standards_kill,
             standards::home_dir,
         ])

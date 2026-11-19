@@ -9,6 +9,8 @@ export type NativeCommands = {
   standards_json: { args: Paths & { args: string[] }; result: string }
   /** Starts `standards <args>` as run `key`: each stdout line arrives as `STANDARDS_LINE`, then one `STANDARDS_EXIT`. */
   standards_start: { args: Paths & { key: string; args: string[] }; result: void }
+  /** Writes one line to run `key`'s stdin: a fix run's answer to a permission question. */
+  standards_write: { args: { key: string; line: string }; result: void }
   /** Stops run `key` and whatever it spawned. */
   standards_kill: { args: { key: string }; result: void }
   /** The home folder, to show paths with `~`. */

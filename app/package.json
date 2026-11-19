@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@just-apps/app-kit": "workspace:*",
+    "@just-apps/claude-code": "workspace:*",
     "@just-apps/host-contract": "workspace:*",
     "@just-apps/vite": "workspace:*",
     "@justanarthur/modo-ui": "^2.8.0",

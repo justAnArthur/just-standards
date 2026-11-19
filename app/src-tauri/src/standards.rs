@@ -1,14 +1,15 @@
 //! Runs the just-standards CLI (`bun <checkout>/cli/standards.ts`): once to completion for its JSON, or as a
 //! keyed run whose NDJSON lines stream to the webview as `standards://line` and end with `standards://exit`.
+//! A keyed run keeps its stdin open, so a fix run's permission answers can be written to it.
 
 use claude_code::profiles::expand;
 use claude_code::shell_path;
 use serde::Serialize;
 use std::collections::{HashMap, VecDeque};
-use std::io::{BufRead, BufReader, Read};
+use std::io::{BufRead, BufReader, Read, Write};
 use std::os::unix::process::CommandExt;
 use std::path::PathBuf;
-use std::process::{Command, Stdio};
+use std::process::{ChildStdin, Command, Stdio};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use std::{env, fs, thread};
@@ -17,21 +18,34 @@ use tauri::{AppHandle, Emitter, Manager, State};
 const LINE: &str = "standards://line";
 const EXIT: &str = "standards://exit";
 const STDERR_LINES: usize = 20;
+/// How long a stopped run gets before SIGKILL: longer than `standards fix` gives Claude Code (5s), so it can record `stopped`.
+const KILL_GRACE: Duration = Duration::from_secs(7);
 
-/// The running CLI processes by key, so one can be stopped and all of them killed on quit.
+struct Live {
+    pid: u32,
+    stdin: ChildStdin,
+}
+
+/// The running CLI processes by key, so one can be written to, stopped, and all of them killed on quit.
 #[derive(Default)]
-pub struct Runs(Arc<Mutex<HashMap<String, u32>>>);
+pub struct Runs(Arc<Mutex<HashMap<String, Live>>>);
 
 impl Runs {
     fn signal(&self, key: &str, signal: i32) -> Option<u32> {
-        let pid = *self.0.lock().unwrap().get(key)?;
+        let pid = self.0.lock().unwrap().get(key)?.pid;
         // Each run leads its own process group, so whatever the CLI spawned (a check's script, `gh`) goes too.
         unsafe { libc::kill(-(pid as i32), signal) };
         Some(pid)
     }
 
     fn alive(&self, key: &str, pid: u32) -> bool {
-        self.0.lock().unwrap().get(key) == Some(&pid)
+        self.0.lock().unwrap().get(key).is_some_and(|live| live.pid == pid)
+    }
+
+    fn write(&self, key: &str, line: &str) -> Result<(), String> {
+        let mut live = self.0.lock().unwrap();
+        let run = live.get_mut(key).ok_or_else(|| format!("run {key} is not going"))?;
+        writeln!(run.stdin, "{line}").and_then(|_| run.stdin.flush()).map_err(|e| e.to_string())
     }
 
     pub fn kill_all(&self) {
@@ -143,15 +157,17 @@ pub async fn standards_start(
     args: Vec<String>,
 ) -> Result<(), String> {
     let mut cmd = command(&checkout, &workspace, &args)?;
+    cmd.stdin(Stdio::piped());
     let mut live = runs.0.lock().unwrap();
     if live.contains_key(&key) {
         return Err(format!("run {key} is already going"));
     }
     let mut child = cmd.spawn().map_err(|e| format!("failed to start bun: {e}"))?;
+    let stdin = child.stdin.take().unwrap();
     let stdout = child.stdout.take().unwrap();
     let stderr = child.stderr.take().unwrap();
     let pid = child.id();
-    live.insert(key.clone(), pid);
+    live.insert(key.clone(), Live { pid, stdin });
     drop(live);
 
     let stderr = thread::spawn(move || tail(stderr));
@@ -163,7 +179,7 @@ pub async fn standards_start(
         let stderr = stderr.join().unwrap_or_default();
         let code = child.wait().ok().and_then(|status| status.code());
         let mut live = map.lock().unwrap();
-        if live.get(&key) == Some(&pid) {
+        if live.get(&key).is_some_and(|l| l.pid == pid) {
             live.remove(&key);
         }
         drop(live);
@@ -172,12 +188,18 @@ pub async fn standards_start(
     Ok(())
 }
 
+/// Writes one line to run `key`'s stdin: a fix run's answer to a permission question, or an interrupt.
+#[tauri::command]
+pub fn standards_write(runs: State<'_, Runs>, key: String, line: String) -> Result<(), String> {
+    runs.write(&key, &line)
+}
+
 #[tauri::command]
 pub fn standards_kill(app: AppHandle, key: String) -> Result<(), String> {
     let runs = app.state::<Runs>();
     let pid = runs.signal(&key, libc::SIGTERM).ok_or_else(|| format!("run {key} is not going"))?;
     thread::spawn(move || {
-        thread::sleep(Duration::from_secs(2));
+        thread::sleep(KILL_GRACE);
         let runs = app.state::<Runs>();
         if runs.alive(&key, pid) {
             runs.signal(&key, libc::SIGKILL);
@@ -202,6 +224,18 @@ mod tests {
         fs::write(dir.join("cli/standards.ts"), "").unwrap();
         assert_eq!(run_json(checkout, "/nowhere", &args).unwrap_err(), "No workspace folder at /nowhere.");
         fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn writes_lines_to_a_runs_stdin() {
+        let mut child = Command::new("cat").stdin(Stdio::piped()).stdout(Stdio::piped()).spawn().unwrap();
+        let runs = Runs::default();
+        runs.0.lock().unwrap().insert("k".into(), Live { pid: child.id(), stdin: child.stdin.take().unwrap() });
+        runs.write("k", r#"{"type":"control_response"}"#).unwrap();
+        assert_eq!(runs.write("other", "x").unwrap_err(), "run other is not going");
+        runs.0.lock().unwrap().clear();
+        let out = child.wait_with_output().unwrap();
+        assert_eq!(String::from_utf8(out.stdout).unwrap(), "{\"type\":\"control_response\"}\n");
     }
 
     #[test]

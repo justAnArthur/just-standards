@@ -2,10 +2,12 @@ import { CommandPalette, useCommand, useHost, useRoute } from '@just-apps/app-ki
 import { Button, DesktopShell, Sidebar } from '@justanarthur/modo-ui'
 import { type IconName, useIcon } from '@justanarthur/modo-ui/lib/icon-context'
 import { ago, cellKey } from '@justanarthur/modo-ui-standards'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { checkingCount, lastChecked } from './checks'
 import type { Model } from './model'
 import { PANE_LABEL, type Pane, PaneContent } from './pane'
+import { RunPane } from './run-pane'
+import { overlayRuns } from './runs'
 import {
   BUSINESS,
   Business,
@@ -15,10 +17,13 @@ import {
   LoadError,
   PACKS,
   Packs,
+  RUNS,
   RunFailure,
+  Runs,
   WORKERS,
   Workers,
 } from './screens'
+import { useRuns } from './use-runs'
 import { type Standards, useStandards } from './use-standards'
 
 function useOpenSettings() {
@@ -30,7 +35,7 @@ function useOpenSettings() {
   return open
 }
 
-const TITLES: Record<string, string> = { [PACKS]: 'Packs', [WORKERS]: 'Workers' }
+const TITLES: Record<string, string> = { [PACKS]: 'Packs', [WORKERS]: 'Workers', [RUNS]: 'Runs' }
 
 function Title({ route, business }: { route: string; business?: string }) {
   const [, go] = useRoute()
@@ -55,30 +60,29 @@ interface Row {
   label: string
   icon: IconName
   count?: number
-  disabled?: boolean
 }
 
-function NavRow({ route, label, icon, count, disabled }: Row) {
+function NavRow({ route, label, icon, count }: Row) {
   const Icon = useIcon(icon)
   return (
     <Sidebar.MenuItem>
-      <Sidebar.MenuButton icon={Icon} value={route} disabled={disabled}>
+      <Sidebar.MenuButton icon={Icon} value={route}>
         {label}
       </Sidebar.MenuButton>
-      {(disabled || count !== undefined) && <Sidebar.MenuBadge>{disabled ? 'next version' : count}</Sidebar.MenuBadge>}
+      {count !== undefined && <Sidebar.MenuBadge>{count}</Sidebar.MenuBadge>}
     </Sidebar.MenuItem>
   )
 }
 
 /** The window's sections, with the workspace's counts once it has loaded; the business routes sit under Businesses. */
-function Nav({ route, model }: { route: string; model?: Model }) {
+function Nav({ route, model, runs }: { route: string; model?: Model; runs?: number }) {
   const [, go] = useRoute()
   const groups: { label: string; rows: Row[] }[] = [
     {
       label: 'Status',
       rows: [
         { route: '/', label: 'Businesses', icon: 'folder', count: model?.businesses.length },
-        { route: '/runs', label: 'Runs', icon: 'timer', disabled: true },
+        { route: RUNS, label: 'Runs', icon: 'timer', count: model && runs },
       ],
     },
     {
@@ -144,7 +148,7 @@ interface Opened {
   pane: Pane
 }
 
-/** The main window: the sidebar's sections, and a cell, item or pack in the side pane. */
+/** The main window: the sidebar's sections, and a cell, item, pack or fix run in the side pane. */
 export default function StandardsWindow() {
   const host = useHost()
   const standards = useStandards()
@@ -156,9 +160,37 @@ export default function StandardsWindow() {
   const setPane = (next: Pane | undefined) => setOpened(next && { route, pane: next })
 
   const id = route.startsWith(BUSINESS) ? decodeURIComponent(route.slice(BUSINESS.length)) : undefined
-  const { load, status, failure } = standards
+  const { load, failure } = standards
   const model = load.kind === 'ready' ? load.model : undefined
-  const content = model && pane && (id || route === PACKS) && (
+  const runs = useRuns({
+    paths: standards.paths,
+    ready: load.kind === 'ready',
+    workers: model?.workers ?? [],
+    recheck: (business, asset, item) => standards.check({ business, asset, item }),
+  })
+  // The cells as the grid draws them: a live run's worker, an open PR.
+  const status = useMemo(() => overlayRuns(standards.status, runs.all), [standards.status, runs.all])
+
+  /** Starts a fix run and opens it in the pane; Back returns to `back`. */
+  const fix = (business: string, asset: string, items: string[], worker: string, back?: Pane) =>
+    setPane({ kind: 'run', key: runs.start(business, asset, items, worker), back })
+
+  const found = pane?.kind === 'run' ? runs.find(pane.key) : undefined
+  const runPane = model && pane && found && (
+    <RunPane
+      key={`run:${pane.key}`}
+      run={found.run}
+      business={model.businesses.find(b => b.id === found.run.record.business)?.name ?? found.run.record.business}
+      live={Boolean(found.key && found.run.live)}
+      loaded={Boolean(found.key) || runs.loaded(found.run.record.id)}
+      onRead={() => runs.read(found.run.record.id)}
+      onRespond={line => found.key && runs.respond(found.key, line)}
+      onStop={() => found.key && runs.stop(found.key)}
+      onBack={pane.back && (() => setPane(pane.back))}
+      onClose={() => setPane(undefined)}
+    />
+  )
+  const content = runPane || (model && pane && pane.kind !== 'run' && (id || route === PACKS) && (
     <PaneContent
       key={`${pane.kind}:${pane.key}`}
       pane={pane}
@@ -175,8 +207,10 @@ export default function StandardsWindow() {
       }}
       onOpenBusiness={business => go(businessRoute(business))}
       onRecheck={(business, asset, item) => standards.check({ business, asset, item })}
+      runs={runs.all}
+      onFix={(business, asset, item, worker) => fix(business, asset, [item], worker, pane)}
     />
-  )
+  ))
   // Tauri windows use titleBarStyle overlay on macOS: the traffic lights sit over the sidebar's corner.
   const macInset = host.kind === 'tauri' && host.os.platform === 'macos'
 
@@ -187,7 +221,7 @@ export default function StandardsWindow() {
       platform={macInset ? 'mac' : 'linux'}
       title={<Title route={route} business={id && (model?.businesses.find(b => b.id === id)?.name ?? id)} />}
       trailing={<RunChecks standards={standards} onSettings={openSettings} />}
-      left={<Nav route={route} model={model} />}
+      left={<Nav route={route} model={model} runs={runs.all.length} />}
       main={
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           {failure && <RunFailure message={failure} onSettings={openSettings} onDismiss={standards.dismissFailure} />}
@@ -195,7 +229,15 @@ export default function StandardsWindow() {
           {load.kind === 'error' && <LoadError message={load.message} onSettings={openSettings} onRetry={standards.reload} />}
           {model &&
             (id ? (
-              <Business model={model} status={status} id={id} pane={pane} onPane={setPane} />
+              <Business
+                key={id}
+                model={model}
+                status={status}
+                id={id}
+                pane={pane}
+                onPane={setPane}
+                onFix={(asset, items, worker) => fix(id, asset, items, worker)}
+              />
             ) : route === PACKS ? (
               <Packs
                 model={model}
@@ -205,6 +247,13 @@ export default function StandardsWindow() {
               />
             ) : route === WORKERS ? (
               <Workers model={model} />
+            ) : route === RUNS ? (
+              <Runs
+                model={model}
+                runs={runs.all}
+                active={found?.run.record.id}
+                onOpenRun={key => setPane({ kind: 'run', key })}
+              />
             ) : (
               <Businesses model={model} status={status} />
             ))}

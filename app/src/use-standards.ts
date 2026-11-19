@@ -15,7 +15,7 @@ export function usePaths() {
 
 export type Load = { kind: 'loading' } | { kind: 'error'; message: string } | { kind: 'ready'; model: Model }
 
-const messageOf = (error: unknown) => (error instanceof Error ? error.message : String(error))
+export const messageOf = (error: unknown) => (error instanceof Error ? error.message : String(error))
 
 /** The workspace and its cells from the CLI, and the check runs that update the cells as their results stream in. */
 export function useStandards() {
@@ -91,7 +91,8 @@ export function useStandards() {
     for (const key of live.current.keys()) call('standards_kill', { key }).catch(error => console.error('[standards] stop:', error))
   }
 
-  return { load, status, runs, failure, dismissFailure: () => setFailure(undefined), reload, check, stop }
+  const paths = useMemo(() => ({ checkout, workspace }), [checkout, workspace])
+  return { load, status, runs, failure, paths, dismissFailure: () => setFailure(undefined), reload, check, stop }
 }
 
 export type Standards = ReturnType<typeof useStandards>
