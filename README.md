@@ -6,6 +6,8 @@ Standards for everything I run, written as packs. Each standard in a pack is a c
 
 **Status:** the CLI, two packs (`website`, `repo`) and the desktop app's grid work; the app is a [just-apps](https://github.com/justAnArthur/just-apps) app in `app/`. Turning a failing cell into a Claude Code run and a pull request is next; see the [MVP spec](docs/mvp-spec.md).
 
+![The desktop app: one business, its assets × pack items, with failing, passing and in-flight cells](.github/screenshot.png)
+
 ```text
 core/           model, pack loader, check runners (http, repo, github, script, ai), fix prompts
 cli/            the `standards` CLI
@@ -13,6 +15,7 @@ app/            the desktop app (just-apps: mounted at apps/standards there, bui
 packs/website/  og tags, og:video, icons, robots + sitemap, sitemap health (script), JSON-LD, llms.txt, security headers, hero copy (AI)
 packs/repo/     README, banner, description, topics, homepage, license; its fixer is the repo-standard skill
 docs/           the MVP spec
+assets/         brand masters (logo, app icon, lockups) and social images
 ```
 
 ## CLI
