@@ -1,16 +1,34 @@
-<a href="https://github.com/justAnArthur/just-repo-standard"><img src=".github/banner.svg" alt="One standard for every repo: Audits a GitHub repo, then writes the README, banner, diagrams, topics and license it is missing." width="100%"></a>
+<a href="https://github.com/justAnArthur/just-standards"><img src=".github/banner.svg" alt="One standard for everything I run: each business adopts packs of standards, every asset is checked against them, and a red cell goes to Claude Code as a pull request." width="100%"></a>
 
-# just-repo-standard
+# just-standards
+
+Standards for everything I run, written as packs. Each standard in a pack is a check that measures it and a recipe that fixes it. A business adopts packs. Every asset it owns (a website, a web app, a repo) is checked against them, and a failing cell goes to Claude Code, which comes back with a pull request.
+
+**Status:** the first pack, `repo`, works today as a Claude Code skill. The CLI, the website pack and the desktop app (a [just-apps](https://github.com/justAnArthur/just-apps) app) are in progress; see the [MVP spec](docs/mvp-spec.md).
+
+```text
+packs/repo/     the repo pack: a Claude Code skill that brings a GitHub repo up to one standard
+docs/           the MVP spec
+```
+
+## The repo pack
 
 A [Claude Code](https://claude.com/claude-code) skill that brings a GitHub repo up to one standard: a README written from the code, a banner, Mermaid diagrams where the code has structure, description, topics, homepage, license, `.gitignore`, and archive state. It plans first and changes nothing on GitHub until you add `--apply`.
 
 Built while auditing the 107 repos on this account, and the rules come from that run: coursework kept in its original language under an English summary, no license on code other people wrote, secrets reported and never printed.
 
-## Install
+### Install
 
 ```bash
-git clone https://github.com/justAnArthur/just-repo-standard ~/.claude/skills/repo-standard
-npm install --prefix ~/.claude/skills/repo-standard/scripts
+git clone https://github.com/justAnArthur/just-standards ~/Projects/just-standards
+```
+
+```bash
+ln -s ~/Projects/just-standards/packs/repo ~/.claude/skills/repo-standard
+```
+
+```bash
+npm install --prefix ~/Projects/just-standards/packs/repo/scripts
 ```
 
 Requirements:
@@ -21,9 +39,9 @@ Requirements:
 - network access for `npx @mermaid-js/mermaid-cli`, which checks that diagrams parse
 - optional: `gitleaks`, for scanning history for secrets
 
-Then make it yours: edit the **Configuration** table at the top of [`SKILL.md`](SKILL.md) (owner, your git author names, licenses, university topic), and the copyright holder in [`assets/licenses/MIT.txt`](assets/licenses/MIT.txt).
+Then make it yours: edit the **Configuration** table at the top of [`packs/repo/SKILL.md`](packs/repo/SKILL.md) (owner, your git author names, licenses, university topic), and the copyright holder in [`packs/repo/assets/licenses/MIT.txt`](packs/repo/assets/licenses/MIT.txt).
 
-## Use
+### Use
 
 In Claude Code:
 
@@ -45,7 +63,7 @@ bash ~/.claude/skills/repo-standard/scripts/audit.sh owner/repo | jq .gaps
 node ~/.claude/skills/repo-standard/scripts/banner.mjs references/banner-examples/flagship-modo.json banner.svg
 ```
 
-## Tiers
+### Tiers
 
 | tier | for | gets |
 |---|---|---|
@@ -56,7 +74,7 @@ node ~/.claude/skills/repo-standard/scripts/banner.mjs references/banner-example
 | `fork` | forks | a description saying what the fork is for; code untouched |
 | `skip` | anything you exclude | nothing |
 
-## How it works
+### How it works
 
 ```mermaid
 flowchart LR
@@ -75,24 +93,24 @@ flowchart LR
 
 Every claim in a README has to come from the code or the existing docs. When the code does something other than what the title promises, the README says what the code does.
 
-## What it won't do
+### What it won't do
 
 Without your confirmation for that exact repo, it never deletes a repo, changes visibility, force-pushes, rewrites history, closes or merges PRs, or touches a fork's code. It never prints secret values; it untracks them and tells you what to rotate. It adds no license where other people wrote the code.
 
-## Structure
+### Structure
 
 ```text
-SKILL.md                      configuration, tiers, procedure, guardrails
-references/readme.md          README templates per tier
-references/visuals.md         banner, diagram, screenshot and badge rules
-references/topics.md          topic vocabulary and course codes
-references/banner-examples/   two complete banner specs
-scripts/audit.sh              one-repo audit → JSON with gaps
-scripts/banner.mjs            banner renderer: outlined Inter / Geist Mono, light and dark in one SVG
-assets/licenses/              MIT and CC BY-NC-ND 4.0 texts
-assets/fonts/                 Inter and Geist Mono, with their OFL license files
+packs/repo/SKILL.md                      configuration, tiers, procedure, guardrails
+packs/repo/references/readme.md          README templates per tier
+packs/repo/references/visuals.md         banner, diagram, screenshot and badge rules
+packs/repo/references/topics.md          topic vocabulary and course codes
+packs/repo/references/banner-examples/   two complete banner specs
+packs/repo/scripts/audit.sh              one-repo audit → JSON with gaps
+packs/repo/scripts/banner.mjs            banner renderer: outlined Inter / Geist Mono, light and dark in one SVG
+packs/repo/assets/licenses/              MIT and CC BY-NC-ND 4.0 texts
+packs/repo/assets/fonts/                 Inter and Geist Mono, with their OFL license files
 ```
 
 ## License
 
-[MIT](LICENSE). The fonts in `assets/fonts` are under the SIL Open Font License (license files next to them). `assets/licenses/CC-BY-NC-ND-4.0.txt` is Creative Commons' legal code, shipped for the portfolio tier.
+[MIT](LICENSE). The fonts in `packs/repo/assets/fonts` are under the SIL Open Font License (license files next to them). `packs/repo/assets/licenses/CC-BY-NC-ND-4.0.txt` is Creative Commons' legal code, shipped for the portfolio tier.
