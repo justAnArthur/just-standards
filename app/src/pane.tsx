@@ -10,16 +10,24 @@ export const WAIVERS_NEXT = 'Waivers come in the next version.'
 export const NO_CHECKOUT = 'no local checkout'
 
 /**
- * What the side pane shows: a cell (`asset:pack/item`), an item (`pack/item`), a pack (its id), or a fix run (its id,
- * or its process key until the CLI names it). `back` is the pane it was opened from.
+ * What the side pane shows: a cell (`asset:pack/item`), an item (`pack/item`), a pack (its id), a fix run (its id,
+ * or its process key until the CLI names it), or the form of a business or a worker (its id, empty for a new one).
+ * `back` is the pane it was opened from.
  */
 export interface Pane {
-  kind: 'cell' | 'item' | 'pack' | 'run'
+  kind: 'cell' | 'item' | 'pack' | 'run' | 'business' | 'worker'
   key: string
   back?: Pane
 }
 
-export const PANE_LABEL: Record<Pane['kind'], string> = { cell: 'Cell', item: 'Item', pack: 'Pack', run: 'Run' }
+export const PANE_LABEL: Record<Pane['kind'], string> = {
+  cell: 'Cell',
+  item: 'Item',
+  pack: 'Pack',
+  run: 'Run',
+  business: 'Business',
+  worker: 'Worker',
+}
 
 interface PaneContentProps {
   pane: Pane

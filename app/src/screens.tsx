@@ -8,12 +8,11 @@ import {
   BusinessesOverview,
   BusinessGrid,
   type CellStatus,
-  cellKey,
   PackList,
   StateCell,
   WorkerList,
 } from '@justanarthur/modo-ui-standards'
-import { type ReactNode, useState } from 'react'
+import { type MouseEvent, type ReactNode, useState } from 'react'
 import type { Model, Status } from './model'
 import { NO_CHECKOUT, type Pane } from './pane'
 import { duration, RUN_GLYPH, RUN_LABEL } from './run-pane'
@@ -30,11 +29,14 @@ function Screen({ children, className }: { children: ReactNode; className?: stri
   return <div className={cn('flex min-h-0 min-w-0 flex-1 flex-col gap-5 p-6 select-text', className)}>{children}</div>
 }
 
-function ScreenHeader({ title, lead }: { title: string; lead?: string }) {
+function ScreenHeader({ title, lead, actions }: { title: string; lead?: string; actions?: ReactNode }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1">
-      <h1 className="text-display text-foreground">{title}</h1>
-      {lead && <p className="truncate text-body text-muted-foreground">{lead}</p>}
+    <div className="flex min-w-0 items-start gap-3">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <h1 className="text-display text-foreground">{title}</h1>
+        {lead && <p className="truncate text-body text-muted-foreground">{lead}</p>}
+      </div>
+      {actions && <div className="flex shrink-0 items-center gap-2 pt-1">{actions}</div>}
     </div>
   )
 }
@@ -85,7 +87,7 @@ export function LoadError({ message, onSettings, onRetry }: { message: string; o
   )
 }
 
-export function Businesses({ model, status }: { model: Model; status: Status }) {
+export function Businesses({ model, status, onAdd }: { model: Model; status: Status; onAdd: () => void }) {
   const [, go] = useRoute()
   return (
     <Screen>
@@ -95,6 +97,7 @@ export function Businesses({ model, status }: { model: Model; status: Status }) 
         packs={model.packs}
         status={status}
         onOpenBusiness={id => go(businessRoute(id))}
+        onAddBusiness={onAdd}
         className="flex-1"
       />
     </Screen>
@@ -108,13 +111,22 @@ interface BusinessProps {
   /** What the side pane shows: its cell, item or pack is lit in the grid. */
   pane?: Pane
   onPane: (pane: Pane) => void
+  /** Opens a cell: its own pane, or the run whose PR is open on it. */
+  onOpenCell: (cell: CellStatus) => void
   /** Starts one fix run of the picked cells, all on one asset. */
   onFix: (asset: string, items: string[], worker: string) => void
+  onEdit: () => void
+  /** Clones an asset's repo, for an asset with a repo and no checkout. */
+  onClone: (asset: string) => void
+  /** The asset being cloned. */
+  cloning?: string
 }
 
-export function Business({ model, status, id, pane, onPane, onFix }: BusinessProps) {
+export function Business({ model, status, id, pane, onPane, onOpenCell, onFix, onEdit, onClone, cloning }: BusinessProps) {
   const [, go] = useRoute()
   const Building = useIcon('folder')
+  const Pencil = useIcon('pencil')
+  const Download = useIcon('arrow-down')
   const [picked, setPicked] = useState<string[]>([])
   const business = model.businesses.find(b => b.id === id)
   if (!business)
@@ -137,10 +149,34 @@ export function Business({ model, status, id, pane, onPane, onFix }: BusinessPro
   // The grid keeps a pick on one asset: Fix needs that asset's checkout.
   const pickedAsset = business.assets.find(a => a.id === picked[0]?.split(':')[0])
   const noCheckout = Boolean(pickedAsset && !pickedAsset.path)
+  const clonable = business.assets.filter(a => a.repo && !a.path)
 
   return (
     <Screen>
-      <ScreenHeader title={business.name} lead={lead} />
+      <ScreenHeader
+        title={business.name}
+        lead={lead}
+        actions={
+          <>
+            {clonable.map(asset => (
+              <Button
+                key={asset.id}
+                variant="secondary"
+                size="compact"
+                leadingIcon={Download}
+                loading={cloning === asset.id}
+                disabled={Boolean(cloning)}
+                onClick={() => onClone(asset.id)}
+              >
+                Clone {asset.id}
+              </Button>
+            ))}
+            <Button variant="secondary" size="compact" leadingIcon={Pencil} onClick={onEdit}>
+              Edit
+            </Button>
+          </>
+        }
+      />
       <BusinessGrid
         business={business}
         packs={model.packs}
@@ -149,7 +185,7 @@ export function Business({ model, status, id, pane, onPane, onFix }: BusinessPro
         active={keyOf('cell')}
         activeItem={keyOf('item')}
         activePack={keyOf('pack')}
-        onOpenCell={(cell: CellStatus) => onPane({ kind: 'cell', key: cellKey(cell.asset, cell.item) })}
+        onOpenCell={onOpenCell}
         onOpenItem={key => onPane({ kind: 'item', key })}
         onOpenPack={key => onPane({ kind: 'pack', key })}
         selected={picked}
@@ -283,11 +319,35 @@ export function Packs({ model, status, active, onOpenPack }: PacksProps) {
   )
 }
 
-export function Workers({ model }: { model: Model }) {
+interface WorkersProps {
+  model: Model
+  onAdd: () => void
+  onEdit: (id: string) => void
+}
+
+export function Workers({ model, onAdd, onEdit }: WorkersProps) {
+  const Plus = useIcon('plus')
+  // WorkerList has no row action: a press on a row edits its worker, the rows in the order of `workers`.
+  const edit = (event: MouseEvent<HTMLDivElement>) => {
+    const row = (event.target as HTMLElement).closest('tbody tr')
+    const index = row?.parentElement ? [...row.parentElement.children].indexOf(row) : -1
+    const worker = model.workers[index]
+    if (worker) onEdit(worker.id)
+  }
   return (
     <Screen className="overflow-y-auto">
-      <ScreenHeader title="Workers" lead="The Claude Code setups that fix runs start." />
-      <WorkerList workers={model.workers} />
+      <ScreenHeader
+        title="Workers"
+        lead="The Claude Code setups that fix runs start. Press one to edit it."
+        actions={
+          <Button variant="secondary" size="compact" leadingIcon={Plus} onClick={onAdd}>
+            Add worker
+          </Button>
+        }
+      />
+      <div onClick={edit} className="[&_tbody_tr]:cursor-pointer">
+        <WorkerList workers={model.workers} />
+      </div>
     </Screen>
   )
 }

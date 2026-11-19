@@ -35,9 +35,10 @@ export function useStandards() {
     setRuns([...live.current.values()])
   }
 
-  async function reload() {
+  /** Reads the workspace again; `quiet` keeps the screens up meanwhile, after a write. */
+  async function reload(quiet = false) {
     const seq = ++loads.current
-    setLoad({ kind: 'loading' })
+    if (!quiet) setLoad({ kind: 'loading' })
     const json = (args: string[]) => call('standards_json', { checkout, workspace, args })
     try {
       const [printed, cells, home] = await Promise.all([json(['workspace']), json(['status']), call('home_dir')])
@@ -92,7 +93,7 @@ export function useStandards() {
   }
 
   const paths = useMemo(() => ({ checkout, workspace }), [checkout, workspace])
-  return { load, status, runs, failure, paths, dismissFailure: () => setFailure(undefined), reload, check, stop }
+  return { load, status, runs, failure, paths, dismissFailure: () => setFailure(undefined), fail: setFailure, reload: () => reload(), refresh: () => reload(true), check, stop }
 }
 
 export type Standards = ReturnType<typeof useStandards>

@@ -1,6 +1,7 @@
 //! Runs the just-standards CLI (`bun <checkout>/cli/standards.ts`): once to completion for its JSON, or as a
-//! keyed run whose NDJSON lines stream to the webview as `standards://line` and end with `standards://exit`.
-//! A keyed run keeps its stdin open, so a fix run's permission answers can be written to it.
+//! keyed run whose NDJSON lines stream to the webview as `standards://line` (its stderr as `standards://stderr`)
+//! and end with `standards://exit`. A keyed run keeps its stdin open, so a fix run's permission answers, or the
+//! Enter `gh auth login` waits for, can be written to it.
 
 use claude_code::profiles::expand;
 use claude_code::shell_path;
@@ -16,6 +17,7 @@ use std::{env, fs, thread};
 use tauri::{AppHandle, Emitter, Manager, State};
 
 const LINE: &str = "standards://line";
+const STDERR: &str = "standards://stderr";
 const EXIT: &str = "standards://exit";
 const STDERR_LINES: usize = 20;
 /// How long a stopped run gets before SIGKILL: longer than `standards fix` gives Claude Code (5s), so it can record `stopped`.
@@ -87,26 +89,26 @@ fn find_bun(path: &str) -> Option<PathBuf> {
         .find(|bin| fs::metadata(bin).is_ok_and(|m| m.is_file()))
 }
 
-/// `bun <checkout>/cli/standards.ts <args> --json --workspace <workspace>`, once both folders are there.
+/// `bun <checkout>/cli/standards.ts <args> --json --workspace <workspace>`, once both folders are there. An empty
+/// workspace leaves `--workspace` out, for the commands that need none (`workspace init`, `github`).
 fn command(checkout: &str, workspace: &str, args: &[String]) -> Result<Command, String> {
     let home = home();
     let checkout = expand(&home, checkout.trim_end_matches('/'));
-    let workspace = expand(&home, workspace.trim_end_matches('/'));
     let cli = checkout.join("cli/standards.ts");
     if !cli.is_file() {
         return Err(format!("No just-standards checkout at {}: cli/standards.ts is missing.", checkout.display()));
     }
-    if !workspace.is_dir() {
+    let workspace = (!workspace.is_empty()).then(|| expand(&home, workspace.trim_end_matches('/')));
+    if let Some(workspace) = workspace.as_ref().filter(|dir| !dir.is_dir()) {
         return Err(format!("No workspace folder at {}.", workspace.display()));
     }
     let bun = find_bun(shell_path()).ok_or("bun is not on the login shell's PATH.")?;
     let mut cmd = Command::new(bun);
-    cmd.arg(cli)
-        .args(args)
-        .arg("--json")
-        .arg("--workspace")
-        .arg(workspace)
-        .current_dir(checkout)
+    cmd.arg(cli).args(args).arg("--json");
+    if let Some(workspace) = workspace {
+        cmd.arg("--workspace").arg(workspace);
+    }
+    cmd.current_dir(checkout)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -116,8 +118,14 @@ fn command(checkout: &str, workspace: &str, args: &[String]) -> Result<Command, 
 }
 
 fn tail(reader: impl Read) -> String {
+    tail_each(reader, |_| {})
+}
+
+/// The last lines of `reader`, handing each line to `each` as it arrives.
+fn tail_each(reader: impl Read, mut each: impl FnMut(&str)) -> String {
     let mut lines = VecDeque::with_capacity(STDERR_LINES);
     for line in BufReader::new(reader).lines().map_while(Result::ok) {
+        each(&line);
         if lines.len() == STDERR_LINES {
             lines.pop_front();
         }
@@ -140,6 +148,38 @@ pub fn run_json(checkout: &str, workspace: &str, args: &[String]) -> Result<Stri
 #[tauri::command]
 pub fn home_dir() -> String {
     home().to_string_lossy().into_owned()
+}
+
+/// A folder picked in the system's dialog, or `None` when it was cancelled.
+#[tauri::command]
+pub async fn pick_folder(prompt: String) -> Result<Option<String>, String> {
+    tauri::async_runtime::spawn_blocking(move || pick(&prompt)).await.map_err(|e| e.to_string())?
+}
+
+#[cfg(target_os = "macos")]
+fn pick(prompt: &str) -> Result<Option<String>, String> {
+    // AppleScript's own chooser: the platform has no dialog plugin, and this needs no new dependency.
+    let script = format!("POSIX path of (choose folder with prompt {})", applescript_string(prompt));
+    let out = Command::new("osascript").arg("-e").arg(script).output().map_err(|e| format!("failed to start osascript: {e}"))?;
+    if out.status.success() {
+        let path = String::from_utf8_lossy(&out.stdout).trim().trim_end_matches('/').to_owned();
+        return Ok(Some(path));
+    }
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    // -128 is "User canceled."
+    if stderr.contains("-128") {
+        return Ok(None);
+    }
+    Err(stderr.trim().to_owned())
+}
+
+#[cfg(not(target_os = "macos"))]
+fn pick(_prompt: &str) -> Result<Option<String>, String> {
+    Err("Picking a folder works on macOS only: type the path in Settings.".into())
+}
+
+fn applescript_string(text: &str) -> String {
+    format!("\"{}\"", text.replace('\\', "\\\\").replace('"', "\\\""))
 }
 
 #[tauri::command]
@@ -170,7 +210,14 @@ pub async fn standards_start(
     live.insert(key.clone(), Live { pid, stdin });
     drop(live);
 
-    let stderr = thread::spawn(move || tail(stderr));
+    let stderr = {
+        let (app, key) = (app.clone(), key.clone());
+        thread::spawn(move || {
+            tail_each(stderr, |line| {
+                let _ = app.emit(STDERR, LinePayload { key: &key, line: line.to_owned() });
+            })
+        })
+    };
     let map = runs.0.clone();
     thread::spawn(move || {
         for line in BufReader::new(stdout).lines().map_while(Result::ok) {
@@ -236,6 +283,23 @@ mod tests {
         runs.0.lock().unwrap().clear();
         let out = child.wait_with_output().unwrap();
         assert_eq!(String::from_utf8(out.stdout).unwrap(), "{\"type\":\"control_response\"}\n");
+    }
+
+    #[test]
+    fn leaves_the_workspace_out_when_empty() {
+        let dir = env::temp_dir().join(format!("standards-app-bare-{}", std::process::id()));
+        fs::create_dir_all(dir.join("cli")).unwrap();
+        fs::write(dir.join("cli/standards.ts"), "").unwrap();
+        if let Ok(cmd) = command(dir.to_str().unwrap(), "", &["github".to_owned(), "status".to_owned()]) {
+            let args: Vec<_> = cmd.get_args().map(|a| a.to_string_lossy().into_owned()).collect();
+            assert_eq!(args[1..], ["github", "status", "--json"]);
+        }
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn quotes_applescript_strings() {
+        assert_eq!(applescript_string(r#"a "b" \c"#), r#""a \"b\" \\c""#);
     }
 
     #[test]

@@ -1,8 +1,9 @@
 import { useHost } from '@just-apps/app-kit'
 import { reduce, type SessionModel } from '@just-apps/claude-code'
-import type { Worker } from '@justanarthur/modo-ui-standards'
+import type { MergeMethod, Worker } from '@justanarthur/modo-ui-standards'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { native, STANDARDS_EXIT, STANDARDS_LINE, type StandardsExit, type StandardsLine } from './native/commands'
+import { parseMerged, parsePr } from './pr'
 import { allRuns, endRun, fixArgs, foldRun, parseRecords, type Run, type RunRecord, recorded, sessionOf, starting } from './runs'
 import { messageOf } from './use-standards'
 
@@ -109,7 +110,17 @@ export function useRuns({ paths, ready, workers, recheck }: Options) {
     setSessions(all => ({ ...all, [id]: session }))
   }
 
-  return { all, error, find, read, start, respond, stop, loaded: (id: string) => id in sessions }
+  /** The run's PR as `standards pr view` reads it. */
+  const pr = async (id: string) => parsePr(await json(['pr', 'view', id]))
+
+  /** Merges the run's PR, re-checks its cells and lists the runs again. */
+  async function merge(id: string, method: MergeMethod) {
+    const record = parseMerged(await json(['pr', 'merge', id, '--method', method]))
+    for (const item of record.items) recheck(record.business, record.asset, item)
+    await list()
+  }
+
+  return { all, error, find, read, start, respond, stop, pr, merge, loaded: (id: string) => id in sessions }
 }
 
 export type Runs = ReturnType<typeof useRuns>

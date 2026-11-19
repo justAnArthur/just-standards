@@ -1,7 +1,8 @@
-import type { Result } from '@justanarthur/modo-ui-standards'
-import { toStatus } from '../model'
+import type { ProfileInfo } from '@just-apps/claude-code'
+import type { Business, CellStatus, PullRequest, Result, Worker } from '@justanarthur/modo-ui-standards'
+import { type CliWorkspace, toStatus } from '../model'
 import type { RunRecord } from '../runs'
-import { STANDARDS_EXIT, STANDARDS_LINE, type StandardsExit, type StandardsLine } from './commands'
+import { STANDARDS_EXIT, STANDARDS_LINE, STANDARDS_STDERR, type StandardsExit, type StandardsLine } from './commands'
 import { type FixScript, fixScript, type Step, stamped } from './fix-script'
 import status from './fixtures/status.ndjson?raw'
 import workspace from './fixtures/workspace.json'
@@ -17,20 +18,58 @@ interface Paths {
 }
 
 const home = (path: string) => path.replace(/^~/, '/Users/you')
+const tilde = (path: string) => path.replace(/^\/Users\/you(?=\/|$)/, '~')
 
-// Paths like the defaults answer; any other one is missing, as on a machine without them.
+// The fixture is the workspace at the default path; `workspace init` makes more, empty ones.
+const fixture = structuredClone(workspace) as unknown as CliWorkspace
+const workspaces = new Map<string, CliWorkspace>()
+/** Where the folder dialog lands: a workspace to make, for onboarding. */
+const PICKED = '/Users/you/Projects/acme-standards'
+
+function workspaceAt(path: string) {
+  if (/standards-workspace\/?$/.test(path)) return fixture
+  return workspaces.get(home(path).replace(/\/$/, ''))
+}
+
+// A checkout path like the default answers, and a workspace the mock knows; any other one is missing, as on a
+// machine without it. An empty workspace is left out, for the commands that need none.
 function check({ checkout, workspace }: Omit<Paths, 'args'>) {
   if (!/just-standards\/?$/.test(checkout)) throw new Error(`No just-standards checkout at ${home(checkout)}: cli/standards.ts is missing.`)
-  if (!/standards-workspace\/?$/.test(workspace)) throw new Error(`No workspace folder at ${home(workspace)}.`)
+  if (!workspace) return
+  const found = workspaceAt(workspace)
+  if (!found) throw new Error(`No workspace folder at ${home(workspace)}.`)
+  return found
 }
 
 const cells = Object.entries(toStatus(status)).flatMap(([business, list]) => list.map(cell => ({ business, ...cell })))
+type MockCell = CellStatus & { business: string }
+
+/** A business's cells: the fixture's, or for one added since, each adopted item on its assets, unchecked. */
+function cellsOf(ws: CliWorkspace): MockCell[] {
+  return ws.businesses.flatMap(business => {
+    const known = ws === fixture ? cells.filter(cell => cell.business === business.id) : []
+    if (known.length) return known
+    return business.packs.flatMap(ref => {
+      const [id, pinned] = ref.split('@') as [string, string?]
+      const pack = ws.packs.find(p => p.id === id)
+      if (!pack) return []
+      const version = pinned ? Number(pinned) : pack.version
+      return pack.items
+        .filter(item => item.since <= version)
+        .flatMap(item =>
+          business.assets
+            .filter(asset => item.applies_to.includes(asset.kind))
+            .map(asset => ({ business: business.id, asset: asset.id, item: item.key, title: item.title, state: 'unchecked' as const })),
+        )
+    })
+  })
+}
 // The results of the mock's own checks, by `business:asset:item`, laid over the fixture's on the next `status`.
 const fresh = new Map<string, Result>()
 const keyOf = (business: string, asset: string, item: string) => `${business}:${asset}:${item}`
 
-function statusLines() {
-  return cells
+function statusLines(ws: CliWorkspace) {
+  return cellsOf(ws)
     .map(({ business, ...cell }) => {
       const result = fresh.get(keyOf(business, cell.asset, cell.item))
       return JSON.stringify({ type: 'cell', business, ...cell, ...(result && { state: result.state, result }) })
@@ -62,10 +101,8 @@ const pad = (n: number) => String(n).padStart(2, '0')
 const runId = (at: Date, business: string, item: string) =>
   `${at.getUTCFullYear()}${pad(at.getUTCMonth() + 1)}${pad(at.getUTCDate())}-${pad(at.getUTCHours())}${pad(at.getUTCMinutes())}${pad(at.getUTCSeconds())}-${business}-${item.slice(item.indexOf('/') + 1)}`
 
-function planOf(business: string, asset: string, items: string[], worker: string, started: Date) {
-  const found = workspace.businesses.find(b => b.id === business)?.assets.find(a => a.id === asset) as
-    | { path?: string; repo?: string; url?: string }
-    | undefined
+function planOf(business: string, asset: string, items: string[], worker: string, started: Date, ws = fixture) {
+  const found = ws.businesses.find(b => b.id === business)?.assets.find(a => a.id === asset)
   if (!found?.path) throw new Error(`${business}/${asset} has no path: a fix needs a local checkout.`)
   return {
     id: runId(started, business, items[0]!),
@@ -73,7 +110,7 @@ function planOf(business: string, asset: string, items: string[], worker: string
     asset,
     items,
     worker,
-    model: workspace.workers.find(w => w.id === worker)?.model ?? 'sonnet',
+    model: ws.workers.find(w => w.id === worker)?.model ?? 'sonnet',
     path: home(found.path),
     repo: found.repo ?? `you/${business}`,
     site: (found.url ?? `https://github.com/${found.repo}`).replace(/\/$/, ''),
@@ -119,13 +156,13 @@ function finishFix(key: string, run: Fixing, emit: Context['emit'], how: 'allowe
 }
 
 /** `standards fix … --interactive`: the run's record, Claude Code's lines up to its question, then the answer's ending. */
-function startFix(key: string, args: string[], emit: Context['emit']) {
+function startFix(key: string, args: string[], emit: Context['emit'], ws: CliWorkspace) {
   const [, business, asset, ...rest] = args
   const items = rest.slice(0, rest.indexOf('--worker'))
   const worker = flag(args, '--worker')!
   let plan: ReturnType<typeof planOf>
   try {
-    plan = planOf(business!, asset!, items, worker, new Date())
+    plan = planOf(business!, asset!, items, worker, new Date(), ws)
   } catch (error) {
     setTimeout(() => emit(STANDARDS_EXIT, { key, code: 1, stderr: (error as Error).message } satisfies StandardsExit), 300)
     return
@@ -145,13 +182,207 @@ function startFix(key: string, args: string[], emit: Context['emit']) {
   )
 }
 
+/** The engine's schema refusal: `<where>:` and then `  <path>: <message>` per issue. */
+function refuse(where: string, issues: [string, string][]) {
+  if (issues.length) throw new Error(`${where}:\n${issues.map(([path, message]) => `  ${path}: ${message}`).join('\n')}`)
+}
+
+const ID = /^[a-z0-9-]+$/
+const PATTERN = (re: RegExp) => `Invalid string: must match pattern ${re}`
+
+function parseJson(text: string | undefined) {
+  if (!text) throw new Error("usage: --json '<object>'")
+  try {
+    return JSON.parse(text)
+  } catch (error) {
+    throw new Error(`--json: ${(error as Error).message}`)
+  }
+}
+
+function setBusiness(ws: CliWorkspace, text?: string) {
+  const business = parseJson(text) as Business
+  const issues: [string, string][] = []
+  if (!ID.test(business.id ?? '')) issues.push(['id', PATTERN(ID)])
+  if (typeof business.name !== 'string' || !business.name) issues.push(['name', 'Invalid input: expected string, received undefined'])
+  if (!business.assets?.length) issues.push(['assets', 'Too small: expected array to have >=1 items'])
+  business.assets?.forEach((asset, i) => {
+    if (!ID.test(asset.id ?? '')) issues.push([`assets.${i}.id`, PATTERN(ID)])
+    if (asset.url && !URL.canParse(asset.url)) issues.push([`assets.${i}.url`, 'Invalid URL'])
+    if (asset.repo && !/^[\w.-]+\/[\w.-]+$/.test(asset.repo)) issues.push([`assets.${i}.repo`, PATTERN(/^[\w.-]+\/[\w.-]+$/)])
+  })
+  refuse('business', issues)
+  for (const ref of business.packs) {
+    const id = ref.split('@')[0]
+    if (!ws.packs.some(p => p.id === id)) throw new Error(`businesses/${business.id}: no pack ${id}`)
+  }
+  const saved = { ...business, waivers: business.waivers ?? [] }
+  const at = ws.businesses.findIndex(b => b.id === business.id)
+  ws.businesses = at < 0 ? [...ws.businesses, saved].sort((a, b) => a.id.localeCompare(b.id)) : ws.businesses.with(at, saved)
+  return JSON.stringify(saved)
+}
+
+function setWorker(ws: CliWorkspace, text?: string) {
+  const worker = { profile: '~/.claude', permission_mode: 'acceptEdits', allow: [], ...parseJson(text) } as Worker
+  refuse('worker', [
+    ...(typeof worker.id === 'string' ? [] : [['id', 'Invalid input: expected string, received undefined'] as [string, string]]),
+    ...(typeof worker.model === 'string' ? [] : [['model', 'Invalid input: expected string, received undefined'] as [string, string]]),
+  ])
+  const at = ws.workers.findIndex(w => w.id === worker.id)
+  ws.workers = at < 0 ? [...ws.workers, worker] : ws.workers.with(at, worker)
+  return JSON.stringify(worker)
+}
+
+function findWorker(ws: CliWorkspace, id: string) {
+  const worker = ws.workers.find(w => w.id === id)
+  if (!worker) throw new Error(`no worker ${id} in workers.yml`)
+  return worker
+}
+
+function findBusiness(ws: CliWorkspace, id: string) {
+  const business = ws.businesses.find(b => b.id === id)
+  if (!business) throw new Error(`no business ${id} in ${home(ws.dir)}/businesses`)
+  return business
+}
+
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+async function cloneAsset(ws: CliWorkspace, businessId: string, assetId: string) {
+  const business = findBusiness(ws, businessId)
+  const asset = business.assets.find(a => a.id === assetId)
+  if (!asset) throw new Error(`${businessId} has no asset ${assetId}`)
+  if (!asset.repo) throw new Error(`${businessId}/${assetId} has no repo`)
+  if (asset.path) throw new Error(`${businessId}/${assetId} already has a path: ${asset.path}`)
+  const [owner, name] = asset.repo.split('/') as [string, string]
+  await wait(1200)
+  asset.path = `~/Projects/${owner.toLowerCase()}/${name}`
+  return JSON.stringify({ path: asset.path })
+}
+
+const PRESETS: Worker[] = fixture.workers.map(w => ({ ...w }))
+
+function initWorkspace(dir: string) {
+  const root = home(dir).replace(/\/$/, '')
+  if (!workspaceAt(root)) workspaces.set(root, { dir: tilde(root), businesses: [], packs: fixture.packs, workers: PRESETS.map(w => ({ ...w })) })
+  return JSON.stringify({ dir: root })
+}
+
+// `gh` starts signed out, so the web host can show the sign-in.
+let github: { loggedIn: boolean; user?: string; protocol?: string } = { loggedIn: false }
+const logins = new Map<string, ReturnType<typeof setTimeout>[]>()
+const DEVICE_CODE = '4F2A-9C1D'
+
+/** `standards github login`: gh's one-time code on stderr, then it waits for Enter and the browser. */
+function startLogin(key: string, emit: Context['emit']) {
+  const say = (line: string) => emit(STANDARDS_STDERR, { key, line } satisfies StandardsLine)
+  logins.set(key, [setTimeout(() => say(`! First copy your one-time code: ${DEVICE_CODE}`), 700)])
+}
+
+function enterLogin(key: string, emit: Context['emit']) {
+  const timers = logins.get(key)!
+  timers.push(
+    setTimeout(() => {
+      github = { loggedIn: true, user: 'you', protocol: 'https' }
+      logins.delete(key)
+      emit(STANDARDS_STDERR, { key, line: '✓ Authentication complete.' } satisfies StandardsLine)
+      emit(STANDARDS_EXIT, { key, code: 0, stderr: '✓ Authentication complete.' } satisfies StandardsExit)
+    }, 2500),
+  )
+}
+
+function recordOf(id: string) {
+  const record = records.find(r => r.id === id)
+  if (!record) throw new Error(`no run ${id}`)
+  if (!record.pr) throw new Error(`run ${id} has no pull request`)
+  return record as RunRecord & { pr: NonNullable<RunRecord['pr']> }
+}
+
+const short = (item: string) => item.slice(item.indexOf('/') + 1)
+
+/** `standards pr view`: the PR the run opened, as gh would describe it. */
+function prOf(record: RunRecord & { pr: NonNullable<RunRecord['pr']> }): PullRequest {
+  const items = record.items.map(short)
+  return {
+    number: record.pr.number,
+    url: record.pr.url,
+    title: `fix(standards): ${items.join(', ')}`,
+    state: record.pr.state === 'merged' ? 'MERGED' : record.pr.state === 'closed' ? 'CLOSED' : 'OPEN',
+    isDraft: false,
+    mergeable: 'MERGEABLE',
+    mergeStateStatus: 'CLEAN',
+    reviewDecision: '',
+    checks: [
+      { name: 'build', state: 'COMPLETED', conclusion: 'SUCCESS' },
+      { name: 'typecheck', state: 'COMPLETED', conclusion: 'SUCCESS' },
+      { name: 'Vercel – Preview', state: 'COMPLETED', conclusion: 'SUCCESS' },
+    ],
+    additions: 18,
+    deletions: 3,
+    changedFiles: 2,
+    files: [
+      { path: 'src/app/(frontend)/layout.tsx', additions: 16, deletions: 3 },
+      { path: 'public/og/home.mp4', additions: 2, deletions: 0 },
+    ],
+    body: [
+      `Fixes the just-standards ${items.length === 1 ? 'item' : 'items'} ${items.map(i => `\`${i}\``).join(', ')} on \`${record.asset}\`.`,
+      '',
+      '## What changed',
+      '- Adds the `og:video` tags to the home page head.',
+      '- Points them at a 1280×720 MP4 served from `public/og/`.',
+      '',
+      `Run \`${record.id}\` by ${record.worker}.`,
+    ].join('\n'),
+  }
+}
+
+async function mergePr(id: string, method = 'merge') {
+  if (!['merge', 'squash', 'rebase'].includes(method)) throw new Error('--method is one of merge, squash, rebase')
+  const record = recordOf(id)
+  await wait(900)
+  const merged = { ...record, pr: { ...record.pr, state: 'merged' as const } }
+  records.splice(records.indexOf(record), 1, merged)
+  return JSON.stringify(merged)
+}
+
+const PROFILES: ProfileInfo[] = [
+  { configDir: '/Users/you/.claude', signedIn: true, email: 'you@example.com', organizationType: 'claude_max' },
+  { configDir: '/Users/you/.claude-work', signedIn: true, email: 'you@studio.example', organizationType: 'claude_team' },
+  { configDir: '/Users/you/.claude-ci', signedIn: false },
+]
+
 export const mockCommands = {
   standards_json(paths: Paths) {
-    check(paths)
-    const [command, sub, id] = paths.args
+    const ws = check(paths)
+    const [command, sub, id, arg] = paths.args
+    if (command === 'github' && sub === 'status') return JSON.stringify(github)
+    if (command === 'workspace' && sub === 'init') return initWorkspace(id!)
+    if (!ws) throw new Error('this command needs --workspace')
     // The CLI prints the workspace's folder absolute.
-    if (command === 'workspace') return JSON.stringify({ ...workspace, dir: home(workspace.dir) })
-    if (command === 'status') return statusLines()
+    if (command === 'workspace') return JSON.stringify({ ...ws, dir: home(ws.dir) })
+    if (command === 'status') return statusLines(ws)
+    // `--json` is the output flag: the object is the argument after it.
+    const object = paths.args[paths.args.indexOf('--json') + 1]
+    if (command === 'business' && sub === 'set') return setBusiness(ws, object)
+    if (command === 'business' && sub === 'remove') {
+      findBusiness(ws, id!)
+      ws.businesses = ws.businesses.filter(b => b.id !== id)
+      return ''
+    }
+    if (command === 'worker' && sub === 'set') return setWorker(ws, object)
+    if (command === 'worker' && sub === 'remove') {
+      findWorker(ws, id!)
+      const user = ws.businesses.find(b => b.worker === id)
+      if (user) throw new Error(`${user.id} uses worker ${id} as its default`)
+      ws.workers = ws.workers.filter(w => w.id !== id)
+      return ''
+    }
+    if (command === 'worker' && sub === 'allow') {
+      const worker = findWorker(ws, id!)
+      if (!worker.allow.includes(arg!)) worker.allow = [...worker.allow, arg!]
+      return JSON.stringify(worker)
+    }
+    if (command === 'clone') return cloneAsset(ws, sub!, id!)
+    if (command === 'pr' && sub === 'view') return JSON.stringify(prOf(recordOf(id!)))
+    if (command === 'pr' && sub === 'merge') return mergePr(id!, flag(paths.args, '--method'))
     if (command === 'runs' && sub === 'transcript') {
       const lines = events.get(id!)
       if (!lines) throw new Error(`no run ${id}`)
@@ -171,13 +402,15 @@ export const mockCommands = {
   },
 
   standards_start({ key, args, ...paths }: Paths & { key: string }, { emit }: Context) {
-    check(paths)
-    if (runs.has(key) || fixing.has(key)) throw new Error(`run ${key} is already going`)
-    if (args[0] === 'fix') return startFix(key, args, emit)
+    const ws = check(paths)
+    if (runs.has(key) || fixing.has(key) || logins.has(key)) throw new Error(`run ${key} is already going`)
+    if (args[0] === 'github' && args[1] === 'login') return startLogin(key, emit)
+    if (!ws) throw new Error('this command needs --workspace')
+    if (args[0] === 'fix') return startFix(key, args, emit, ws)
     const [, business] = args
     const item = flag(args, '--item')
     const asset = flag(args, '--asset')
-    const picked = cells.filter(
+    const picked = cellsOf(ws).filter(
       cell =>
         cell.state !== 'waived' &&
         (!business || business.startsWith('--') || cell.business === business) &&
@@ -213,7 +446,15 @@ export const mockCommands = {
 
   home_dir: () => home('~'),
 
+  pick_folder: async () => {
+    await wait(400)
+    return PICKED
+  },
+
+  list_profiles: () => PROFILES,
+
   standards_write({ key, line }: { key: string; line: string }, { emit }: Context) {
+    if (logins.has(key)) return enterLogin(key, emit)
     const run = fixing.get(key)
     if (!run) throw new Error(`run ${key} is not going`)
     const { type, response } = JSON.parse(line) as { type: string; response?: { request_id: string; response?: { behavior: string } } }
@@ -224,6 +465,13 @@ export const mockCommands = {
   },
 
   standards_kill({ key }: { key: string }, { emit }: Context) {
+    const login = logins.get(key)
+    if (login) {
+      login.forEach(clearTimeout)
+      logins.delete(key)
+      setTimeout(() => emit(STANDARDS_EXIT, { key, code: null, stderr: '' } satisfies StandardsExit), 50)
+      return
+    }
     const fix = fixing.get(key)
     if (fix) {
       fix.timers.forEach(clearTimeout)

@@ -197,7 +197,15 @@ export function fixScript(plan: FixPlan): FixScript {
 
   function finish(how: 'allowed' | 'denied' | 'stopped', at: string): RunRecord {
     const ended = { ...started, finished_at: at, ms: Date.parse(at) - Date.parse(plan.started_at), session_id }
-    if (how === 'allowed') return { ...ended, state: 'done', pr: { ...pr, state: 'open' }, cost_usd: 0.38 }
+    if (how === 'allowed')
+      return {
+        ...ended,
+        state: 'done',
+        pr: { ...pr, state: 'open' },
+        cost_usd: 0.38,
+        summary: `Fixed ${plan.items.map(itemId).join(', ')} on ${plan.asset} in \`${branch}\` and opened PR #${number}.`,
+        missing: [`Check the preview deploy before merging: ${plan.site}`],
+      }
     if (how === 'denied') return { ...ended, state: 'failed', cost_usd: 0.21, error: 'no pull request' }
     return { ...ended, state: 'stopped', error: 'stopped by SIGTERM' }
   }

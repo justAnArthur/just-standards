@@ -13,6 +13,8 @@ fn main() {
             standards::standards_write,
             standards::standards_kill,
             standards::home_dir,
+            standards::pick_folder,
+            claude_code::profiles::list_profiles,
         ])
         .build(tauri::generate_context!())
         .expect("error while building Standards")

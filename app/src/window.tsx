@@ -1,11 +1,14 @@
 import { CommandPalette, useCommand, useHost, useRoute } from '@just-apps/app-kit'
 import { Button, DesktopShell, Sidebar } from '@justanarthur/modo-ui'
 import { type IconName, useIcon } from '@justanarthur/modo-ui/lib/icon-context'
-import { ago, cellKey } from '@justanarthur/modo-ui-standards'
+import { ago, type CellStatus } from '@justanarthur/modo-ui-standards'
 import { useEffect, useMemo, useState } from 'react'
 import { checkingCount, lastChecked } from './checks'
+import { BusinessPane, WorkerPane } from './forms'
 import type { Model } from './model'
+import { Setup } from './onboarding'
 import { PANE_LABEL, type Pane, PaneContent } from './pane'
+import { cellPane } from './pr'
 import { RunPane } from './run-pane'
 import { overlayRuns } from './runs'
 import {
@@ -23,8 +26,9 @@ import {
   WORKERS,
   Workers,
 } from './screens'
+import { useConfig } from './use-config'
 import { useRuns } from './use-runs'
-import { type Standards, useStandards } from './use-standards'
+import { messageOf, type Standards, useStandards } from './use-standards'
 
 function useOpenSettings() {
   const host = useHost()
@@ -148,6 +152,21 @@ interface Opened {
   pane: Pane
 }
 
+/** The CLI's words when the workspace folder isn't there: first launch, or a path that moved. */
+const MISSING = 'No workspace folder at'
+
+/** Onboarding is decided on the first load: a missing or empty workspace opens it, Open just-standards closes it. */
+function useSetup(standards: Standards) {
+  const { load } = standards
+  const missing = load.kind === 'error' && load.message.startsWith(MISSING)
+  const [setup, setSetup] = useState<'open' | 'closed'>()
+  useEffect(() => {
+    if (setup || load.kind === 'loading') return
+    setSetup(missing || (load.kind === 'ready' && !load.model.businesses.length) ? 'open' : 'closed')
+  }, [setup, load, missing])
+  return { open: setup === 'open' || (setup === 'closed' && missing), missing, close: () => setSetup('closed') }
+}
+
 /** The main window: the sidebar's sections, and a cell, item, pack or fix run in the side pane. */
 export default function StandardsWindow() {
   const host = useHost()
@@ -162,6 +181,9 @@ export default function StandardsWindow() {
   const id = route.startsWith(BUSINESS) ? decodeURIComponent(route.slice(BUSINESS.length)) : undefined
   const { load, failure } = standards
   const model = load.kind === 'ready' ? load.model : undefined
+  const setup = useSetup(standards)
+  const config = useConfig(standards.paths, standards.refresh)
+  const [cloning, setCloning] = useState<string>()
   const runs = useRuns({
     paths: standards.paths,
     ready: load.kind === 'ready',
@@ -175,6 +197,26 @@ export default function StandardsWindow() {
   const fix = (business: string, asset: string, items: string[], worker: string, back?: Pane) =>
     setPane({ kind: 'run', key: runs.start(business, asset, items, worker), back })
 
+  /** A cell from the grid or an item: its pane, or the run whose PR is open on it. */
+  const openCell = (cell: CellStatus, business: string) => {
+    const next = cellPane(cell, runs.all, business)
+    const to = businessRoute(business)
+    if (to === route) return setPane(next)
+    setOpened({ route: to, pane: next })
+    go(to)
+  }
+
+  async function clone(business: string, asset: string) {
+    setCloning(asset)
+    try {
+      await config.clone(business, asset)
+    } catch (error) {
+      standards.fail(messageOf(error))
+    } finally {
+      setCloning(undefined)
+    }
+  }
+
   const found = pane?.kind === 'run' ? runs.find(pane.key) : undefined
   const runPane = model && pane && found && (
     <RunPane
@@ -185,12 +227,36 @@ export default function StandardsWindow() {
       loaded={Boolean(found.key) || runs.loaded(found.run.record.id)}
       onRead={() => runs.read(found.run.record.id)}
       onRespond={line => found.key && runs.respond(found.key, line)}
+      onAllow={rules => config.allow(found.run.record.worker, rules).catch(error => standards.fail(messageOf(error)))}
+      onReadPr={() => runs.pr(found.run.record.id)}
+      onMerge={method => runs.merge(found.run.record.id, method)}
       onStop={() => found.key && runs.stop(found.key)}
       onBack={pane.back && (() => setPane(pane.back))}
       onClose={() => setPane(undefined)}
     />
   )
-  const content = runPane || (model && pane && pane.kind !== 'run' && (id || route === PACKS) && (
+  const formPane =
+    model &&
+    (pane?.kind === 'business' ? (
+      <BusinessPane
+        key={`business:${pane.key}`}
+        model={model}
+        config={config}
+        id={pane.key || undefined}
+        onSaved={(business, was) => {
+          setPane(undefined)
+          if (!was || id === was) go(businessRoute(business.id))
+        }}
+        onRemoved={() => {
+          setPane(undefined)
+          go('/')
+        }}
+        onClose={() => setPane(undefined)}
+      />
+    ) : pane?.kind === 'worker' ? (
+      <WorkerPane key={`worker:${pane.key}`} model={model} config={config} id={pane.key || undefined} onDone={() => setPane(undefined)} />
+    ) : undefined)
+  const content = runPane || formPane || (model && pane && (pane.kind === 'cell' || pane.kind === 'item' || pane.kind === 'pack') && (id || route === PACKS) && (
     <PaneContent
       key={`${pane.kind}:${pane.key}`}
       pane={pane}
@@ -198,13 +264,7 @@ export default function StandardsWindow() {
       status={status}
       business={id}
       onPane={setPane}
-      onOpenCell={(cell, business) => {
-        const next: Pane = { kind: 'cell', key: cellKey(cell.asset, cell.item) }
-        const to = businessRoute(business)
-        if (to === route) return setPane(next)
-        setOpened({ route: to, pane: next })
-        go(to)
-      }}
+      onOpenCell={openCell}
       onOpenBusiness={business => go(businessRoute(business))}
       onRecheck={(business, asset, item) => standards.check({ business, asset, item })}
       runs={runs.all}
@@ -214,9 +274,31 @@ export default function StandardsWindow() {
   // Tauri windows use titleBarStyle overlay on macOS: the traffic lights sit over the sidebar's corner.
   const macInset = host.kind === 'tauri' && host.os.platform === 'macos'
 
+  if (setup.open)
+    return (
+      <div className="flex h-dvh flex-col bg-background">
+        <div data-tauri-drag-region className="h-10 shrink-0" />
+        <div className="min-h-0 flex-1 overflow-y-auto select-none">
+          <Setup
+            model={model}
+            missing={setup.missing}
+            problem={load.kind === 'error' && !setup.missing ? load.message : undefined}
+            config={config}
+            onFinish={() => {
+              setup.close()
+              go('/')
+            }}
+          />
+        </div>
+      </div>
+    )
+
   return (
     <DesktopShell
       className="select-none"
+      // forms, PRs and permission questions need ~400px; the shell's 35% leaves ~300 at the default window
+      defaultPaneSize={48}
+      minPaneSize={36}
       titleBar="card"
       platform={macInset ? 'mac' : 'linux'}
       title={<Title route={route} business={id && (model?.businesses.find(b => b.id === id)?.name ?? id)} />}
@@ -236,7 +318,11 @@ export default function StandardsWindow() {
                 id={id}
                 pane={pane}
                 onPane={setPane}
+                onOpenCell={cell => openCell(cell, id)}
                 onFix={(asset, items, worker) => fix(id, asset, items, worker)}
+                onEdit={() => setPane({ kind: 'business', key: id })}
+                onClone={asset => void clone(id, asset)}
+                cloning={cloning}
               />
             ) : route === PACKS ? (
               <Packs
@@ -246,7 +332,11 @@ export default function StandardsWindow() {
                 onOpenPack={key => setPane({ kind: 'pack', key })}
               />
             ) : route === WORKERS ? (
-              <Workers model={model} />
+              <Workers
+                model={model}
+                onAdd={() => setPane({ kind: 'worker', key: '' })}
+                onEdit={worker => setPane({ kind: 'worker', key: worker })}
+              />
             ) : route === RUNS ? (
               <Runs
                 model={model}
@@ -255,14 +345,13 @@ export default function StandardsWindow() {
                 onOpenRun={key => setPane({ kind: 'run', key })}
               />
             ) : (
-              <Businesses model={model} status={status} />
+              <Businesses model={model} status={status} onAdd={() => setPane({ kind: 'business', key: '' })} />
             ))}
         </div>
       }
       right={content || undefined}
       rightOpen={Boolean(content)}
       onRightOpenChange={next => !next && setPane(undefined)}
-      defaultPaneSize={36}
       rightLabel={pane ? PANE_LABEL[pane.kind] : 'Side pane'}
     />
   )

@@ -1,10 +1,14 @@
 import { allow, answer, deny, type Pending, type PermissionUpdate, setPermissionMode } from '@just-apps/claude-code'
-import { Badge, Button, Diff, Markdown } from '@justanarthur/modo-ui'
+import { Badge, Button, Diff, Markdown, Tabs } from '@justanarthur/modo-ui'
 import { useIcon } from '@justanarthur/modo-ui/lib/icon-context'
 import { AgentPrompt } from '@justanarthur/modo-ui-ai'
-import { type FixRun, RunTranscript, type ShownState, StateCell } from '@justanarthur/modo-ui-standards'
+import { type FixRun, type MergeMethod, PrDetail, type PullRequest, RunTranscript, type ShownState, StateCell } from '@justanarthur/modo-ui-standards'
 import { useEffect, useState } from 'react'
-import { type Run, toTranscript } from './runs'
+import { allowRules } from './config'
+import { Refused } from './forms'
+import { type RunView, runView } from './pr'
+import { type Run, type RunRecord, toTranscript } from './runs'
+import { messageOf } from './use-standards'
 
 /** A run's state as the grid draws it, and what it is called. */
 export const RUN_GLYPH: Record<FixRun['state'], ShownState> = { running: 'running', done: 'pr-open', failed: 'error', stopped: 'unchecked' }
@@ -34,8 +38,8 @@ function patchOf(tool: string, input: Record<string, unknown>) {
 
 /** What "Always allow" adds: `Bash(curl -sI:*)`, or `edits` for the accept-edits mode. */
 function ruleOf(suggestions: PermissionUpdate[]) {
-  const rules = suggestions.flatMap(s => (s.type === 'addRules' ? s.rules : []))
-  if (rules.length) return rules.map(r => (r.ruleContent ? `${r.toolName}(${r.ruleContent})` : r.toolName)).join(', ')
+  const rules = allowRules(suggestions)
+  if (rules.length) return rules.join(', ')
   if (suggestions.some(s => s.type === 'setMode' && s.mode === 'acceptEdits')) return 'edits'
 }
 
@@ -67,8 +71,15 @@ function Questions({ pending: { requestId, input }, respond }: { pending: Pendin
   )
 }
 
+interface PendingPromptProps {
+  pending: Pending
+  respond: (line: string) => void
+  /** "Always allow" also keeps its rules for the worker's next runs (`worker allow`). */
+  onAllow?: (rules: string[]) => void
+}
+
 /** What Claude Code asks mid-run, answered as ai-desktop answers it: a control response on the run's stdin. */
-export function PendingPrompt({ pending, respond }: { pending: Pending; respond: (line: string) => void }) {
+export function PendingPrompt({ pending, respond, onAllow }: PendingPromptProps) {
   const { requestId, input, tool } = pending
   if (pending.kind === 'question') return <Questions pending={pending} respond={respond} />
   if (pending.kind === 'plan')
@@ -98,6 +109,8 @@ export function PendingPrompt({ pending, respond }: { pending: Pending; respond:
         if (decision === 'once') return respond(allow(requestId))
         respond(allow(requestId, undefined, suggestions))
         if (mode) respond(setPermissionMode(mode))
+        const rules = allowRules(suggestions)
+        if (rules.length) onAllow?.(rules)
       }}
     />
   )
@@ -113,6 +126,12 @@ interface RunPaneProps {
   loaded: boolean
   onRead: () => Promise<void>
   onRespond: (line: string) => void
+  /** "Always allow" answered: the rules go onto the run's worker. */
+  onAllow: (rules: string[]) => void
+  /** `standards pr view` of the run. */
+  onReadPr: () => Promise<PullRequest>
+  /** `standards pr merge` of the run, then its cells re-checked. */
+  onMerge: (method: MergeMethod) => Promise<void>
   onStop: () => void
   /** Back to the cell the run was opened from. */
   onBack?: () => void
@@ -120,20 +139,22 @@ interface RunPaneProps {
 }
 
 /** One fix run in the side pane: who and where, its state, cost and PR, then its live transcript and questions. */
-export function RunPane({ run, business, live, loaded, onRead, onRespond, onStop, onBack, onClose }: RunPaneProps) {
+export function RunPane({ run, business, live, loaded, onRead, onRespond, onAllow, onReadPr, onMerge, onStop, onBack, onClose }: RunPaneProps) {
   const Back = useIcon('arrow-left')
   const Close = useIcon('x')
   const Stop = useIcon('square')
-  const External = useIcon('link')
   const [readError, setReadError] = useState<string>()
+  const [picked, setPicked] = useState<RunView>()
   const [now, setNow] = useState(Date.now())
   const { record, session } = run
   const running = record.state === 'running'
 
+  const view = runView(record, picked)
+
   useEffect(() => {
-    if (live || loaded) return
-    onRead().catch(e => setReadError(e instanceof Error ? e.message : String(e)))
-  }, [live, loaded, record.id, record.state])
+    if (live || loaded || view !== 'transcript') return
+    onRead().catch(e => setReadError(messageOf(e)))
+  }, [live, loaded, record.id, record.state, view])
 
   useEffect(() => {
     if (!running) return
@@ -172,31 +193,121 @@ export function RunPane({ run, business, live, loaded, onRead, onRespond, onStop
             Stop
           </Button>
         )}
-        {record.pr && (
-          <Button variant="secondary" size="compact" trailingIcon={External} render={<a href={record.pr.url} target="_blank" rel="noreferrer" />}>
-            PR #{record.pr.number} {record.pr.state}
-          </Button>
-        )}
         <Button variant="ghost" size="icon-compact" aria-label="Close" onClick={onClose}>
           <Close />
         </Button>
       </header>
-      {(record.error || readError) && (
+      {record.pr && !running && (
+        <Tabs size="compact" value={view} onValueChange={next => setPicked(next === 'pr' ? 'pr' : 'transcript')} className="shrink-0 px-5 pb-3">
+          <Tabs.List aria-label="Show">
+            <Tabs.Item value="pr" label={`Pull request #${record.pr.number}`} />
+            <Tabs.Item value="transcript" label="Transcript" />
+          </Tabs.List>
+        </Tabs>
+      )}
+      {(record.error || (readError && view === 'transcript')) && (
         <p className="mx-5 mb-3 shrink-0 whitespace-pre-wrap break-words rounded-box bg-destructive-wash px-3 py-2 font-mono text-caption text-destructive-strong">
           {record.error ?? readError}
         </p>
       )}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-border border-t">
-        {items.length || running ? (
-          <RunTranscript
-            items={items}
-            running={running && !pending}
-            footer={pending && <PendingPrompt key={pending.requestId} pending={pending} respond={onRespond} />}
-          />
+        {view === 'pr' ? (
+          <PrView key={record.id} record={record} onRead={onReadPr} onMerge={onMerge} />
+        ) : items.length || running ? (
+          <>
+            {!running && <FinishNote record={record} />}
+            <RunTranscript
+              items={items}
+              running={running && !pending}
+              footer={pending && <PendingPrompt key={pending.requestId} pending={pending} respond={onRespond} onAllow={onAllow} />}
+            />
+          </>
         ) : (
           <p className="p-5 text-body text-muted-foreground">{loaded || live ? 'Claude Code printed nothing.' : 'Reading the transcript…'}</p>
         )}
       </div>
+    </div>
+  )
+}
+
+/** What the worker said through `finish`: what it did, and what a person must still do. */
+export function FinishNote({ record }: { record: Pick<RunRecord, 'summary' | 'missing'> }) {
+  const Alert = useIcon('circle-alert')
+  const missing = record.missing ?? []
+  if (!record.summary && !missing.length) return null
+  return (
+    <div className="flex flex-col gap-4 border-border border-b p-5">
+      {record.summary && (
+        <section className="flex flex-col gap-2">
+          <h3 className="text-subtitle text-foreground">What the worker did</h3>
+          <Markdown>{record.summary}</Markdown>
+        </section>
+      )}
+      {missing.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h3 className="text-subtitle text-foreground">Still for you to do</h3>
+          <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+            {missing.map(step => (
+              <li key={step} className="flex items-start gap-2 text-body text-foreground">
+                <Alert size={14} strokeWidth={1.5} className="mt-1 shrink-0 text-status-warning" />
+                {step}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+  )
+}
+
+interface PrViewProps {
+  record: RunRecord
+  onRead: () => Promise<PullRequest>
+  onMerge: (method: MergeMethod) => Promise<void>
+}
+
+/** The run's PR, read with `standards pr view`, under what the worker said; Merge merges it, Re-check reads it again. */
+function PrView({ record, onRead, onMerge }: PrViewProps) {
+  const [pr, setPr] = useState<PullRequest>()
+  const [error, setError] = useState<string>()
+  const [rechecking, setRechecking] = useState(false)
+  const [merging, setMerging] = useState(false)
+
+  async function read() {
+    setRechecking(true)
+    try {
+      setPr(await onRead())
+      setError(undefined)
+    } catch (e) {
+      setError(messageOf(e))
+    } finally {
+      setRechecking(false)
+    }
+  }
+
+  useEffect(() => {
+    void read()
+  }, [record.id, record.pr?.state])
+
+  async function merge(method: MergeMethod) {
+    setMerging(true)
+    try {
+      await onMerge(method)
+      await read()
+    } catch (e) {
+      setError(messageOf(e))
+    } finally {
+      setMerging(false)
+    }
+  }
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <FinishNote record={record} />
+      {error && <Refused message={error} />}
+      {(pr || !error) && (
+        <PrDetail pr={pr} onMerge={merge} merging={merging} onRecheck={read} rechecking={rechecking} className="shrink-0 overflow-visible" />
+      )}
     </div>
   )
 }

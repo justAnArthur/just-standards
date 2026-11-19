@@ -13,6 +13,10 @@ export interface RunRecord extends Omit<FixRun, 'transcript'> {
   session_id?: string
   /** Why it failed or stopped. */
   error?: string
+  /** What the worker said it did, through the `finish` tool. */
+  summary?: string
+  /** What a person must still do. */
+  missing?: string[]
 }
 
 /** A run as the app holds it: its record and its Claude Code session, folded from the `claude` lines. */
