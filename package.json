@@ -1,6 +1,5 @@
 {
   "name": "just-standards",
-  "version": "0.1.0",
   "private": true,
   "description": "Standards for everything I run: packs of checks and fixes, with Claude Code as the fixer",
   "type": "module",

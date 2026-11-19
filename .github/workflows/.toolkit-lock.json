@@ -1,0 +1,18 @@
+{
+  "ref": "@justanarthur/just-github-actions-n-workflows@1.7.0",
+  "installedAt": "2026-11-17T15:29:56.681Z",
+  "workflows": {
+    "bump-version.yml": {
+      "name": "bump-version",
+      "file": "bump-version.yml",
+      "ref": "@justanarthur/just-github-actions-n-workflows@1.7.0",
+      "installedAt": "2026-11-17T15:29:56.681Z"
+    },
+    "release-on-tag.yml": {
+      "name": "release-on-tag",
+      "file": "release-on-tag.yml",
+      "ref": "@justanarthur/just-github-actions-n-workflows@1.7.0",
+      "installedAt": "2026-11-17T15:29:56.681Z"
+    }
+  }
+}

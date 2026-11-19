@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "properties": {
-    "gitCommitScopeRelatedNames": "just-standards,standards,app,ui,native"
+    "gitCommitScopeRelatedNames": "standards-app,app,ui,native"
   },
   "type": "module",
   "scripts": {

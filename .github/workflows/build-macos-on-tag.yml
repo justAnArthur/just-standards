@@ -1,0 +1,85 @@
+# build-macos-on-tag.yml
+# ---
+# builds Standards for a release tag (`just-standards-app@x.y.z`) and attaches the zipped app to that
+# tag's GitHub release (created by release-on-tag.yml from the same tag).
+#
+# this repo holds the engine (core/, cli/, packs/) and the desktop app in app/; only the app is
+# released. its tag is named after app/package.json (`just-standards-app`), so engine tags never
+# start this workflow.
+#
+# the app builds only inside the just-apps platform (workspace packages, crates/app-core), so this
+# checks out just-apps and puts this repo at apps/standards; the platform CLI finds the app in
+# apps/standards/app. the PLATFORM_TOKEN secret is a fine-grained token with read access to the
+# just-apps repo.
+#
+# bump-version.yml dispatches this workflow for every new tag that matches `push.tags`, passing the
+# tag as the `tag` input — keep that input.
+#
+# the app is ad-hoc signed, not notarized: first launch needs right-click → Open, or
+# `xattr -dr com.apple.quarantine "Standards.app"`.
+# ---
+name: build-macos-on-tag
+run-name: "macOS app — ${{ inputs.tag || github.ref_name }}"
+
+on:
+  push:
+    tags: [ "just-standards-app@*" ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'tag to build (e.g. "just-standards-app@0.2.0")'
+        type: string
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/just-apps
+          token: ${{ secrets.PLATFORM_TOKEN }}
+          # the install scripts that run later have no use for the token
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+          path: apps/standards
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - uses: Swatinem/rust-cache@v2
+
+      - run: bun install
+
+      - name: Build the app
+        run: bun run app build standards --target universal-apple-darwin --bundles app
+
+      - name: Package
+        id: pkg
+        run: |
+          zip="just-standards-app-${TAG#just-standards-app@}.zip"
+          ditto -c -k --sequesterRsrc --keepParent "target/universal-apple-darwin/release/bundle/macos/Standards.app" "$zip"
+          echo "zip=$zip" >> "$GITHUB_OUTPUT"
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # the working directory is the just-apps checkout; the release belongs to this repo.
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # release-on-tag.yml creates the release from the same tag, possibly after this build starts.
+          for _ in $(seq 1 30); do gh release view "$TAG" > /dev/null 2>&1 && break; sleep 10; done
+          gh release upload "$TAG" "${{ steps.pkg.outputs.zip }}" --clobber
