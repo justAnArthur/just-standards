@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { join } from 'node:path'
 import { parseArgs } from 'node:util'
 import { type CellStatus, cellsOf, checkBusiness, statusOf } from '../core/cells.ts'
 import { ConfigError, loadWorkspace, type Workspace } from '../core/load.ts'
@@ -88,12 +89,19 @@ async function status(ws: Workspace, ids: string[]) {
   }
 }
 
-/** What an app needs to draw the grid: the config as loaded, items without their folder paths. */
-function model(ws: Workspace) {
-  const packs = [...ws.packs.values()].map(({ dir: _, entries, ...pack }) => ({
-    ...pack,
-    items: entries.map(({ dir: _dir, ...item }) => item),
-  }))
+const readRecipe = async (dir: string) => {
+  const file = Bun.file(join(dir, 'recipe.md'))
+  return (await file.exists()) ? (await file.text()).trim() : undefined
+}
+
+/** What an app needs to draw the grid and its details: the config as loaded, each item with its recipe instead of its folder. */
+async function model(ws: Workspace) {
+  const packs = await Promise.all(
+    [...ws.packs.values()].map(async ({ dir: _, entries, ...pack }) => ({
+      ...pack,
+      items: await Promise.all(entries.map(async ({ dir, ...item }) => ({ ...item, recipe: await readRecipe(dir) }))),
+    })),
+  )
   return { dir: ws.dir, businesses: ws.businesses, packs, workers: ws.workers }
 }
 
@@ -108,7 +116,7 @@ async function main() {
     const items = [...ws.packs.values()].reduce((sum, pack) => sum + pack.entries.length, 0)
     return console.log(`${ws.businesses.length} businesses, ${ws.workers.length} workers, ${ws.packs.size} packs, ${items} items: valid`)
   }
-  if (command === 'workspace') return console.log(JSON.stringify(model(ws)))
+  if (command === 'workspace') return console.log(JSON.stringify(await model(ws)))
   if (command === 'prompt') {
     const [businessId, assetId, ...items] = rest
     if (!businessId || !assetId || items.length === 0) throw new PromptError('usage: standards prompt <business> <asset> <item…>')
