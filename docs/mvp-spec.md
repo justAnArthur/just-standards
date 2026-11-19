@@ -7,6 +7,14 @@ against it, and hands the gaps to an AI (or a person) to fix.
 for each of them, I can add the business, see the grid, send a red cell to Claude Code, watch
 the run, and get a PR that turns the cell green.
 
+**Status (2026-11-19):** M0–M4 are done; M5 (fix runs) is next. What changed from the plan below:
+- The app lives in `app/` of this repo, not at its root, so the engine still installs and runs on its own.
+  just-apps mounts the repo at `apps/standards`, and its CLI finds an app in an `app/` subfolder.
+- The UI kit is `@justanarthur/modo-ui-standards` in modo (`kits/standards`); `ButtonGroup` went into modo-ui.
+- Items carry a short `label` for the grid's column heads; `standards workspace` prints the whole model for the app.
+- Decisions in §11: the repo stays public; the workspace is a local folder (`standards-workspace`) for now;
+  the Claude session code was extracted into just-apps (`crates/claude-code`, `@just-apps/claude-code`).
+
 ## 1. Repo and naming
 
 - **Rename** `justAnArthur/just-repo-standard` to `justAnArthur/just-standards`.
@@ -307,11 +315,11 @@ per the just-apps "new app" rule. The existing mockup is the reference for that 
 
 | # | ships | check-point |
 |---|---|---|
-| M0 | Rename; move today's skill to `packs/repo`; install symlink in README | `/repo-standard` still works |
-| M1 | `core/` + CLI + website@1 + repo@1; workspace with the test businesses | `standards check` gives correct results on the sites under redesign. **Usable on its own from Claude Code.** |
-| M2 | Step 0: Claude session and process commands moved into the just-apps platform; ai-desktop on them | ai-desktop works unchanged |
-| M3 | modo kit `standards` (screens 1–3 on mock data) | screenshots of light and dark mode reviewed |
-| M4 | App: businesses, grid, drawer, checks streaming from the CLI | real grid for the test businesses |
+| M0 ✓ | Rename; move today's skill to `packs/repo`; install symlink in README | `/repo-standard` still works |
+| M1 ✓ | `core/` + CLI + website@1 + repo@1; workspace with the test businesses | `standards check` gives correct results on the sites under redesign. **Usable on its own from Claude Code.** |
+| M2 ✓ | Step 0: Claude session and process commands moved into the just-apps platform; ai-desktop on them | ai-desktop works unchanged |
+| M3 ✓ | modo kit `standards` (screens 1–3 on mock data) | screenshots of light and dark mode reviewed |
+| M4 ✓ | App: businesses, grid, drawer, checks streaming from the CLI | real grid for the test businesses |
 | M5 | Fix runs: worktree, worker, timeline, permission prompts, PR, re-check, cleanup | one red cell becomes a merged PR and turns green |
 
 M1 is useful on its own: the redesign work can lean on `standards check` before any UI exists.
