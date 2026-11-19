@@ -84,13 +84,28 @@ jobs:
       - run: bun install
 
       - name: Build the app
+        env:
+          # signs the updater's bundle; its public key is `updater.pubkey` in app/app.json
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
         run: bun run app build standards --target universal-apple-darwin --bundles app
 
       - name: Package
         id: pkg
         run: |
-          zip="just-standards-app-${TAG#just-standards-app@}.zip"
-          ditto -c -k --sequesterRsrc --keepParent "target/universal-apple-darwin/release/bundle/macos/Standards.app" "$zip"
+          version="${TAG#just-standards-app@}"
+          dir="target/universal-apple-darwin/release/bundle/macos"
+          # Standards.zip is the stable link (releases/latest/download/Standards.zip); the versioned one stays with its release.
+          zip="just-standards-app-$version.zip"
+          ditto -c -k --sequesterRsrc --keepParent "$dir/Standards.app" "$zip"
+          cp "$zip" Standards.zip
+          # self-update: installed apps read releases/latest/download/latest.json, which points at this signed bundle
+          cp "$dir/Standards.app.tar.gz" Standards.app.tar.gz
+          url="https://github.com/${{ github.repository }}/releases/download/${TAG/@/%40}/Standards.app.tar.gz"
+          # one universal bundle serves both architectures
+          jq -n --arg v "$version" --arg sig "$(cat "$dir/Standards.app.tar.gz.sig")" --arg url "$url" \
+            --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{version: $v, pub_date: $date, platforms: {"darwin-aarch64": {signature: $sig, url: $url}, "darwin-x86_64": {signature: $sig, url: $url}}}' > latest.json
           echo "zip=$zip" >> "$GITHUB_OUTPUT"
 
       - name: Attach to the release
@@ -101,4 +116,4 @@ jobs:
         run: |
           # release-on-tag.yml creates the release from the same tag, possibly after this build starts.
           for _ in $(seq 1 30); do gh release view "$TAG" > /dev/null 2>&1 && break; sleep 10; done
-          gh release upload "$TAG" "${{ steps.pkg.outputs.zip }}" --clobber
+          gh release upload "$TAG" "${{ steps.pkg.outputs.zip }}" Standards.zip Standards.app.tar.gz latest.json --clobber
