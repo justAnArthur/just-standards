@@ -1,5 +1,13 @@
 {
   "productName": "Standards",
   "identifier": "dev.justanarthur.standards",
-  "window": { "title": "Standards", "width": 1100, "height": 720 }
+  "window": {
+    "title": "Standards",
+    "width": 1100,
+    "height": 720,
+    "trafficLightPosition": {
+      "x": 12,
+      "y": 19
+    }
+  }
 }
