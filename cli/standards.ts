@@ -22,7 +22,7 @@ const USAGE = `standards <command> [options]
         --worker <id>  --interactive (permission questions on stdout, answers on stdin)
   runs [business…]                   the fix runs, newest first
   runs transcript <id>               everything Claude Code printed in a run
-  runs sync                          read open PRs; clean up the worktrees of merged and closed ones
+  runs sync [run…]                   read open PRs and check their previews; clean up after merged and closed ones
   pr view <run>                      the run's pull request: state, checks, files, body
   pr merge <run>                     merge it, then sync the run
         --method merge|squash|rebase (default merge)
@@ -202,7 +202,7 @@ async function runs(ws: Workspace, [sub, ...rest]: string[]) {
     if (!rest[0]) throw new RunError('usage: standards runs transcript <id>')
     return process.stdout.write(await transcriptOf(ws, rest[0]).text())
   }
-  const records = sub === 'sync' ? await syncRuns(ws) : await listRuns(ws, sub ? [sub, ...rest] : [])
+  const records = sub === 'sync' ? await syncRuns(ws, rest) : await listRuns(ws, sub ? [sub, ...rest] : [])
   for (const record of records) line(record)
 }
 

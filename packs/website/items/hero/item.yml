@@ -9,6 +9,6 @@ check:
   kind: ai
   model: haiku
   prompt: |
-    Fetch the home page at the URL above and read its first screen: the main heading, the line under it, and the primary button or link.
+    Read the home page's HTML below and find its first screen: the main heading, the line under it, and the primary button or link.
     Pass only if a stranger could tell from those alone (1) what the product or company is, (2) who it is for, and (3) what to do next.
     Fail when any of the three is missing, or only implied through jargon or slogans. Quote the heading in your evidence and name what is missing.

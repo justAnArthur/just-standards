@@ -95,6 +95,9 @@ export async function removeBusiness(ws: Workspace, id: string) {
   await unlink(businessFile(ws, id))
 }
 
+/** Run state, and the secrets checks use (a preview's protection bypass): neither belongs in git. */
+const IGNORED = ['.state/', 'secrets.yml']
+
 /** Makes `dir` a workspace, keeping whatever is already there. */
 export async function initWorkspace(dir: string) {
   const root = resolve(expandHome(dir))
@@ -103,8 +106,9 @@ export async function initWorkspace(dir: string) {
   if (!(await workers.exists())) await Bun.write(workers, yaml(PRESETS))
   const gitignore = join(root, '.gitignore')
   const ignored = existsSync(gitignore) ? await Bun.file(gitignore).text() : ''
-  if (!ignored.split('\n').some(line => line.trim() === '.state/')) {
-    await appendFile(gitignore, `${ignored && !ignored.endsWith('\n') ? '\n' : ''}.state/\n`)
+  const missing = IGNORED.filter(entry => !ignored.split('\n').some(line => line.trim() === entry))
+  if (missing.length > 0) {
+    await appendFile(gitignore, `${ignored && !ignored.endsWith('\n') ? '\n' : ''}${missing.join('\n')}\n`)
   }
   return root
 }

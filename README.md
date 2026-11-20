@@ -39,7 +39,7 @@ bun cli/standards.ts fix <business> <asset> <item…> --worker <id> [--interacti
                                                        a worker fixes the items in a new worktree and opens a PR
 bun cli/standards.ts runs [business…]                  the fix runs, newest first
 bun cli/standards.ts runs transcript <id>              everything Claude Code printed in a run
-bun cli/standards.ts runs sync                         read open PRs; clean up after merged and closed ones
+bun cli/standards.ts runs sync [run…]                  read open PRs and check their previews; clean up after merged and closed ones
 bun cli/standards.ts pr view <run>                     the run's pull request: state, checks, files, body
 bun cli/standards.ts pr merge <run> [--method merge|squash|rebase]
                                                        merge it, then clean up like runs sync
@@ -55,7 +55,7 @@ bun cli/standards.ts github status                     who gh is signed in as
 bun cli/standards.ts github login                      sign gh in through the browser
 ```
 
-Output is a table in a terminal and one JSON object per line when piped (or with `--json`). `fix` and `runs` always print NDJSON. A fix run works in `<path>/.worktrees/std-<item>`, records itself in `<workspace>/.state/runs/<id>/`, and exits 0 only when it ends with a PR; the worker reports the PR, a summary and what is still missing through the `finish` tool of `standards mcp`. The protocol is in [docs/fix-runs.md](docs/fix-runs.md) and [docs/m6.md](docs/m6.md).
+Output is a table in a terminal and one JSON object per line when piped (or with `--json`). `fix` and `runs` always print NDJSON. A fix run works in `<path>/.worktrees/std-<item>`, records itself in `<workspace>/.state/runs/<id>/`, and exits 0 only when it ends with a PR; the worker reports the PR, a summary and what is still missing through the `finish` tool of `standards mcp`. Before the worker starts, the run installs dependencies from the lockfile. The worker waits for the PR's CI and fixes what fails, and a run that needs something from a person leaves a draft. The run's items are then checked on the PR's preview deployment; a protected Vercel preview needs `vercel_bypass` on the asset and the secret in the workspace's git-ignored `secrets.yml`. The protocol is in [docs/fix-runs.md](docs/fix-runs.md), [docs/m6.md](docs/m6.md) and [docs/m7.md](docs/m7.md).
 
 Writes (`worker`, `business`, `clone`) are validated first and rewrite the YAML file whole, so comments in it are lost.
 

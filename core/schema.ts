@@ -57,6 +57,8 @@ export const Check = z.discriminatedUnion('kind', [
     kind: z.literal('ai'),
     prompt: z.string(),
     model: z.string().default('haiku'),
+    /** Pages of the asset's URL the model reads, as served (scripts, styles and SVG removed) */
+    pages: z.array(z.string()).default(['/']),
   }),
 ])
 export type Check = z.infer<typeof Check>
@@ -94,6 +96,8 @@ export const Asset = z.object({
   /** local checkout; `~` allowed */
   path: z.string().optional(),
   stack: z.string().optional(),
+  /** The name of a secret in the workspace's `secrets.yml` that holds the Vercel project's Protection Bypass for Automation, for checking PR previews */
+  vercel_bypass: z.string().optional(),
 })
 export type Asset = z.infer<typeof Asset>
 
@@ -159,13 +163,29 @@ export interface RunRecord {
   /** Left out while it runs. */
   ms?: number
   state: 'running' | 'done' | 'failed' | 'stopped'
-  pr?: { url: string; number: number; state: 'open' | 'merged' | 'closed' }
+  pr?: { url: string; number: number; state: 'open' | 'merged' | 'closed'; draft?: boolean }
+  /** How the worktree got its dependencies; left out when it has no lockfile. */
+  setup?: { command: string; ok: boolean; error?: string }
+  /** The run's items checked on the PR's preview deployment. */
+  preview?: Preview
   cost_usd?: number
   session_id?: string
   /** Why it failed or stopped. */
   error?: string
   /** What the worker said it did, through the `finish` tool. */
   summary?: string
-  /** What a person must still do, through the `finish` tool. */
+  /** What a person must provide before the PR can merge, through the `finish` tool. The PR is then a draft. */
   missing?: string[]
+}
+
+/** The run's items checked on the preview deployment of the PR's head commit. */
+export interface Preview {
+  /** The head commit the preview was looked up for. */
+  sha: string
+  checked_at: string
+  /** Left out when there is no preview deployment (yet). */
+  url?: string
+  results: Result[]
+  /** Why nothing was checked: no deployment yet, or a protected one. */
+  note?: string
 }

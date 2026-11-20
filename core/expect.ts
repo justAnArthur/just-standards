@@ -2,11 +2,18 @@ import type { ValueAssertion } from './schema.ts'
 
 const USER_AGENT = 'just-standards/0.1 (+https://github.com/justAnArthur/just-standards)'
 
+const extraHeaders = new Map<string, Record<string, string>>()
+
+/** Headers `get` sends with every request to `origin`, such as a preview deployment's protection bypass. */
+export function authorize(origin: string, headers: Record<string, string>) {
+  extraHeaders.set(new URL(origin).origin, headers)
+}
+
 export function get(url: string, init: RequestInit = {}) {
   return fetch(url, {
     redirect: 'follow',
     ...init,
-    headers: { 'user-agent': USER_AGENT, ...init.headers },
+    headers: { 'user-agent': USER_AGENT, ...extraHeaders.get(new URL(url).origin), ...init.headers },
     signal: AbortSignal.timeout(20_000),
   })
 }

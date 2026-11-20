@@ -4,10 +4,11 @@ import { join, resolve } from 'node:path'
 import { cellsOf } from './cells.ts'
 import { cleanEnv } from './checks/ai.ts'
 import { run } from './checks/github.ts'
+import { installDeps, managerOf } from './deps.ts'
 import { expandHome, type Workspace } from './load.ts'
 import { type Finish, finishFile } from './mcp.ts'
 import { fixPrompt } from './prompt.ts'
-import { createWorktree, ghBin, lines, RunError, runsDir, writeRecord } from './runs.ts'
+import { createWorktree, ghBin, lines, previewOf, RunError, runsDir, writeRecord } from './runs.ts'
 import type { Business, RunRecord, Worker } from './schema.ts'
 
 export type RunEvent = { type: 'run'; event: 'started' | 'finished'; run: RunRecord } | { type: 'claude'; line: string }
@@ -34,6 +35,8 @@ const PR_URL = /https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/pull\/(\d+)/g
 
 const CLI = join(import.meta.dir, '../cli/standards.ts')
 const FINISH_TOOL = 'mcp__standards__finish'
+/** What every run needs besides the worker's own rules: reading its PR's checks and their logs. */
+const RUN_TOOLS = [FINISH_TOOL, 'Bash(gh pr checks *)', 'Bash(gh run view *)']
 
 const claudeBin = () => process.env.STANDARDS_CLAUDE_BIN ?? 'claude'
 const stamp = (date: Date) => date.toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15)
@@ -56,7 +59,7 @@ function parse(line: string) {
 const mcpConfig = (ws: Workspace, id: string) =>
   JSON.stringify({ mcpServers: { standards: { type: 'stdio', command: process.execPath, args: [CLI, 'mcp', '--run', id, '--workspace', ws.dir] } } })
 
-function args(worker: Worker, interactive: boolean, packDirs: string[], mcp: string) {
+function args(worker: Worker, interactive: boolean, packDirs: string[], mcp: string, tools: string[]) {
   return [
     claudeBin(),
     ...['-p', '--input-format', 'stream-json', '--output-format', 'stream-json', '--verbose', '--model', worker.model],
@@ -66,7 +69,7 @@ function args(worker: Worker, interactive: boolean, packDirs: string[], mcp: str
     ...['--permission-mode', worker.permission_mode],
     ...(interactive ? ['--permission-prompt-tool', 'stdio'] : []),
     ...['--mcp-config', mcp],
-    ...['--allowedTools', ...worker.allow, FINISH_TOOL],
+    ...['--allowedTools', ...new Set([...worker.allow, ...RUN_TOOLS, ...tools])],
     // a recipe can point at files in its pack (the repo pack's skill), which live outside the worktree
     ...packDirs.flatMap(dir => ['--add-dir', dir]),
   ]
@@ -90,6 +93,11 @@ async function findPr(text: string, branch: string, worktree: string): Promise<R
   } catch {
     return undefined
   }
+}
+
+async function markDraft(pr: NonNullable<RunRecord['pr']>, cwd: string) {
+  const undone = await run([ghBin(), 'pr', 'ready', pr.url, '--undo'], cwd)
+  if (undone.ok || /already.*draft/i.test(undone.stderr)) pr.draft = true
 }
 
 /** Two runs of one item started in the same second would share an id. */
@@ -123,7 +131,6 @@ export async function fix(ws: Workspace, business: Business, assetId: string, it
   const { worker, path } = validate(ws, business, assetId, items, options.worker)
   const itemId = items[0]!.split('/')[1]!
   const { branch, worktree } = await createWorktree(path, itemId)
-  const prompt = await fixPrompt(ws, business, assetId, items, branch)
 
   const started = new Date()
   const id = await newRunDir(ws, `${stamp(started)}-${business.id}-${itemId}`)
@@ -151,11 +158,19 @@ export async function fix(ws: Workspace, business: Business, assetId: string, it
     return record
   }
 
+  // Without dependencies the worker can't run the repo's typecheck or tests, and finds out only from CI.
+  record.setup = await installDeps(worktree, options.signal)
+  if (options.signal?.aborted) return finish('stopped', `stopped by ${String(options.signal.reason ?? 'abort')}`)
+  await writeRecord(ws, record)
+  const prompt = await fixPrompt(ws, business, assetId, items, branch, record.setup)
+  // The repo's package manager, so the worker can run its scripts.
+  const tools = managerOf(worktree)?.tools ?? []
+
   let stopped: string | undefined
   let open = true
   let proc: Bun.Subprocess<'pipe', 'pipe', 'pipe'>
   try {
-    proc = Bun.spawn(args(worker, !!options.interactive, packDirsOf(ws, items), mcpConfig(ws, id)), {
+    proc = Bun.spawn(args(worker, !!options.interactive, packDirsOf(ws, items), mcpConfig(ws, id), tools), {
       cwd: worktree,
       env: env(worker),
       stdin: 'pipe',
@@ -224,5 +239,10 @@ export async function fix(ws: Workspace, business: Business, assetId: string, it
   if (stopped) return finish('stopped', `stopped by ${stopped}`)
   if (result.is_error || result.subtype !== 'success') return finish('failed', (result.result || result.subtype).slice(0, 300))
   if (!record.pr) return finish('failed', 'no pull request')
+  // A PR that still needs a person reads as a draft, whatever the worker opened.
+  if (record.missing?.length) await markDraft(record.pr, worktree)
+  const head = await run([ghBin(), 'pr', 'view', record.pr.url, '--json', 'headRefOid'], worktree)
+  const sha = head.ok ? (JSON.parse(head.stdout) as { headRefOid?: string }).headRefOid : undefined
+  if (sha) record.preview = await previewOf(ws, record, sha)
   return finish('done')
 }

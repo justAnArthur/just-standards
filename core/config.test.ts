@@ -61,7 +61,7 @@ describe('permission_mode', () => {
 })
 
 describe('standards workspace init', () => {
-  test('creates businesses/, the preset workers and a .gitignore for .state/, keeping what is there', async () => {
+  test('creates businesses/, the preset workers and a .gitignore for .state/ and secrets.yml, keeping what is there', async () => {
     const { code, json } = await standards(['workspace', 'init', ws])
     expect(code).toBe(0)
     expect(json()).toEqual({ dir: ws })
@@ -71,16 +71,16 @@ describe('standards workspace init', () => {
       ['opus-fixer', 'opus', 'acceptEdits'],
       ['opus-reviewer', 'opus', 'plan'],
     ])
-    expect(await Bun.file(join(ws, '.gitignore')).text()).toBe('.state/\n')
+    expect(await Bun.file(join(ws, '.gitignore')).text()).toBe('.state/\nsecrets.yml\n')
 
     const other = join(dir, 'other')
     await Bun.write(join(other, '.gitignore'), 'node_modules/')
     await Bun.write(join(other, 'workers.yml'), '[]\n')
     expect((await standards(['workspace', 'init', other])).code).toBe(0)
-    expect(await Bun.file(join(other, '.gitignore')).text()).toBe('node_modules/\n.state/\n')
+    expect(await Bun.file(join(other, '.gitignore')).text()).toBe('node_modules/\n.state/\nsecrets.yml\n')
     expect(await Bun.file(join(other, 'workers.yml')).text()).toBe('[]\n')
     await standards(['workspace', 'init', other])
-    expect(await Bun.file(join(other, '.gitignore')).text()).toBe('node_modules/\n.state/\n')
+    expect(await Bun.file(join(other, '.gitignore')).text()).toBe('node_modules/\n.state/\nsecrets.yml\n')
   })
 })
 

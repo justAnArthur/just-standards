@@ -14,11 +14,12 @@ const PR9 = 'https://github.com/acme/widgets/pull/9'
 
 const FAKE_GH = `#!/bin/sh
 if [ "$1 $2" = "pr list" ]; then echo "\${FAKE_GH_LIST:-[]}"; exit 0; fi
+if [ "$1 $2" = "pr ready" ]; then echo "pr ready $3 $4" >> "$FAKE_GH_LOG"; exit 0; fi
 if [ "$1 $2" = "pr view" ]; then
   state=OPEN
   [ "$3" = "$FAKE_GH_MERGED" ] && state=MERGED
   [ "$3" = "$FAKE_GH_CLOSED" ] && state=CLOSED
-  echo "{\\"state\\":\\"$state\\"}"; exit 0
+  echo "{\\"state\\":\\"$state\\"\${FAKE_GH_SHA:+,\\"headRefOid\\":\\"$FAKE_GH_SHA\\"}}"; exit 0
 fi
 exit 1
 `
@@ -75,6 +76,7 @@ beforeAll(async () => {
     STANDARDS_WORKSPACE: ws,
     STANDARDS_CLAUDE_BIN: FAKE_CLAUDE,
     STANDARDS_GH_BIN: gh,
+    FAKE_GH_LOG: join(dir, 'gh.log'),
     CLAUDECODE: '1',
     ANTHROPIC_BASE_URL: 'http://localhost:9',
     GIT_AUTHOR_NAME: 'test',
@@ -165,7 +167,14 @@ describe('standards fix', () => {
     expect(init.argv).toEqual(
       expect.arrayContaining(['-p', '--input-format', 'stream-json', '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits']),
     )
-    expect(init.argv.slice(-6, -2)).toEqual(['--allowedTools', 'Bash(git *)', 'Bash(gh pr *)', 'mcp__standards__finish'])
+    expect(init.argv.slice(-8, -2)).toEqual([
+      '--allowedTools',
+      'Bash(git *)',
+      'Bash(gh pr *)',
+      'mcp__standards__finish',
+      'Bash(gh pr checks *)',
+      'Bash(gh run view *)',
+    ])
     const mcp = JSON.parse(init.argv[init.argv.indexOf('--mcp-config') + 1])
     expect(mcp.mcpServers.standards).toEqual({
       type: 'stdio',
@@ -223,12 +232,18 @@ describe('standards fix', () => {
     expect(messages.find(m => m.type === 'user')?.message.content[0].content).toBe(PR7)
   })
 
-  test('a PR given to finish wins over the one in the result, and its summary and missing are recorded', async () => {
+  test('a PR given to finish wins over the one in the result, its summary and missing are recorded, and missing makes it a draft', async () => {
     const finish = { pr_url: PR9, summary: 'Added a .gitignore for Bun.', missing: ['Rotate the leaked key'] }
-    const { seen, code } = await standards(['fix', 'acme', 'widgets', 'repo/gitignore', '--worker', 'fake'], { FAKE_FINISH: JSON.stringify(finish) }).finish()
+    const { seen, code } = await standards(['fix', 'acme', 'widgets', 'repo/gitignore', '--worker', 'fake'], {
+      FAKE_FINISH: JSON.stringify(finish),
+      FAKE_GH_SHA: 'abc1234def',
+    }).finish()
     expect(code).toBe(0)
     const run = finished(seen)
-    expect(run).toMatchObject({ state: 'done', pr: { url: PR9, number: 9, state: 'open' }, summary: finish.summary, missing: finish.missing })
+    expect(run).toMatchObject({ state: 'done', pr: { url: PR9, number: 9, state: 'open', draft: true }, summary: finish.summary, missing: finish.missing })
+    expect(await Bun.file(join(dir, 'gh.log')).text()).toContain(`pr ready ${PR9} --undo`)
+    // the repo has no deployments
+    expect(run.preview).toMatchObject({ sha: 'abc1234def', results: [], note: 'no preview deployment of abc1234 yet' })
     expect(await Bun.file(join(ws, '.state/runs', run.id, 'finish.json')).json()).toEqual(finish)
     const result = claudeLines(seen).find(m => m.type === 'user' && m.message.content[0].tool_use_id === 'toolu_2')
     expect(result.message.content[0].content).toContain('Recorded')

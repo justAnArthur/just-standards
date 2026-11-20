@@ -3,7 +3,8 @@ import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { run } from './checks/github.ts'
 import type { Workspace } from './load.ts'
-import type { RunRecord } from './schema.ts'
+import { checkPreview } from './preview.ts'
+import type { Preview, RunRecord } from './schema.ts'
 
 export class RunError extends Error {}
 
@@ -99,15 +100,41 @@ async function cleanUp(record: RunRecord) {
   if (record.pr?.state === 'merged') await run(['git', 'branch', '-D', record.branch], checkout)
 }
 
-/** Reads the state of the run's PR; a merged or closed one gets its worktree removed. True when the record changed. */
+/** The preview check, or a note saying why there is none: it must not stop a sync. */
+export async function previewOf(ws: Workspace, record: RunRecord, sha: string): Promise<Preview> {
+  try {
+    return await checkPreview(ws, record, sha)
+  } catch (error) {
+    return { sha, checked_at: new Date().toISOString(), results: [], note: (error as Error).message }
+  }
+}
+
+/**
+ * Reads the state of the run's PR. An open one gets its items checked on the preview of a new head commit, until a preview
+ * answered; a merged or closed one gets its worktree removed. True when the record changed.
+ */
 async function syncRun(ws: Workspace, record: WithPr) {
-  const view = await run([ghBin(), 'pr', 'view', record.pr.url, '--json', 'state'])
+  const view = await run([ghBin(), 'pr', 'view', record.pr.url, '--json', 'state,headRefOid,isDraft'])
   if (!view.ok) {
     console.error(`${record.id}: gh pr view ${record.pr.url}: ${view.stderr}`)
     return false
   }
-  const state = (JSON.parse(view.stdout) as { state: string }).state.toLowerCase()
-  if (state !== 'merged' && state !== 'closed') return false
+  const pr = JSON.parse(view.stdout) as { state: string; headRefOid?: string; isDraft?: boolean }
+  const state = pr.state.toLowerCase()
+  if (state !== 'merged' && state !== 'closed') {
+    let changed = false
+    if (pr.isDraft !== undefined && pr.isDraft !== !!record.pr.draft) {
+      record.pr.draft = pr.isDraft
+      changed = true
+    }
+    const sha = pr.headRefOid
+    if (sha && (record.preview?.sha !== sha || record.preview.results.length === 0)) {
+      record.preview = await previewOf(ws, record, sha)
+      changed = true
+    }
+    if (changed) await writeRecord(ws, record)
+    return changed
+  }
   record.pr.state = state
   const problem = await cleanUp(record)
   if (problem) console.error(`${record.id}: left ${record.worktree} in place: ${problem}`)
@@ -115,10 +142,11 @@ async function syncRun(ws: Workspace, record: WithPr) {
   return true
 }
 
-/** Syncs every run whose PR is open. Returns the records it changed. */
-export async function syncRuns(ws: Workspace) {
+/** Syncs every run whose PR is open, or only the runs `ids`. Returns the records it changed. */
+export async function syncRuns(ws: Workspace, ids: string[] = []) {
   const changed: RunRecord[] = []
-  for (const record of await listRuns(ws)) {
+  const records = ids.length ? await Promise.all(ids.map(id => readRecord(ws, id))) : await listRuns(ws)
+  for (const record of records) {
     if (record.pr?.state === 'open' && (await syncRun(ws, record as WithPr))) changed.push(record)
   }
   return changed

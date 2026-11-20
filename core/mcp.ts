@@ -10,7 +10,10 @@ export const Finish = z.object({
     .optional()
     .describe('The URL of the pull request you opened. Leave it out when there is none.'),
   summary: z.string().min(1).describe('A short summary of what you changed, or why you could not.'),
-  missing: z.array(z.string()).optional().describe('Anything a person must still do, one entry each.'),
+  missing: z
+    .array(z.string())
+    .optional()
+    .describe('What a person must provide or fix before the pull request can merge, one entry each. Not checks to run after merging.'),
 })
 export type Finish = z.infer<typeof Finish>
 
