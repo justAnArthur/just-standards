@@ -111,7 +111,15 @@ export function useRuns({ paths, ready, workers, recheck }: Options) {
   }
 
   /** The run's PR as `standards pr view` reads it. */
-  const pr = async (id: string) => parsePr(await json(['pr', 'view', id]))
+  const pr = async (id: string) => {
+    // checks the run's items on the preview of a new head commit, and notices a merge made elsewhere
+    try {
+      if (parseRecords(await json(['runs', 'sync', id])).length) await relist.current()
+    } catch (e) {
+      console.error('[standards] runs sync:', e)
+    }
+    return parsePr(await json(['pr', 'view', id]))
+  }
 
   /** Merges the run's PR, re-checks its cells and lists the runs again. */
   async function merge(id: string, method: MergeMethod) {

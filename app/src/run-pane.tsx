@@ -163,7 +163,13 @@ export function RunPane({ run, business, live, loaded, onRead, onRespond, onAllo
   }, [running])
 
   const time = duration(record.ms ?? now - Date.parse(record.started_at))
-  const facts = [record.model, record.branch, running ? `running for ${time}` : time, record.cost_usd !== undefined && `$${record.cost_usd.toFixed(2)}`]
+  const facts = [
+    record.model,
+    record.branch,
+    record.pr?.draft && 'draft PR',
+    running ? `running for ${time}` : time,
+    record.cost_usd !== undefined && `$${record.cost_usd.toFixed(2)}`,
+  ]
   const pending = live ? session.pending[0] : undefined
   const items = toTranscript(session.turns)
 
@@ -230,13 +236,50 @@ export function RunPane({ run, business, live, loaded, onRead, onRespond, onAllo
   )
 }
 
-/** What the worker said through `finish`: what it did, and what a person must still do. */
-export function FinishNote({ record }: { record: Pick<RunRecord, 'summary' | 'missing'> }) {
+const RESULT_BADGE = { pass: 'green', fail: 'red', error: 'amber' } as const
+
+/** The run's items as checked on the PR's preview deployment, or why they weren't. */
+function PreviewChecks({ preview }: { preview: NonNullable<RunRecord['preview']> }) {
+  return (
+    <section className="flex flex-col gap-2">
+      <h3 className="text-subtitle text-foreground">On the preview</h3>
+      {preview.url && (
+        <a href={preview.url} target="_blank" rel="noreferrer" className="truncate text-caption text-muted-foreground underline">
+          {preview.url}
+        </a>
+      )}
+      {preview.note && <p className="text-body text-muted-foreground">{preview.note}</p>}
+      {preview.results.length > 0 && (
+        <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+          {preview.results.map(result => (
+            <li key={result.item} className="flex items-start gap-2 text-body text-foreground">
+              <Badge size="compact" color={RESULT_BADGE[result.state]}>
+                {result.state}
+              </Badge>
+              <span className="min-w-0 break-words">
+                {result.item}: <span className="text-muted-foreground">{result.evidence}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  )
+}
+
+/** What the worker said through `finish` (what it did, what a person must still do), a failed install, and the preview checks. */
+export function FinishNote({ record }: { record: Pick<RunRecord, 'summary' | 'missing' | 'setup' | 'preview'> }) {
   const Alert = useIcon('circle-alert')
   const missing = record.missing ?? []
-  if (!record.summary && !missing.length) return null
+  const failedSetup = record.setup?.ok === false ? record.setup : undefined
+  if (!record.summary && !missing.length && !record.preview && !failedSetup) return null
   return (
     <div className="flex flex-col gap-4 border-border border-b p-5">
+      {failedSetup && (
+        <p className="text-body text-status-warning">
+          <code>{failedSetup.command}</code> failed in the worktree, so the worker had to install dependencies itself.
+        </p>
+      )}
       {record.summary && (
         <section className="flex flex-col gap-2">
           <h3 className="text-subtitle text-foreground">What the worker did</h3>
@@ -256,6 +299,7 @@ export function FinishNote({ record }: { record: Pick<RunRecord, 'summary' | 'mi
           </ul>
         </section>
       )}
+      {record.preview && <PreviewChecks preview={record.preview} />}
     </div>
   )
 }

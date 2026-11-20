@@ -3,7 +3,8 @@ import type { CellRun, CellStatus, FixRun, TranscriptItem } from '@justanarthur/
 import { parseLine, type Status } from './model'
 
 /** A fix run as the engine records it (`run.json`): the kit's `FixRun` without its transcript, plus where it ran. */
-export interface RunRecord extends Omit<FixRun, 'transcript'> {
+export interface RunRecord extends Omit<FixRun, 'transcript' | 'pr'> {
+  pr?: NonNullable<FixRun['pr']> & { draft?: boolean }
   business: string
   asset: string
   /** `pack/item` */
@@ -15,8 +16,18 @@ export interface RunRecord extends Omit<FixRun, 'transcript'> {
   error?: string
   /** What the worker said it did, through the `finish` tool. */
   summary?: string
-  /** What a person must still do. */
+  /** What a person must provide before the PR can merge; the PR is then a draft. */
   missing?: string[]
+  /** How the worktree got its dependencies. */
+  setup?: { command: string; ok: boolean; error?: string }
+  /** The run's items checked on the PR's preview deployment. */
+  preview?: {
+    sha: string
+    checked_at: string
+    url?: string
+    results: { item: string; state: 'pass' | 'fail' | 'error'; evidence: string }[]
+    note?: string
+  }
 }
 
 /** A run as the app holds it: its record and its Claude Code session, folded from the `claude` lines. */
