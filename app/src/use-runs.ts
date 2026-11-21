@@ -12,15 +12,21 @@ interface Options {
   /** The workspace has loaded: sync and list the runs. */
   ready: boolean
   workers: Worker[]
-  /** Re-checks one cell, for a run whose PR merged. */
-  recheck: (business: string, asset: string, item: string) => void
+  /** The engine checked cells again (the labeled items of a PR merged and deployed): read the status again. */
+  onRechecked: () => void
 }
+
+/** How often a window syncs: open PRs, their previews, and labeled PRs merged and deployed since. */
+const SYNC_EVERY_MS = 2 * 60_000
+
+/** Whether `standards runs sync` printed a `recheck` line. */
+export const rechecked = (ndjson: string) => ndjson.split("\n").some(line => line.includes('"type":"recheck"'))
 
 /**
  * The fix runs: the recorded ones (`standards runs`, synced on load), and the ones this window starts, folded live
  * from `standards fix --interactive`, whose permission questions are answered on the run's stdin.
  */
-export function useRuns({ paths, ready, workers, recheck }: Options) {
+export function useRuns({ paths, ready, workers, onRechecked }: Options) {
   const host = useHost()
   const call = useMemo(() => native(host), [host])
   const [records, setRecords] = useState<RunRecord[]>([])
@@ -39,10 +45,10 @@ export function useRuns({ paths, ready, workers, recheck }: Options) {
 
   useEffect(() => {
     if (!ready) return
-    void (async () => {
+    const sync = async () => {
       try {
-        for (const record of parseRecords(await json(['runs', 'sync'])))
-          if (record.pr?.state === 'merged') for (const item of record.items) recheck(record.business, record.asset, item)
+        const printed = await json(['runs', 'sync'])
+        if (rechecked(printed)) onRechecked()
       } catch (e) {
         console.error('[standards] runs sync:', e)
       }
@@ -52,7 +58,10 @@ export function useRuns({ paths, ready, workers, recheck }: Options) {
       } catch (e) {
         setError(messageOf(e))
       }
-    })()
+    }
+    void sync()
+    const timer = setInterval(() => void sync(), SYNC_EVERY_MS)
+    return () => clearInterval(timer)
   }, [ready, paths])
 
   useEffect(() => {
@@ -121,10 +130,9 @@ export function useRuns({ paths, ready, workers, recheck }: Options) {
     return parsePr(await json(['pr', 'view', id]))
   }
 
-  /** Merges the run's PR, re-checks its cells and lists the runs again. */
+  /** Merges the run's PR and lists the runs again. Its cells are checked again by a later sync, once the merge is deployed. */
   async function merge(id: string, method: MergeMethod) {
-    const record = parseMerged(await json(['pr', 'merge', id, '--method', method]))
-    for (const item of record.items) recheck(record.business, record.asset, item)
+    parseMerged(await json(['pr', 'merge', id, '--method', method]))
     await list()
   }
 

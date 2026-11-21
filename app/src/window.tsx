@@ -188,7 +188,7 @@ export default function StandardsWindow() {
     paths: standards.paths,
     ready: load.kind === 'ready',
     workers: model?.workers ?? [],
-    recheck: (business, asset, item) => standards.check({ business, asset, item }),
+    onRechecked: standards.refresh,
   })
   // The cells as the grid draws them: a live run's worker, an open PR.
   const status = useMemo(() => overlayRuns(standards.status, runs.all), [standards.status, runs.all])
