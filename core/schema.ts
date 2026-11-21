@@ -216,6 +216,10 @@ export const Item = z.object({
   applies_to: z.array(AssetKind).min(1),
   category: Category,
   severity: Severity.default('should'),
+  /** Where the standard comes from: the official docs, spec or checklist it follows. Shown to workers and in specs, and watched by `standards sources`. */
+  sources: z.array(z.object({ title: z.string(), url: z.url() })).default([]),
+  /** Only for assets whose code uses this dependency, in this version range (`>=15`): read from the asset's local checkout. */
+  applies_when: z.object({ dependency: z.string(), version: z.string().optional() }).optional(),
   /** Items that must pass first, on this asset or one sharing its repo: a fix starts from what they provide (brand assets, a design system). */
   requires: z.array(ItemKey).default([]),
   /** It requests paths a firewall reads as an attack (`/.env`, `/.git/HEAD`): only checked when asked for by name, or for a business that allows it. */

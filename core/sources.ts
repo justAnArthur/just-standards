@@ -1,0 +1,81 @@
+import { join } from 'node:path'
+import { readable } from './checks/ai.ts'
+import { get } from './expect.ts'
+import { BUNDLED_PACKS, type Workspace } from './load.ts'
+
+/** What `standards sources` last read of each source URL: its text's hash and when. Committed beside the packs. */
+export const LOCK_FILE = join(BUNDLED_PACKS, 'sources.lock.json')
+
+export interface Locked {
+  sha256: string
+  checked_at: string
+  /** The items that follow it. */
+  items: string[]
+}
+
+export interface SourceChange {
+  url: string
+  title: string
+  items: string[]
+  /** `new`: not in the lock yet; `changed`: its text differs; `gone`: it didn't answer 200; `same`. */
+  state: 'new' | 'changed' | 'gone' | 'same'
+  status?: number
+}
+
+/** A page's text without its markup, whitespace and the bits that change on every load (dates, build ids in scripts). */
+async function textOf(html: string) {
+  const text = (await readable(html)).replace(/<[^>]+>/g, ' ')
+  return text.replace(/\s+/g, ' ').trim()
+}
+
+const sha256 = (text: string) => new Bun.CryptoHasher('sha256').update(text).digest('hex')
+
+/** Every source the loaded items cite, with the items citing it. */
+export function sourcesOf(ws: Workspace) {
+  const sources = new Map<string, { title: string; items: string[] }>()
+  for (const pack of ws.packs.values()) {
+    for (const item of pack.entries) {
+      for (const source of item.sources) {
+        const entry = sources.get(source.url) ?? { title: source.title, items: [] }
+        entry.items.push(item.key)
+        sources.set(source.url, entry)
+      }
+    }
+  }
+  return sources
+}
+
+/**
+ * Reads every cited source and compares its text with the lock: a changed source means its items may need to follow it.
+ * With `update`, writes the new hashes to the lock.
+ */
+export async function checkSources(ws: Workspace, { update = false, lockFile = LOCK_FILE } = {}) {
+  const lock: Record<string, Locked> = (await Bun.file(lockFile).exists()) ? await Bun.file(lockFile).json() : {}
+  const changes: SourceChange[] = []
+  for (const [url, { title, items }] of sourcesOf(ws)) {
+    let response: Response
+    try {
+      response = await get(url)
+    } catch {
+      changes.push({ url, title, items, state: 'gone', status: 0 })
+      continue
+    }
+    if (!response.ok) {
+      await response.body?.cancel()
+      changes.push({ url, title, items, state: 'gone', status: response.status })
+      continue
+    }
+    const hash = sha256(await textOf(await response.text()))
+    const before = lock[url]
+    const state = !before ? 'new' : before.sha256 === hash ? 'same' : 'changed'
+    changes.push({ url, title, items, state })
+    if (update && state !== 'same') lock[url] = { sha256: hash, checked_at: new Date().toISOString(), items }
+  }
+  if (update) {
+    const cited = new Set(changes.map(change => change.url))
+    for (const url of Object.keys(lock)) if (!cited.has(url)) delete lock[url]
+    const sorted = Object.fromEntries(Object.entries(lock).sort(([a], [b]) => a.localeCompare(b)))
+    await Bun.write(lockFile, `${JSON.stringify(sorted, null, 2)}\n`)
+  }
+  return changes
+}

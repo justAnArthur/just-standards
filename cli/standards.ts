@@ -11,6 +11,7 @@ import { serveMcp } from '../core/mcp.ts'
 import { fixPrompt, PromptError, specOf } from '../core/prompt.ts'
 import { recheckLabeled } from '../core/labels.ts'
 import { recipeProblems } from '../core/recipes.ts'
+import { checkSources } from '../core/sources.ts'
 import { lines, listRuns, mergePr, prView, RunError, syncRuns, transcriptOf } from '../core/runs.ts'
 import type { Result } from '../core/schema.ts'
 
@@ -21,6 +22,8 @@ const USAGE = `standards <command> [options]
   status [business…]                 the saved state of every cell
   prompt <business> <asset> <item…>  the fix instructions for a worker
         --branch <name>              (default standards/<asset>-<first item>)
+  sources                            read every source the items cite and compare with packs/sources.lock.json
+        --update                     write the new hashes to the lock
   spec <business> <asset>            every standard the asset adopted, by category, with its recipe: a definition of done (Markdown)
         --severity must,should  --category seo,sharing
   fix <business> <asset> <item…>     a worker fixes the items in a new worktree and opens a PR; NDJSON
@@ -64,6 +67,7 @@ const { values: flags, positionals } = parseArgs({
     method: { type: 'string' },
     severity: { type: 'string' },
     category: { type: 'string' },
+    update: { type: 'boolean' },
     help: { type: 'boolean', short: 'h' },
   },
 })
@@ -184,6 +188,15 @@ async function main() {
     const [business] = pick(ws, [businessId])
     const branch = flags.branch ?? `standards/${assetId}-${items[0]!.split('/')[1]}`
     return console.log(await fixPrompt(ws, business!, assetId, items, branch))
+  }
+  if (command === 'sources') {
+    const changes = await checkSources(ws, { update: flags.update })
+    for (const change of changes) {
+      if (json) line(change)
+      else if (change.state !== 'same') console.log(`${change.state.padEnd(8)} ${change.url}  (${change.items.join(', ')})`)
+    }
+    if (!json) console.log(`${changes.length} sources, ${changes.filter(c => c.state !== 'same').length} new, changed or gone${flags.update ? '; lock updated' : ''}`)
+    return
   }
   if (command === 'spec') {
     const [businessId, assetId] = rest

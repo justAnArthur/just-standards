@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 const INSTALL_TIMEOUT_MS = 10 * 60_000
@@ -20,6 +20,30 @@ export interface Setup {
   ok: boolean
   /** The end of the output when it failed. */
   error?: string
+}
+
+const versions = new Map<string, string | undefined>()
+
+/**
+ * The version of `name` the checkout at `dir` uses: the installed one in `node_modules`, else the first full version in
+ * package.json's range (`^16.3.0` → 16.3.0). Undefined when it isn't a dependency. Cached per process.
+ */
+export function dependencyVersion(dir: string, name: string) {
+  const key = `${dir} ${name}`
+  if (versions.has(key)) return versions.get(key)
+  let version: string | undefined
+  try {
+    const manifest = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')) as Record<string, Record<string, string> | undefined>
+    const declared = ['dependencies', 'devDependencies', 'peerDependencies'].map(field => manifest[field]?.[name]).find(Boolean)
+    if (declared) {
+      try {
+        version = (JSON.parse(readFileSync(join(dir, 'node_modules', name, 'package.json'), 'utf8')) as { version?: string }).version
+      } catch {}
+      version ??= declared.match(/\d+\.\d+\.\d+/)?.[0] ?? declared.match(/\d+(\.\d+)?/)?.[0]?.replace(/^(\d+)$/, '$1.0').concat('.0')
+    }
+  } catch {}
+  versions.set(key, version)
+  return version
 }
 
 export const managerOf = (dir: string) => MANAGERS.find(manager => existsSync(join(dir, manager.lock)))

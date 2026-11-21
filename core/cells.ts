@@ -1,7 +1,8 @@
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { runCheck } from './checks/index.ts'
-import type { LoadedItem, Workspace } from './load.ts'
+import { dependencyVersion } from './deps.ts'
+import { expandHome, type LoadedItem, type Workspace } from './load.ts'
 import type { Asset, Business, Result } from './schema.ts'
 
 const STALE_DAYS = 7
@@ -36,8 +37,20 @@ export function cellsOf(business: Business, ws: Workspace): Cell[] {
     if (!pack) return []
     const version = pinned ? Number(pinned) : pack.version
     const items = pack.entries.filter(item => item.since <= version)
-    return items.flatMap(item => business.assets.filter(asset => item.applies_to.includes(asset.kind)).map(asset => ({ asset, item })))
+    return items.flatMap(item =>
+      business.assets.filter(asset => item.applies_to.includes(asset.kind) && usesDependency(item, asset)).map(asset => ({ asset, item })),
+    )
   })
+}
+
+/** An item with `applies_when` applies only where the asset's checkout has that dependency in that range. */
+function usesDependency(item: LoadedItem, asset: Asset) {
+  const when = item.applies_when
+  if (!when) return true
+  if (!asset.path) return false
+  const version = dependencyVersion(expandHome(asset.path), when.dependency)
+  if (!version) return false
+  return !when.version || Bun.semver.satisfies(version, when.version)
 }
 
 export function waiverOf(business: Business, cell: Cell) {

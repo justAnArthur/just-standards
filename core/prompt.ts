@@ -47,6 +47,7 @@ async function itemSection(ws: Workspace, cell: Cell, result: Result | undefined
     `${heading} ${item.title} (\`${item.key}\` v${item.version}, ${item.severity})`,
     `Why: ${item.why}`,
     item.requires.length ? `Builds on: ${item.requires.map(key => `\`${key}\``).join(', ')}.` : '',
+    item.sources.length ? `Follows: ${item.sources.map(source => `[${source.title}](${source.url})`).join(', ')}. Where the source and the recipe differ, the source wins: read it.` : '',
     stateLine(result),
     `The check:\n\n\`\`\`json\n${JSON.stringify(item.check, null, 2)}\n\`\`\``,
     recipe ? `${heading}# Recipe\n\n${recipe}\n\nFiles the recipe names are in its pack: \`${ws.packs.get(item.pack)?.dir}\`.` : '',
