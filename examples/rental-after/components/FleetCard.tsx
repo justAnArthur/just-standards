@@ -16,7 +16,7 @@ export function FleetCard({ car, lang, priority = false }: { car: CarClass; lang
         width={960}
         height={480}
         sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
-        priority={priority}
+        preload={priority}
         className="h-auto w-full bg-surface"
       />
       <div className="flex flex-1 flex-col p-5">

@@ -42,7 +42,7 @@ export function Fleet({ lang }: { lang: Locale }) {
                 width={960}
                 height={480}
                 sizes="(min-width: 768px) 340px, 100vw"
-                priority={i === 0}
+                preload={i === 0}
                 className="h-auto w-full rounded-md bg-surface"
               />
               <div>

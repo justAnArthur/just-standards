@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
   experimental: {
     // Turbopack's dev file-system cache grows by gigabytes; keep it off.
     turbopackFileSystemCacheForDev: false,
+    // two root layouts (app/[lang]): app/global-not-found.tsx renders a URL no route matches
+    globalNotFound: true,
   },
   turbopack: {
     // this app has its own lockfile inside a larger repo
