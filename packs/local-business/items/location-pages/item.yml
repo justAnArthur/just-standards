@@ -1,0 +1,11 @@
+id: location-pages
+version: 1
+title: Every location has its own page with its address and hours
+label: location pages
+why: people search for "car rental Košice airport"; a page per location, indexable and with the address and opening hours in its text, is what ranks and what a map pin links to
+applies_to: [website]
+category: seo
+severity: should
+owner_role: seo
+check:
+  kind: script

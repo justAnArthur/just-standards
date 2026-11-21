@@ -1,0 +1,11 @@
+id: locations-schema
+version: 1
+title: Every location is a LocalBusiness in JSON-LD
+label: locations schema
+why: search engines and maps read a branch's address, phone, position and hours from LocalBusiness structured data (AutoRental for car rental); without it, a branch shows up with wrong or missing hours, or not at all
+applies_to: [website]
+category: seo
+severity: must
+owner_role: seo
+check:
+  kind: script

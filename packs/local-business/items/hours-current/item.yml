@@ -1,0 +1,11 @@
+id: hours-current
+version: 1
+title: Opening hours and holiday notices are current
+label: hours current
+why: a Christmas-hours banner in March or summer hours in November tells people a branch is closed when it is open, or the other way round
+applies_to: [website]
+category: content
+severity: should
+owner_role: content
+check:
+  kind: script

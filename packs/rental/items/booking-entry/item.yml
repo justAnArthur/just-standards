@@ -1,0 +1,11 @@
+id: booking-entry
+version: 1
+title: The home page leads straight into booking
+label: booking entry
+why: a renter comes to book; the home page as served must carry the search (pick-up place and dates) or a book/search link that works, or the site loses the booking
+applies_to: [website]
+category: conversion
+severity: must
+owner_role: web
+check:
+  kind: script

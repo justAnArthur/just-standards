@@ -1,0 +1,11 @@
+id: map-link
+version: 1
+title: Each location page links to a map or embeds one
+label: map link
+why: the next step after reading an address is finding the way; a link to Google Maps, Apple Maps or OpenStreetMap (or an embedded map) takes one tap
+applies_to: [website]
+category: conversion
+severity: nice
+owner_role: web
+check:
+  kind: script

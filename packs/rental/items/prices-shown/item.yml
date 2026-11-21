@@ -1,0 +1,11 @@
+id: prices-shown
+version: 1
+title: Prices show their currency and say whether VAT is included
+label: prices shown
+why: a price without its currency or without "incl. VAT" (s DPH) can't be compared and, for consumers in the EU, must be the final price; business renters need to know if VAT comes on top
+applies_to: [website]
+category: conversion
+severity: should
+owner_role: content
+check:
+  kind: script
