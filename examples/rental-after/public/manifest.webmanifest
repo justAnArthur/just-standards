@@ -1,0 +1,17 @@
+{
+  "name": "Príklad Rent – požičovňa áut a dodávok",
+  "short_name": "Príklad Rent",
+  "description": "Prenájom áut a dodávok v Bratislave: centrum a letisko. Vymyslená spoločnosť, ukážka projektu just-standards.",
+  "lang": "sk",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0A3550",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
