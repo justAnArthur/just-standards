@@ -1,0 +1,17 @@
+id: referrer-policy
+version: 1
+title: A Referrer-Policy that keeps paths and queries in-house
+label: referrer policy
+why: without it, older browsers and in-app webviews send the full URL (booking IDs, search parameters, tokens in links) to every third-party script, image and link target
+applies_to: [website, webapp]
+category: security
+severity: should
+owner_role: engineering
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        # the last policy a browser knows wins; these four never send a path cross-origin
+        - header: referrer-policy
+          matches: '(^|,)\s*(no-referrer|same-origin|strict-origin|strict-origin-when-cross-origin)\s*$'

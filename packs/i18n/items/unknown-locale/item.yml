@@ -1,0 +1,11 @@
+id: unknown-locale
+version: 1
+title: A made-up language prefix answers 404
+label: unknown locale
+why: a route that renders any /xx/ as a page makes endless duplicate pages for crawlers (or a 500 when the translations are missing); it should be a 404
+applies_to: [website]
+category: i18n
+severity: should
+owner_role: engineering
+check:
+  kind: script

@@ -1,0 +1,11 @@
+id: frame-protection
+version: 1
+title: Other sites can't frame the pages
+label: framing
+why: a page another site can load in an invisible frame can be clickjacked, so a visitor who thinks they click the other site confirms a booking or a change on this one
+applies_to: [website, webapp]
+category: security
+severity: should
+owner_role: engineering
+check:
+  kind: script

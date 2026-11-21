@@ -1,0 +1,11 @@
+id: broken-images
+version: 1
+title: Every image loads
+label: broken images
+why: a broken image is a hole in the page (a car with no photo, a missing logo) and tells visitors and crawlers the site is neglected
+applies_to: [website, webapp]
+category: content
+severity: must
+owner_role: engineering
+check:
+  kind: script

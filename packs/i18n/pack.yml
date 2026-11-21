@@ -1,0 +1,13 @@
+id: i18n
+version: 1
+title: Languages
+description: For sites in more than one language - every language version is there, an unknown one is a 404, the copy is in the page's language, and the switcher keeps the visitor's place. A single-language site passes each item with "one language". hreflang itself is seo/hreflang.
+items:
+  - locales-reachable
+  - unknown-locale
+  - copy-language
+  - switcher-keeps-page
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: "First version: locales-reachable (must); unknown-locale, copy-language (ai) (should); switcher-keeps-page (nice)."

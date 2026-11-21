@@ -1,0 +1,11 @@
+id: promo-freshness
+version: 1
+title: No expired offer is shown as current
+label: promo freshness
+why: an offer that ended, a summer deal in November or a Black Friday from last year costs trust and invites complaints from customers who expect the price; consumer law treats an advertised price as an offer
+applies_to: [website]
+category: conversion
+severity: must
+owner_role: marketing
+check:
+  kind: script

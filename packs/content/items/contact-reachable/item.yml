@@ -1,0 +1,11 @@
+id: contact-reachable
+version: 1
+title: Every page offers a way to get in touch
+label: contact reachable
+why: "a visitor with a question leaves when the footer has no phone, e-mail or contact link, and a phone number that isn't a working tel: link can't be tapped on a phone"
+applies_to: [website]
+category: conversion
+severity: must
+owner_role: content
+check:
+  kind: script

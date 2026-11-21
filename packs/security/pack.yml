@@ -1,0 +1,16 @@
+id: security
+version: 1
+title: Security
+description: "What a public site's responses give away or leave open, read from the outside like a scanner would: files that should never be served, the browser's protections in the headers, cookie flags, version banners. exposed-files comes last, and the pack is best listed last in a business: its probes for /.env look like a scan, and a firewall that challenges scanners (Vercel's, on the avis sites, for about ten minutes) then answers every later request of the run with a challenge, which those checks report as errors."
+items:
+  - csp
+  - frame-protection
+  - referrer-policy
+  - cookie-flags
+  - permissions-policy
+  - server-leak
+  - exposed-files
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: "First version: exposed-files (must); csp, frame-protection, referrer-policy, cookie-flags (should); permissions-policy, server-leak (nice)."

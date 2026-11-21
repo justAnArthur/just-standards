@@ -1,0 +1,11 @@
+id: server-leak
+version: 1
+title: Headers don't name the framework or software versions
+label: version banner
+why: X-Powered-By and versioned Server headers tell a scanner which known vulnerabilities to try first, and say nothing a visitor needs
+applies_to: [website, webapp]
+category: security
+severity: nice
+owner_role: engineering
+check:
+  kind: script

@@ -1,0 +1,18 @@
+id: theme-color
+version: 1
+title: The browser bar takes the brand colour
+label: theme-color
+why: mobile browsers and installed shortcuts tint their toolbar with theme-color; without it the brand's page sits under a grey bar
+applies_to: [website, webapp]
+category: brand
+severity: nice
+owner_role: engineering
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        # a colour: #rgb, #rrggbb(aa), rgb()/hsl()/oklch(), or a named colour
+        - select: meta[name="theme-color"]
+          attr: content
+          matches: '^\s*(#[0-9a-f]{3,8}|(rgb|rgba|hsl|hsla|oklch|oklab|lab|lch)\(.+\)|[a-z]+)\s*$'

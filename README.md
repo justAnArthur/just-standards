@@ -14,11 +14,14 @@ cli/            the `standards` CLI
 app/            the desktop app (just-apps: mounted at apps/standards there, builds only inside just-apps)
 stacks/         what fix runs learned about a stack (next, payload-next), added to prompts
 packs/RECIPE.md the recipe template every item follows
-packs/website/        og tags, og:video, icons, robots + sitemap, sitemap health, JSON-LD, llms.txt, security headers, hero, canonical host, 404, TLS, lang
+packs/website/        og tags, og:video, icons, robots + sitemap, sitemap health, JSON-LD, llms.txt, security headers, hero, canonical host, 404, TLS, lang, viewport, charset, manifest, domain expiry, theme-color
 packs/sharing/        the full Open Graph set, a 1200×630 share image, the X large-image card
 packs/seo/            titles, descriptions, self canonicals, one h1, hreflang, internal links, alt text, indexable, breadcrumbs, URL hygiene
 packs/ai-visibility/  AI crawlers let through, server-rendered content, entity facts, customer answers
 packs/eu-consumer/    privacy policy, terms, company identity, ADR, security.txt, SPF and DMARC, cookie consent, Consent Mode v2
+packs/security/       no exposed .git/.env files, CSP, framing, Referrer-Policy, cookie flags, Permissions-Policy, no version banners
+packs/content/        no expired offers, broken images or placeholders, a contact in every footer, this year in the footer
+packs/i18n/           every language reachable, unknown locales 404, copy in the page's language, a switcher that keeps the page
 packs/analytics/      an analytics tool on the page
 packs/performance/    Core Web Vitals (CrUX), Lighthouse, TTFB, static caching, page weight, console errors, render-blocking third parties, image formats
 packs/accessibility/  axe-core, keyboard reach and visible focus, skip link, reduced motion, accessibility statement

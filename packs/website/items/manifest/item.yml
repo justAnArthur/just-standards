@@ -1,0 +1,11 @@
+id: manifest
+version: 1
+title: A web app manifest with name, icons and colours
+label: manifest
+why: Android's "add to home screen", Chrome's install prompt and the splash screen take the name, the 192 and 512 px icons and the colours from the manifest; without it the shortcut is a blurry screenshot
+applies_to: [website, webapp]
+category: brand
+severity: should
+owner_role: engineering
+check:
+  kind: script

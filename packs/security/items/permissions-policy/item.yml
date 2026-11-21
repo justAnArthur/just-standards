@@ -1,0 +1,17 @@
+id: permissions-policy
+version: 1
+title: A Permissions-Policy that turns off what the site doesn't use
+label: permissions policy
+why: it stops an embedded or injected third party from asking for the camera, microphone or location in the site's name
+applies_to: [website, webapp]
+category: security
+severity: nice
+owner_role: engineering
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        # at least one feature named with its allow list: camera=(), geolocation=(self)
+        - header: permissions-policy
+          matches: '[a-z-]+=\('

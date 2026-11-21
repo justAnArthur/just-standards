@@ -1,0 +1,11 @@
+id: switcher-keeps-page
+version: 1
+title: The language switcher keeps the visitor on the same page
+label: switcher keeps page
+why: a visitor reading the fleet page who switches language and lands on the home page has to find their way back, and often doesn't
+applies_to: [website]
+category: i18n
+severity: nice
+owner_role: engineering
+check:
+  kind: script
