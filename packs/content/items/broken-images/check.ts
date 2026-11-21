@@ -33,6 +33,17 @@ export async function imagesOf(html: string, base: string) {
   return [...new Set(urls)]
 }
 
+/** An image URL for evidence: an optimizer's (`/_next/image?url=…`) by the source it resizes, and short. */
+export function shown(url: string) {
+  let text = url
+  try {
+    const parsed = new URL(url)
+    const source = parsed.pathname.endsWith('/_next/image') ? parsed.searchParams.get('url') : null
+    if (source) text = `${source} (through /_next/image)`
+  } catch {}
+  return text.length > 120 ? `${text.slice(0, 119)}…` : text
+}
+
 /** What's wrong with an image URL's answer, or undefined; `blocked` when the host's firewall answered instead. */
 async function problemOf(url: string): Promise<string | { blocked: string } | undefined> {
   if (!/^https?:\/\//.test(url)) return `"${url}" is not a URL`
@@ -62,7 +73,8 @@ export default async function brokenImages(ctx: Context): Promise<Outcome> {
   const problems = await pool(urls, CONCURRENCY, problemOf)
   const blocked = problems.findIndex(problem => typeof problem === 'object')
   if (blocked >= 0) return { state: 'error', evidence: `${urls[blocked]}: ${(problems[blocked] as { blocked: string }).blocked}` }
-  const broken = urls.flatMap((url, i) => (problems[i] ? [`${url.length > 90 ? `${url.slice(0, 89)}…` : url} ${problems[i]} (on ${firstSeen.get(url)})`] : []))
+  // one source resized to several widths is one broken image
+  const broken = [...new Set(urls.flatMap((url, i) => (problems[i] ? [`${shown(url)} ${problems[i]} (on ${firstSeen.get(url)})`] : [])))]
   const skipped = firstSeen.size - urls.length
   const sample = `${urls.length} images on ${pages.length} pages${skipped > 0 ? `; ${skipped} more not fetched, the sample limit` : ''}`
   if (broken.length === 0) return { state: 'pass', evidence: `every image answers 200 as an image (${sample})` }

@@ -25,3 +25,12 @@ test('device width, zoom allowed', async () => {
 test('zoom turned off or capped at 1, or a fixed width, fail', async () => {
   for (const name of ['capped', 'cappedDecimal', 'noScale', 'fixed']) expect([name, await state(name)]).toEqual([name, 'fail'])
 })
+
+test("a firewall's challenge page is an error, not the site's viewport", async () => {
+  const challenge = site({ '/': () => new Response(html('<meta name="viewport" content="width=device-width">'), { status: 403, headers: { 'content-type': 'text/html', 'x-vercel-mitigated': 'challenge' } }) })
+  try {
+    expect(await http(check, challenge.ctx())).toEqual({ state: 'error', evidence: expect.stringContaining("the host's firewall challenged the checker (challenge)") })
+  } finally {
+    challenge.server.stop(true)
+  }
+})

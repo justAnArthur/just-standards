@@ -52,6 +52,9 @@ export async function http(check: HttpCheck, { asset }: Context): Promise<Outcom
       return { state: 'error', evidence: `${url} did not respond (${(error as Error).message})` }
     }
     if (response.status >= 500) return { state: 'error', evidence: `${url} answered ${response.status}` }
+    // a firewall's bot challenge (Vercel, Cloudflare) is not the site: its page has a viewport and a theme-color of its own
+    const mitigated = response.headers.get('x-vercel-mitigated') ?? response.headers.get('cf-mitigated')
+    if (mitigated) return { state: 'error', evidence: `${url} answered ${response.status}: the host's firewall challenged the checker (${mitigated})` }
     const body = await response.text()
     for (const expect of request.expect) {
       const failure = await expectOne(expect, response, body, url)

@@ -1,6 +1,6 @@
 import { afterAll, expect, test } from 'bun:test'
 import { html, site } from '../../../seo/fixture.ts'
-import brokenImages, { imagesOf } from './check.ts'
+import brokenImages, { imagesOf, shown } from './check.ts'
 
 const png = () => new Response(new Uint8Array([137, 80, 78, 71]), { headers: { 'content-type': 'image/png' } })
 const good = site(
@@ -41,4 +41,9 @@ test('a 404 and an HTML answer fail, naming the page', async () => {
   expect(outcome.evidence).toContain('2 broken')
   expect(outcome.evidence).toContain('/gone.jpg answered 404 (on /)')
   expect(outcome.evidence).toContain('/page.jpg is text/html; charset=utf-8, not an image (on /)')
+})
+
+test('evidence names the source an optimizer resizes', () => {
+  expect(shown('https://a.sk/_next/image?url=https%3A%2F%2Fcms.a.sk%2Fuploads%2Fvan.jpg&w=1920&q=75')).toBe('https://cms.a.sk/uploads/van.jpg (through /_next/image)')
+  expect(shown('https://a.sk/van.jpg')).toBe('https://a.sk/van.jpg')
 })
