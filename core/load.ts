@@ -82,6 +82,15 @@ export async function loadPacks(dirs: string[]) {
   return packs
 }
 
+/** Every `requires` names a loaded item. */
+export function checkRequires(packs: Map<string, LoadedPack>) {
+  const keys = new Set([...packs.values()].flatMap(pack => pack.entries.map(item => item.key)))
+  for (const item of [...packs.values()].flatMap(pack => pack.entries)) {
+    const missing = item.requires.find(key => !keys.has(key))
+    if (missing) throw new ConfigError(`${item.dir}/item.yml: requires ${missing}, which no pack has`)
+  }
+}
+
 /** A business names only packs and a worker that exist. */
 export function checkRefs(business: Business, packs: Map<string, LoadedPack>, workers: Worker[]) {
   for (const ref of business.packs) {
@@ -102,6 +111,7 @@ export async function loadWorkspace(dir: string, bundled = BUNDLED_PACKS): Promi
   const workers = (await Bun.file(workersFile).exists()) ? await readYaml(workersFile, Worker.array()) : []
   const packs = await loadPacks([bundled, join(root, 'packs')])
 
+  checkRequires(packs)
   for (const business of businesses) checkRefs(business, packs, workers)
   return { dir: root, businesses, workers, packs }
 }

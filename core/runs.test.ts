@@ -15,6 +15,8 @@ const PR9 = 'https://github.com/acme/widgets/pull/9'
 const FAKE_GH = `#!/bin/sh
 if [ "$1 $2" = "pr list" ]; then echo "\${FAKE_GH_LIST:-[]}"; exit 0; fi
 if [ "$1 $2" = "pr ready" ]; then echo "pr ready $3 $4" >> "$FAKE_GH_LOG"; exit 0; fi
+if [ "$1 $2" = "label create" ]; then echo "label create $3" >> "$FAKE_GH_LOG"; exit 0; fi
+if [ "$1 $2" = "pr edit" ]; then echo "pr edit $3 $4 $5" >> "$FAKE_GH_LOG"; exit 0; fi
 if [ "$1 $2" = "pr view" ]; then
   state=OPEN
   [ "$3" = "$FAKE_GH_MERGED" ] && state=MERGED
@@ -141,7 +143,7 @@ describe('standards fix', () => {
     const { seen, code } = await standards(['fix', 'acme', 'widgets', 'repo/readme', 'repo/license', '--worker', 'fake']).finish()
     expect(code).toBe(0)
 
-    const worktree = join(checkout, '.worktrees/std-readme')
+    const worktree = join(checkout, '.worktrees/std-widgets-readme')
     const first = seen[0]!
     expect(first.type === 'run' && first.event).toBe('started')
     expect(first.type === 'run' && first.run).toMatchObject({
@@ -150,11 +152,11 @@ describe('standards fix', () => {
       items: ['repo/readme', 'repo/license'],
       worker: 'fake',
       model: 'haiku',
-      branch: 'standards/readme',
+      branch: 'standards/widgets-readme',
       worktree,
       state: 'running',
     })
-    expect(first.type === 'run' && first.run.id).toMatch(/^\d{8}-\d{6}-acme-readme$/)
+    expect(first.type === 'run' && first.run.id).toMatch(/^\d{8}-\d{6}-acme-widgets-readme$/)
 
     const run = finished(seen)
     expect(run).toMatchObject({ state: 'done', pr: { url: PR7, number: 7, state: 'open' }, cost_usd: 0.0123, session_id: 'fake-session' })
@@ -186,7 +188,7 @@ describe('standards fix', () => {
     expect(init.argv).not.toContain('--effort')
     expect(text.message.content[0].text).toContain('Bring Acme / widgets up to standard')
 
-    expect(await git(worktree, 'branch', '--show-current')).toBe('standards/readme')
+    expect(await git(worktree, 'branch', '--show-current')).toBe('standards/widgets-readme')
     expect(await git(worktree, 'rev-parse', 'HEAD')).toBe(await git(checkout, 'rev-parse', 'origin/main'))
     expect(existsSync(join(worktree, 'later.txt'))).toBe(true)
 
@@ -202,14 +204,14 @@ describe('standards fix', () => {
     const { seen, code } = await standards(['fix', 'acme', 'widgets', 'repo/readme', '--worker', 'fake'], { FAKE_CLAUDE: 'no-pr', FAKE_GH_LIST: list }).finish()
     expect(code).toBe(0)
     const run = finished(seen)
-    expect(run).toMatchObject({ branch: 'standards/readme-2', worktree: join(checkout, '.worktrees/std-readme-2'), state: 'done' })
+    expect(run).toMatchObject({ branch: 'standards/widgets-readme-2', worktree: join(checkout, '.worktrees/std-widgets-readme-2'), state: 'done' })
     expect(run.pr).toEqual({ url: PR8, number: 8, state: 'open' })
   })
 
   test('a session without a pull request fails', async () => {
     const { seen, code } = await standards(['fix', 'acme', 'widgets', 'repo/readme', '--worker', 'fake'], { FAKE_CLAUDE: 'no-pr' }).finish()
     expect(code).toBe(1)
-    expect(finished(seen)).toMatchObject({ branch: 'standards/readme-3', state: 'failed', error: 'no pull request' })
+    expect(finished(seen)).toMatchObject({ branch: 'standards/widgets-readme-3', state: 'failed', error: 'no pull request' })
   })
 
   test('--interactive passes permission questions out and the answers on stdin back in', async () => {
@@ -224,7 +226,7 @@ describe('standards fix', () => {
     const { seen, code } = await run.finish()
     expect(code).toBe(0)
     const record = finished(seen)
-    expect(record).toMatchObject({ branch: 'standards/license', model: 'sonnet', state: 'done' })
+    expect(record).toMatchObject({ branch: 'standards/widgets-license', model: 'sonnet', state: 'done' })
 
     const messages = claudeLines(seen)
     expect(messages[0].argv).toEqual(expect.arrayContaining(['--effort', 'low', '--permission-prompt-tool', 'stdio']))
@@ -242,6 +244,7 @@ describe('standards fix', () => {
     const run = finished(seen)
     expect(run).toMatchObject({ state: 'done', pr: { url: PR9, number: 9, state: 'open', draft: true }, summary: finish.summary, missing: finish.missing })
     expect(await Bun.file(join(dir, 'gh.log')).text()).toContain(`pr ready ${PR9} --undo`)
+    expect(await Bun.file(join(dir, 'gh.log')).text()).toContain(`label create std:repo/gitignore\npr edit ${PR9} --add-label std:repo/gitignore`)
     // the repo has no deployments
     expect(run.preview).toMatchObject({ sha: 'abc1234def', results: [], note: 'no preview deployment of abc1234 yet' })
     expect(await Bun.file(join(ws, '.state/runs', run.id, 'finish.json')).json()).toEqual(finish)
@@ -301,18 +304,18 @@ describe('standards runs', () => {
     expect(nothing.seen).toEqual([])
 
     const merged = await standards(['runs', 'sync'], { FAKE_GH_MERGED: PR8 }).finish()
-    expect(merged.seen).toEqual([expect.objectContaining({ branch: 'standards/readme-2', pr: { url: PR8, number: 8, state: 'merged' } })])
-    expect(existsSync(join(checkout, '.worktrees/std-readme-2'))).toBe(false)
-    expect(await git(checkout, 'branch', '--list', 'standards/readme-2')).toBe('')
+    expect(merged.seen).toEqual([expect.objectContaining({ branch: 'standards/widgets-readme-2', pr: { url: PR8, number: 8, state: 'merged' } })])
+    expect(existsSync(join(checkout, '.worktrees/std-widgets-readme-2'))).toBe(false)
+    expect(await git(checkout, 'branch', '--list', 'standards/widgets-readme-2')).toBe('')
 
     const closed = await standards(['runs', 'sync'], { FAKE_GH_CLOSED: PR7 }).finish()
     const changed = closed.seen as unknown as RunRecord[]
-    expect(changed.map(r => r.branch).sort()).toEqual(['standards/license', 'standards/readme'])
+    expect(changed.map(r => r.branch).sort()).toEqual(['standards/widgets-license', 'standards/widgets-readme'])
     expect(changed.every(r => r.pr?.state === 'closed')).toBe(true)
-    expect(await readdir(join(checkout, '.worktrees'))).toEqual(expect.not.arrayContaining(['std-readme', 'std-license']))
-    expect(await git(checkout, 'branch', '--list', 'standards/readme')).toContain('standards/readme')
+    expect(await readdir(join(checkout, '.worktrees'))).toEqual(expect.not.arrayContaining(['std-widgets-readme', 'std-widgets-license']))
+    expect(await git(checkout, 'branch', '--list', 'standards/widgets-readme')).toContain('standards/widgets-readme')
 
     const saved = (await standards(['runs']).finish()).seen as unknown as RunRecord[]
-    expect(saved.find(r => r.branch === 'standards/readme-2')?.pr?.state).toBe('merged')
+    expect(saved.find(r => r.branch === 'standards/widgets-readme-2')?.pr?.state).toBe('merged')
   })
 })

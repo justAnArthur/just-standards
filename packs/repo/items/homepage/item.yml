@@ -4,6 +4,8 @@ title: Homepage that answers
 label: homepage
 why: the homepage link is the way from the repo to the live thing; a dead one costs trust
 applies_to: [repo]
+category: docs
+severity: nice
 owner_role: engineering
 check:
   kind: github

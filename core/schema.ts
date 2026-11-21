@@ -63,6 +63,33 @@ export const Check = z.discriminatedUnion('kind', [
 ])
 export type Check = z.infer<typeof Check>
 
+/** What an item is about; the grid groups its columns by it. */
+export const Category = z.enum([
+  'seo',
+  'sharing',
+  'ai',
+  'performance',
+  'accessibility',
+  'security',
+  'privacy',
+  'legal',
+  'content',
+  'conversion',
+  'i18n',
+  'analytics',
+  'ops',
+  'brand',
+  'docs',
+  'code',
+])
+export type Category = z.infer<typeof Category>
+
+/** `must`: broken, illegal, or losing money. `should`: expected of a good asset. `nice`: polish. "Perfect" is every must and should passing. */
+export const Severity = z.enum(['must', 'should', 'nice'])
+export type Severity = z.infer<typeof Severity>
+
+export const ItemKey = z.string().regex(/^[a-z0-9-]+\/[a-z0-9-]+$/, 'a pack/item key')
+
 export const Item = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   version: z.number().int().positive(),
@@ -71,6 +98,12 @@ export const Item = z.object({
   label: z.string().max(20).optional(),
   why: z.string(),
   applies_to: z.array(AssetKind).min(1),
+  category: Category,
+  severity: Severity.default('should'),
+  /** Items that must pass first, on this asset or one sharing its repo: a fix starts from what they provide (brand assets, a design system). */
+  requires: z.array(ItemKey).default([]),
+  /** Programs a worker needs to fix it (`ffmpeg`, `rsvg-convert`); a fix run checks they are installed before it starts. */
+  tools: z.array(z.string().regex(/^[\w.-]+$/)).default([]),
   owner_role: z.string().optional(),
   check: Check,
 })

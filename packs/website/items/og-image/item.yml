@@ -4,6 +4,8 @@ title: Open Graph image and card
 label: "og:image"
 why: a link shared on LinkedIn, X, Slack or iMessage shows a large picture and title instead of a bare URL
 applies_to: [website, webapp]
+category: sharing
+severity: must
 owner_role: seo
 check:
   kind: http

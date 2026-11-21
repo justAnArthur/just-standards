@@ -1,13 +1,14 @@
 import { mkdir } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
-import { cellsOf } from './cells.ts'
+import { blockersOf, cellsOf, readResults } from './cells.ts'
 import { cleanEnv } from './checks/ai.ts'
 import { run } from './checks/github.ts'
 import { installDeps, managerOf } from './deps.ts'
 import { expandHome, type Workspace } from './load.ts'
 import { type Finish, finishFile } from './mcp.ts'
 import { fixPrompt } from './prompt.ts'
+import { labelPr } from './labels.ts'
 import { createWorktree, ghBin, lines, previewOf, RunError, runsDir, writeRecord } from './runs.ts'
 import type { Business, RunRecord, Worker } from './schema.ts'
 
@@ -113,27 +114,42 @@ async function newRunDir(ws: Workspace, base: string) {
   }
 }
 
-function validate(ws: Workspace, business: Business, assetId: string, items: string[], workerId: string) {
+/** The programs the items need that aren't on PATH. */
+const missingTools = (tools: string[]) => tools.filter(tool => !Bun.which(tool))
+
+async function validate(ws: Workspace, business: Business, assetId: string, items: string[], workerId: string) {
   const worker = ws.workers.find(w => w.id === workerId)
   if (!worker) throw new RunError(`no worker ${workerId} in workers.yml`)
   const asset = business.assets.find(a => a.id === assetId)
   if (!asset) throw new RunError(`${business.id} has no asset ${assetId}`)
   if (!asset.path) throw new RunError(`${business.id}/${assetId} has no path: no local checkout`)
   if (!asset.repo) throw new RunError(`${business.id}/${assetId} has no repo`)
-  const applies = new Set(cellsOf(business, ws).filter(cell => cell.asset.id === assetId).map(cell => cell.item.key))
-  const stray = items.find(key => !applies.has(key))
+  const cells = cellsOf(business, ws).filter(cell => cell.asset.id === assetId)
+  const stray = items.find(key => !cells.some(cell => cell.item.key === key))
   if (stray) throw new RunError(`${stray} does not apply to ${business.id}/${assetId}`)
-  return { worker, path: expandHome(asset.path) }
+  const picked = cells.filter(cell => items.includes(cell.item.key))
+
+  // A worker sent before what an item builds on exists would only hand the gap back to a person.
+  const results = await readResults(ws, business.id)
+  for (const cell of picked) {
+    const blockers = blockersOf(business, ws, cell, results)
+    if (blockers.length) throw new RunError(`${cell.item.key} on ${assetId} is blocked by ${blockers.join(', ')}: fix that first`)
+  }
+  const tools = [...new Set(picked.flatMap(cell => cell.item.tools))]
+  const missing = missingTools(tools)
+  if (missing.length) throw new RunError(`${items.join(', ')} needs ${missing.join(', ')}, which isn't installed (brew install ${missing.join(' ')})`)
+  return { worker, path: expandHome(asset.path), tools }
 }
 
 /** Runs a worker on failing items of one asset, in a fresh worktree, until it opens a PR. Resolves with the final record. */
 export async function fix(ws: Workspace, business: Business, assetId: string, items: string[], options: FixOptions) {
-  const { worker, path } = validate(ws, business, assetId, items, options.worker)
-  const itemId = items[0]!.split('/')[1]!
-  const { branch, worktree } = await createWorktree(path, itemId)
+  const { worker, path, tools: needed } = await validate(ws, business, assetId, items, options.worker)
+  // The asset in the name: several sites can share one repo, and each gets its own worktree and branch.
+  const name = `${assetId}-${items[0]!.split('/')[1]!}`
+  const { branch, worktree } = await createWorktree(path, name)
 
   const started = new Date()
-  const id = await newRunDir(ws, `${stamp(started)}-${business.id}-${itemId}`)
+  const id = await newRunDir(ws, `${stamp(started)}-${business.id}-${name}`)
   const record: RunRecord = {
     id,
     business: business.id,
@@ -162,9 +178,9 @@ export async function fix(ws: Workspace, business: Business, assetId: string, it
   record.setup = await installDeps(worktree, options.signal)
   if (options.signal?.aborted) return finish('stopped', `stopped by ${String(options.signal.reason ?? 'abort')}`)
   await writeRecord(ws, record)
-  const prompt = await fixPrompt(ws, business, assetId, items, branch, record.setup)
-  // The repo's package manager, so the worker can run its scripts.
-  const tools = managerOf(worktree)?.tools ?? []
+  const prompt = await fixPrompt(ws, business, assetId, items, branch, { setup: record.setup, tools: needed })
+  // The repo's package manager, so the worker can run its scripts, and the programs the items need.
+  const tools = [...(managerOf(worktree)?.tools ?? []), ...needed.map(tool => `Bash(${tool} *)`)]
 
   let stopped: string | undefined
   let open = true
@@ -239,6 +255,8 @@ export async function fix(ws: Workspace, business: Business, assetId: string, it
   if (stopped) return finish('stopped', `stopped by ${stopped}`)
   if (result.is_error || result.subtype !== 'success') return finish('failed', (result.result || result.subtype).slice(0, 300))
   if (!record.pr) return finish('failed', 'no pull request')
+  // The labels say which standards the PR touches; after it is merged and deployed, only those are checked again.
+  await labelPr(record.pr.url, ws, items, worktree)
   // A PR that still needs a person reads as a draft, whatever the worker opened.
   if (record.missing?.length) await markDraft(record.pr, worktree)
   const head = await run([ghBin(), 'pr', 'view', record.pr.url, '--json', 'headRefOid'], worktree)

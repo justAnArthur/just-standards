@@ -34,6 +34,7 @@ export STANDARDS_WORKSPACE=~/Projects/standards-workspace
 bun cli/standards.ts check [business…]                 run the checks and save the results
 bun cli/standards.ts status [business…]                the saved state of every cell
 bun cli/standards.ts prompt <business> <asset> <item>  the fix instructions for a worker
+bun cli/standards.ts spec <business> <asset>           every adopted standard by category, with recipes: a definition of done
 bun cli/standards.ts validate                          load the workspace and every pack
 bun cli/standards.ts fix <business> <asset> <item…> --worker <id> [--interactive]
                                                        a worker fixes the items in a new worktree and opens a PR
@@ -55,7 +56,7 @@ bun cli/standards.ts github status                     who gh is signed in as
 bun cli/standards.ts github login                      sign gh in through the browser
 ```
 
-Output is a table in a terminal and one JSON object per line when piped (or with `--json`). `fix` and `runs` always print NDJSON. A fix run works in `<path>/.worktrees/std-<item>`, records itself in `<workspace>/.state/runs/<id>/`, and exits 0 only when it ends with a PR; the worker reports the PR, a summary and what is still missing through the `finish` tool of `standards mcp`. Before the worker starts, the run installs dependencies from the lockfile. The worker waits for the PR's CI and fixes what fails, and a run that needs something from a person leaves a draft. The run's items are then checked on the PR's preview deployment; a protected Vercel preview needs `vercel_bypass` on the asset and the secret in the workspace's git-ignored `secrets.yml`. The protocol is in [docs/fix-runs.md](docs/fix-runs.md), [docs/m6.md](docs/m6.md) and [docs/m7.md](docs/m7.md).
+Output is a table in a terminal and one JSON object per line when piped (or with `--json`). `fix` and `runs` always print NDJSON. A fix run works in `<path>/.worktrees/std-<item>`, records itself in `<workspace>/.state/runs/<id>/`, and exits 0 only when it ends with a PR; the worker reports the PR, a summary and what is still missing through the `finish` tool of `standards mcp`. Before the worker starts, the run installs dependencies from the lockfile. The worker waits for the PR's CI and fixes what fails, and a run that needs something from a person leaves a draft. The run's items are then checked on the PR's preview deployment; a protected Vercel preview needs `vercel_bypass` on the asset and the secret in the workspace's git-ignored `secrets.yml`. Each item has a category and a severity, may require other items (a cell waits, blocked, until they pass), and may name the tools its fix needs. A run labels its PR `std:<item>`; once a labeled PR is merged and deployed, `runs sync` checks those items again on every site of that repo. `businesses/<id>.context.md` and `stacks/<stack>.md` go into the worker's prompt, and `spec` prints every standard of an asset as one brief. The protocol is in [docs/fix-runs.md](docs/fix-runs.md), [docs/m6.md](docs/m6.md), [docs/m7.md](docs/m7.md) and [docs/m8a.md](docs/m8a.md); the plan for the catalog is [docs/m8-plan.md](docs/m8-plan.md).
 
 Writes (`worker`, `business`, `clone`) are validated first and rewrite the YAML file whole, so comments in it are lost.
 

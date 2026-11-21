@@ -4,6 +4,8 @@ title: One-line description
 label: description
 why: the description is what GitHub search, link previews and profile pages show
 applies_to: [repo]
+category: docs
+severity: should
 owner_role: engineering
 check:
   kind: github

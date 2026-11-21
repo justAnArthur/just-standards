@@ -7,7 +7,8 @@ import { fix } from '../core/fix.ts'
 import { githubLogin, githubStatus } from '../core/github.ts'
 import { ConfigError, loadWorkspace, type Workspace } from '../core/load.ts'
 import { serveMcp } from '../core/mcp.ts'
-import { fixPrompt, PromptError } from '../core/prompt.ts'
+import { fixPrompt, PromptError, specOf } from '../core/prompt.ts'
+import { recheckLabeled } from '../core/labels.ts'
 import { lines, listRuns, mergePr, prView, RunError, syncRuns, transcriptOf } from '../core/runs.ts'
 import type { Result } from '../core/schema.ts'
 
@@ -17,12 +18,15 @@ const USAGE = `standards <command> [options]
         --item <pack/item>  --asset <id>
   status [business…]                 the saved state of every cell
   prompt <business> <asset> <item…>  the fix instructions for a worker
-        --branch <name>              (default standards/<first item>)
+        --branch <name>              (default standards/<asset>-<first item>)
+  spec <business> <asset>            every standard the asset adopted, by category, with its recipe: a definition of done (Markdown)
+        --severity must,should  --category seo,sharing
   fix <business> <asset> <item…>     a worker fixes the items in a new worktree and opens a PR; NDJSON
         --worker <id>  --interactive (permission questions on stdout, answers on stdin)
   runs [business…]                   the fix runs, newest first
   runs transcript <id>               everything Claude Code printed in a run
-  runs sync [run…]                   read open PRs and check their previews; clean up after merged and closed ones
+  runs sync [run…]                   read open PRs and check their previews; clean up after merged and closed ones;
+                                     without runs, also re-check the std: labels of PRs merged and deployed since the last sync
   pr view <run>                      the run's pull request: state, checks, files, body
   pr merge <run>                     merge it, then sync the run
         --method merge|squash|rebase (default merge)
@@ -56,6 +60,8 @@ const { values: flags, positionals } = parseArgs({
     run: { type: 'string' },
     into: { type: 'string' },
     method: { type: 'string' },
+    severity: { type: 'string' },
+    category: { type: 'string' },
     help: { type: 'boolean', short: 'h' },
   },
 })
@@ -163,8 +169,15 @@ async function main() {
     const [businessId, assetId, ...items] = rest
     if (!businessId || !assetId || items.length === 0) throw new PromptError('usage: standards prompt <business> <asset> <item…>')
     const [business] = pick(ws, [businessId])
-    const branch = flags.branch ?? `standards/${items[0]!.split('/')[1]}`
+    const branch = flags.branch ?? `standards/${assetId}-${items[0]!.split('/')[1]}`
     return console.log(await fixPrompt(ws, business!, assetId, items, branch))
+  }
+  if (command === 'spec') {
+    const [businessId, assetId] = rest
+    if (!businessId || !assetId) throw new PromptError('usage: standards spec <business> <asset> [--severity must,should] [--category seo,…]')
+    const [business] = pick(ws, [businessId])
+    const list = (value?: string) => value?.split(',').map(part => part.trim()).filter(Boolean)
+    return console.log(await specOf(ws, business!, assetId, { severities: list(flags.severity), categories: list(flags.category) }))
   }
   if (command === 'fix') return runFix(ws, rest)
   if (command === 'runs') return runs(ws, rest)
@@ -204,6 +217,8 @@ async function runs(ws: Workspace, [sub, ...rest]: string[]) {
   }
   const records = sub === 'sync' ? await syncRuns(ws, rest) : await listRuns(ws, sub ? [sub, ...rest] : [])
   for (const record of records) line(record)
+  // A full sync also checks again what labeled PRs changed, once they are deployed.
+  if (sub === 'sync' && rest.length === 0) for (const recheck of await recheckLabeled(ws)) line(recheck)
 }
 
 async function pr(ws: Workspace, [sub, id]: string[]) {

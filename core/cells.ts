@@ -21,6 +21,8 @@ export interface CellStatus {
   state: CellState
   result?: Result
   waiver?: Business['waivers'][number]
+  /** Required items that don't pass yet, on this asset or one sharing its repo: no worker is sent until they do. */
+  blocked_by?: string[]
 }
 
 const cellKey = (asset: string, item: string) => `${asset}:${item}`
@@ -94,12 +96,30 @@ function stateOf(item: LoadedItem, result: Result | undefined): CellState {
   return result.state
 }
 
+const sameRepo = (a: Asset, b: Asset) => !!a.repo && !!b.repo && a.repo.toLowerCase() === b.repo.toLowerCase()
+
+/**
+ * The items `cell` requires that don't pass yet: each is looked for on the cell's asset and on assets sharing its repo
+ * (a website needs the brand assets of its repo). A required item the business doesn't adopt blocks nothing.
+ */
+export function blockersOf(business: Business, ws: Workspace, cell: Cell, results: Record<string, Result>) {
+  if (cell.item.requires.length === 0) return []
+  const all = cellsOf(business, ws)
+  return cell.item.requires.filter(key => {
+    const related = all.filter(other => other.item.key === key && (other.asset.id === cell.asset.id || sameRepo(other.asset, cell.asset)))
+    return related.length > 0 && !related.some(other => results[cellKey(other.asset.id, key)]?.state === 'pass' || waiverOf(business, other))
+  })
+}
+
 export async function statusOf(ws: Workspace, business: Business): Promise<CellStatus[]> {
   const results = await readResults(ws, business.id)
   return cellsOf(business, ws).map(cell => {
     const result = results[cellKey(cell.asset.id, cell.item.key)]
     const waiver = waiverOf(business, cell)
     const base = { asset: cell.asset.id, item: cell.item.key, title: cell.item.title, result }
-    return waiver ? { ...base, state: 'waived', waiver } : { ...base, state: stateOf(cell.item, result) }
+    if (waiver) return { ...base, state: 'waived', waiver }
+    const state = stateOf(cell.item, result)
+    const blocked = state === 'pass' ? [] : blockersOf(business, ws, cell, results)
+    return blocked.length ? { ...base, state, blocked_by: blocked } : { ...base, state }
   })
 }

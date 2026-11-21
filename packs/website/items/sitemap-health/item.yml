@@ -4,6 +4,8 @@ title: Sitemap URLs answer on the site's own host
 label: sitemap health
 why: a sitemap full of redirects, 404s or staging hosts wastes crawl budget and gets pages dropped
 applies_to: [website]
+category: seo
+severity: must
 owner_role: seo
 check:
   kind: script

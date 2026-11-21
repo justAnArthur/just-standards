@@ -4,6 +4,8 @@ title: Basic security headers
 label: security headers
 why: HSTS keeps visitors on HTTPS and nosniff stops browsers guessing content types; scanners and buyers check both
 applies_to: [website, webapp]
+category: security
+severity: must
 owner_role: engineering
 check:
   kind: http

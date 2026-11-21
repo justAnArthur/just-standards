@@ -4,6 +4,8 @@ title: Title, description, canonical, lang
 label: meta basics
 why: search results and AI answers quote the title and description; the canonical stops duplicate URLs from splitting ranking
 applies_to: [website, webapp]
+category: seo
+severity: must
 owner_role: seo
 check:
   kind: http

@@ -4,6 +4,8 @@ title: README written from the code
 label: README
 why: the README is the page people and AI tools read first; a thin or boilerplate one hides what the repo does
 applies_to: [repo]
+category: docs
+severity: must
 owner_role: engineering
 check:
   kind: github

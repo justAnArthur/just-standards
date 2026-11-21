@@ -4,6 +4,8 @@ title: No tracked .env
 label: no .env
 why: a committed .env leaks secrets to everyone who can read the repo
 applies_to: [repo]
+category: security
+severity: must
 owner_role: engineering
 check:
   kind: repo

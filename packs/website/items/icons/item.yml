@@ -4,6 +4,8 @@ title: Favicon and touch icon
 label: icons
 why: tabs, bookmarks, home-screen shortcuts and search results show the brand mark instead of a blank page
 applies_to: [website, webapp]
+category: brand
+severity: should
 owner_role: engineering
 check:
   kind: http

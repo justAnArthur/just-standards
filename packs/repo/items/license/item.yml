@@ -4,6 +4,8 @@ title: License
 label: license
 why: without a license nobody may legally use the code; with the wrong one the repo says something it shouldn't
 applies_to: [repo]
+category: legal
+severity: should
 owner_role: engineering
 check:
   kind: github

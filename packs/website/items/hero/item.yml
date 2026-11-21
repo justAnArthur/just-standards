@@ -4,6 +4,8 @@ title: The first screen says what it is, for whom, and what to do
 label: hero
 why: visitors and AI summaries decide from the first screen; a vague hero loses both
 applies_to: [website]
+category: content
+severity: should
 owner_role: content
 check:
   kind: ai

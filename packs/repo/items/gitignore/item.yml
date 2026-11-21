@@ -4,6 +4,8 @@ title: .gitignore
 label: ".gitignore"
 why: keeps build output, IDE files and local secrets out of the repo
 applies_to: [repo]
+category: code
+severity: should
 owner_role: engineering
 check:
   kind: repo

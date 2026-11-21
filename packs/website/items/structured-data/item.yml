@@ -4,6 +4,8 @@ title: Structured data (JSON-LD)
 label: structured data
 why: search engines and AI answers read who is behind the site and what it offers from schema.org data
 applies_to: [website]
+category: seo
+severity: should
 owner_role: seo
 check:
   kind: http

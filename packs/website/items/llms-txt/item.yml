@@ -4,6 +4,8 @@ title: llms.txt
 label: llms.txt
 why: AI tools and agents get a short, curated map of the site instead of crawling it blind
 applies_to: [website]
+category: ai
+severity: should
 owner_role: seo
 check:
   kind: http
