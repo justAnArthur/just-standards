@@ -1,0 +1,14 @@
+id: rental
+version: 1
+title: Car and van rental
+description: What a car or van rental site needs so a renter can find a car, its price and the terms without calling, checked from the HTML as served.
+items:
+  - booking-entry
+  - fleet-data
+  - faq-schema
+  - rental-terms
+  - prices-shown
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: "First version: the booking entry on the home page, fleet facts and Offer JSON-LD, FAQPage JSON-LD, rental terms (AI) and prices with currency and VAT (AI)."

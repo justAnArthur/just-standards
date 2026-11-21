@@ -1,0 +1,11 @@
+id: nap-consistent
+version: 1
+title: Name, address and phone are the same in the text and the JSON-LD
+label: NAP consistent
+why: search engines trust a business whose name, address and phone (NAP) agree everywhere they are given; a phone in JSON-LD that the page doesn't show, or an address only in JSON-LD, sends people and crawlers different facts
+applies_to: [website]
+category: seo
+severity: should
+owner_role: seo
+check:
+  kind: script

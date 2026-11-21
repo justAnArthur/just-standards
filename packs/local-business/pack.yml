@@ -1,0 +1,15 @@
+id: local-business
+version: 1
+title: Local business
+description: What a business with places people go to (branches, pick-up points, shops) needs on its site so search, maps and AI answers send people to the right door, and so they can call it with one tap.
+items:
+  - locations-schema
+  - location-pages
+  - nap-consistent
+  - click-to-call
+  - map-link
+  - hours-current
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: "First version: LocalBusiness JSON-LD per location, a page per location, name/address/phone the same in text and JSON-LD, tel: and mailto: links, a map on each location page, current hours (AI)."

@@ -1,0 +1,11 @@
+id: rental-terms
+version: 1
+title: The rental terms state what a renter must know before booking
+label: rental terms
+why: minimum age, deposit, insurance excess, fuel, mileage, travel abroad and cancellation decide whether a renter can and will book; a term left unstated becomes a surprise at the counter, a complaint or a lost booking
+applies_to: [website]
+category: content
+severity: must
+owner_role: content
+check:
+  kind: script

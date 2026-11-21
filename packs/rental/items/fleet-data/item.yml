@@ -1,0 +1,11 @@
+id: fleet-data
+version: 1
+title: Every vehicle shows its seats, gearbox, luggage or class and a "from" price
+label: fleet data
+why: renters compare cars by seats, gearbox, luggage and price before they book; the same facts as Car or Product JSON-LD with an Offer put the price in search results and AI answers
+applies_to: [website]
+category: content
+severity: should
+owner_role: content
+check:
+  kind: script
