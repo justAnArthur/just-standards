@@ -1,0 +1,11 @@
+id: answers
+version: 1
+title: The site answers what its customers ask
+label: answers
+why: people ask AI assistants the questions they would ask at the counter; a site that answers them in plain text gets quoted, one that doesn't sends them elsewhere
+applies_to: [website]
+category: ai
+severity: should
+owner_role: content
+check:
+  kind: script

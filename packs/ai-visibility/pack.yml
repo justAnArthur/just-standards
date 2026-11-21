@@ -1,0 +1,13 @@
+id: ai-visibility
+version: 1
+title: AI visibility
+description: What AI assistants and their crawlers need to find, read and quote a site correctly; the site is built for search and AI alike.
+items:
+  - ai-crawlers
+  - server-rendered
+  - entity-facts
+  - answers
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: "First version: AI crawlers let in by robots.txt and the CDN, content in the HTML as served, the business's facts in plain text (AI), and the answers its customers look for (AI)."

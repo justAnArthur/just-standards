@@ -1,0 +1,11 @@
+id: entity-facts
+version: 1
+title: Name, address, phone and hours are stated in plain text
+label: entity facts
+why: AI assistants and local search quote a business's facts from its own site; facts that are missing, only in an image, or different in JSON-LD get answered wrong
+applies_to: [website]
+category: ai
+severity: should
+owner_role: content
+check:
+  kind: script
