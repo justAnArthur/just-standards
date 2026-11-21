@@ -1,5 +1,5 @@
 id: security-headers
-version: 1
+version: 2
 title: Basic security headers
 label: security headers
 why: HSTS keeps visitors on HTTPS and nosniff stops browsers guessing content types; scanners and buyers check both
@@ -20,6 +20,7 @@ check:
     - path: /
       expect:
         - header: strict-transport-security
-          matches: 'max-age=\d{7,}'
+          # at least a year (31536000 s), what MDN, OWASP and the HSTS preload list ask for
+          matches: 'max-age=(\d{9,}|[4-9]\d{7}|3[2-9]\d{6}|31[6-9]\d{5}|315[4-9]\d{4}|3153[6-9]\d{3})\b'
         - header: x-content-type-options
           equals: nosniff

@@ -25,7 +25,8 @@ export interface SourceChange {
 /** A page's text without its markup, whitespace and the bits that change on every load (dates, build ids in scripts). */
 async function textOf(html: string) {
   const text = (await readable(html)).replace(/<[^>]+>/g, ' ')
-  return text.replace(/\s+/g, ' ').trim()
+  // Long digit runs are request ids and timestamps some pages print on every load (support.google.com does).
+  return text.replace(/\d{6,}/g, '').replace(/\s+/g, ' ').trim()
 }
 
 const sha256 = (text: string) => new Bun.CryptoHasher('sha256').update(text).digest('hex')
@@ -70,7 +71,8 @@ export async function checkSources(ws: Workspace, { update = false, lockFile = L
     const before = lock[url]
     const state = !before ? 'new' : before.sha256 === hash ? 'same' : 'changed'
     changes.push({ url, title, items, state })
-    if (update && state !== 'same') lock[url] = { sha256: hash, checked_at: new Date().toISOString(), items }
+    // The items citing a source can change while its text doesn't: keep that list current either way.
+    if (update) lock[url] = state === 'same' ? { ...before!, items } : { sha256: hash, checked_at: new Date().toISOString(), items }
   }
   if (update) {
     const cited = new Set(changes.map(change => change.url))
