@@ -1,0 +1,18 @@
+id: secrets-history
+version: 1
+title: No secret in the repo's git history
+label: secrets in history
+why: >-
+  A key committed once stays readable in every clone and fork after it is deleted from the tree, and bots scan public
+  repos for them within minutes. The threshold is no finding by gitleaks' default rules over every commit; a finding
+  that was rotated or is a false positive is listed in `.gitleaksignore`, which gitleaks reads itself.
+applies_to: [repo]
+category: security
+severity: must
+tools: [gitleaks]
+sources:
+  - { title: Gitleaks, url: "https://github.com/gitleaks/gitleaks" }
+  - { title: "GitHub: removing sensitive data from a repository", url: "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository" }
+owner_role: engineering
+check:
+  kind: script

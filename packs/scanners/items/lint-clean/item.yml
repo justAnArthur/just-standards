@@ -1,0 +1,20 @@
+id: lint-clean
+version: 1
+title: The repo's lint script passes on a fresh checkout
+label: lint clean
+why: >-
+  A linter that only passes on someone's machine (or is never run) lets the bugs it exists to catch through, and makes
+  every PR's lint output noise. The threshold is the repo's own `lint` script exiting 0 on a fresh worktree of the
+  committed code with the locked dependencies installed; warnings don't count, and the rules are the repo's own.
+applies_to: [repo]
+category: code
+severity: should
+# A PR is checked on the run's own worktree, in place (docs/m8c.md).
+preview: true
+sources:
+  - { title: "npm: scripts", url: "https://docs.npmjs.com/cli/v11/using-npm/scripts" }
+  - { title: "ESLint: command line interface", url: "https://eslint.org/docs/latest/use/command-line-interface" }
+  - { title: "Biome: biome check", url: "https://biomejs.dev/reference/cli/#biome-check" }
+owner_role: engineering
+check:
+  kind: script

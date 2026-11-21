@@ -1,0 +1,21 @@
+id: dependency-vulns
+version: 1
+title: No known critical or high vulnerability in the locked dependencies
+label: dependency vulns
+why: >-
+  A dependency with a published critical or high advisory (remote code execution, auth bypass, a malicious release)
+  is how most sites get compromised, and the fix is usually a patch release away. The threshold is OSV's critical and
+  high (GitHub's severity label, else the CVSS v3 base score: 7.0 and up; a malicious package is critical); medium and
+  low are counted in the evidence but don't fail. The versions are read from the committed lockfile, not from
+  package.json's ranges.
+applies_to: [repo]
+category: security
+severity: must
+sources:
+  - { title: "OSV API: POST /v1/querybatch", url: "https://google.github.io/osv.dev/post-v1-querybatch/" }
+  - { title: "OSV API: GET /v1/vulns/{id}", url: "https://google.github.io/osv.dev/get-v1-vulns/" }
+  - { title: OSV schema (severity, affected ranges), url: "https://ossf.github.io/osv-schema/" }
+  - { title: CVSS v3.1 specification, url: "https://www.first.org/cvss/v3-1/specification-document" }
+owner_role: engineering
+check:
+  kind: script

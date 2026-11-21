@@ -1,0 +1,20 @@
+id: observatory
+version: 1
+title: Mozilla HTTP Observatory grades the site B+ or better
+label: observatory
+why: >-
+  Observatory scores the headers that blunt the common attacks (CSP, clickjacking, HSTS, MIME sniffing, cookie flags).
+  B+ is where every high-impact header is in place and only the hardening extras (SRI, a strict CSP without
+  unsafe-inline) remain; set STANDARDS_OBSERVATORY_GRADE (A+ to F) to hold a site to another grade.
+applies_to: [website, webapp]
+category: security
+severity: should
+# Observatory scans the public host, with its CDN's headers: a preview can't stand in for it.
+preview: false
+sources:
+  - { title: MDN HTTP Observatory, url: "https://developer.mozilla.org/en-US/observatory" }
+  - { title: "HTTP Observatory API v2 (README)", url: "https://github.com/mdn/mdn-http-observatory" }
+  - { title: Observatory tests and scoring, url: "https://developer.mozilla.org/en-US/observatory/docs/tests_and_scoring" }
+owner_role: engineering
+check:
+  kind: script

@@ -1,0 +1,21 @@
+id: typecheck-clean
+version: 1
+title: The repo typechecks on a fresh checkout
+label: typecheck clean
+why: >-
+  Type errors that `next build` or a bundler skips (or that only show without a stale `.tsbuildinfo`) are bugs waiting
+  for production, and they bury the new errors a change introduces. The threshold is the repo's typecheck exiting 0 on
+  a fresh worktree of the committed code with the locked dependencies installed: its `typecheck` script (or a `check`
+  that runs tsc), else `tsc --noEmit` on its tsconfig.json.
+applies_to: [repo]
+applies_when: { dependency: typescript }
+category: code
+severity: should
+# A PR is checked on the run's own worktree, in place (docs/m8c.md).
+preview: true
+sources:
+  - { title: "TypeScript: tsc CLI options (noEmit)", url: "https://www.typescriptlang.org/docs/handbook/compiler-options.html" }
+  - { title: "TypeScript: tsconfig reference", url: "https://www.typescriptlang.org/tsconfig/" }
+owner_role: engineering
+check:
+  kind: script

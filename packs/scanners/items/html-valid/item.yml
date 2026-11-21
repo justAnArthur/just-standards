@@ -1,0 +1,19 @@
+id: html-valid
+version: 1
+title: The pages' HTML has no errors by the W3C Nu Html Checker
+label: valid HTML
+why: >-
+  Invalid markup is parsed differently by browsers, crawlers, link previews and screen readers: a stray element closes
+  a list, a duplicate id breaks a label, a misplaced meta tag is ignored. The threshold is no error-level message on the
+  home page and two pages sampled from the sitemap; warnings and info messages don't count.
+applies_to: [website, webapp]
+category: code
+severity: should
+sources:
+  - { title: The Nu Html Checker (v.Nu), url: "https://validator.github.io/validator/" }
+  - { title: "Nu web service: POST body input", url: "https://github.com/validator/validator/wiki/Service-%C2%BB-Input-%C2%BB-POST-body" }
+  - { title: "Nu web service: JSON output", url: "https://github.com/validator/validator/wiki/Output-%C2%BB-JSON" }
+  - { title: Validator.nu terms of service, url: "https://about.validator.nu/" }
+owner_role: engineering
+check:
+  kind: script
