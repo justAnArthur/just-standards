@@ -80,7 +80,7 @@ export function BookingForm({ lang, query, today, compact = false }: { lang: Loc
             <label htmlFor="from" className={label}>
               {d.from}
             </label>
-            <select id="from" name="from" required defaultValue={query.from} className={field}>
+            <select id="from" name="from" defaultValue={query.from} className={field}>
               <DateOptions today={today} lang={lang} selected={query.from} />
             </select>
           </div>
@@ -100,7 +100,7 @@ export function BookingForm({ lang, query, today, compact = false }: { lang: Loc
             <label htmlFor="to" className={label}>
               {d.to}
             </label>
-            <select id="to" name="to" required defaultValue={query.to} className={field}>
+            <select id="to" name="to" defaultValue={query.to} className={field}>
               <DateOptions today={today} lang={lang} selected={query.to} />
             </select>
           </div>

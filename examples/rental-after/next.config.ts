@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [384, 640, 828, 1080, 1280, 1920],
+    // below the smallest device size: a width in both lists would appear twice in srcset, which HTML forbids
+    imageSizes: [32, 48, 64, 96, 128, 256],
   },
   experimental: {
     // Turbopack's dev file-system cache grows by gigabytes; keep it off.

@@ -6,7 +6,7 @@ name: Príklad Rent (before)
 assets:
   - { id: site, kind: website, url: http://localhost:3101, stack: next }
   - { id: code, kind: repo, path: examples/rental-before, stack: next }
-packs: [accessibility, ai-ready, ai-visibility, analytics, content, eu-consumer, i18n, local-business, nextjs, performance, rental, security, seo, sharing, website]
+packs: [accessibility, ai-ready, ai-visibility, analytics, content, eu-consumer, i18n, local-business, nextjs, performance, rental, scanners, security, seo, sharing, website]
 # localhost has no firewall: probe /.env and /.git too
 intrusive: true
 # The same waivers for before and after: what only the production domain can show.
@@ -17,3 +17,4 @@ waivers:
   - { item: performance/cwv-field, asset: site, reason: "PageSpeed Insights can't reach localhost, and field data needs real Chrome traffic on the production domain" }
   - { item: performance/lighthouse, asset: site, reason: "PageSpeed Insights can't reach localhost" }
   - { item: website/domain-expiry, asset: site, reason: "localhost has no domain registration; expiry is the production domain's" }
+  - { item: scanners/observatory, asset: site, reason: "Mozilla Observatory scans public hosts only; localhost is not one" }

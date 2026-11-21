@@ -53,21 +53,34 @@ export function sourcesOf(ws: Workspace) {
 export async function checkSources(ws: Workspace, { update = false, lockFile = LOCK_FILE } = {}) {
   const lock: Record<string, Locked> = (await Bun.file(lockFile).exists()) ? await Bun.file(lockFile).json() : {}
   const changes: SourceChange[] = []
+  // Sources that differ only by #anchor are one page: read it once, which also spares sites (EUR-Lex) that answer
+  // bursts with a challenge.
+  const pages = new Map<string, Promise<{ status: number; hash?: string }>>()
+  const read = (page: string) => {
+    let pending = pages.get(page)
+    if (!pending) {
+      pending = get(page).then(
+        async response => {
+          // 200 only: a 202 is a bot challenge (EUR-Lex's WAF answers one with an empty body), not the page
+          if (response.status !== 200) {
+            await response.body?.cancel()
+            return { status: response.status }
+          }
+          return { status: 200, hash: sha256(await textOf(await response.text())) }
+        },
+        () => ({ status: 0 }),
+      )
+      pages.set(page, pending)
+    }
+    return pending
+  }
   for (const [url, { title, items }] of sourcesOf(ws)) {
-    let response: Response
-    try {
-      response = await get(url)
-    } catch {
-      changes.push({ url, title, items, state: 'gone', status: 0 })
+    const page = await read(url.replace(/#.*$/, ''))
+    if (!page.hash) {
+      changes.push({ url, title, items, state: 'gone', status: page.status })
       continue
     }
-    // 200 only: a 202 is a bot challenge (EUR-Lex's WAF answers one with an empty body), not the page
-    if (response.status !== 200) {
-      await response.body?.cancel()
-      changes.push({ url, title, items, state: 'gone', status: response.status })
-      continue
-    }
-    const hash = sha256(await textOf(await response.text()))
+    const hash = page.hash
     const before = lock[url]
     const state = !before ? 'new' : before.sha256 === hash ? 'same' : 'changed'
     changes.push({ url, title, items, state })
