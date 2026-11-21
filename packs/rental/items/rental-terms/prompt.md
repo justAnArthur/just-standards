@@ -6,7 +6,7 @@ These are a car or van rental's terms, FAQ, fees and cover pages. Check that eac
 4. **fuel policy**: full-to-full, prepaid fuel, or what is charged if the car comes back with less;
 5. **mileage**: unlimited, or the daily or total kilometre limit and the price per extra kilometre;
 6. **travel abroad (cross-border)**: whether the car may leave the country, to which countries, and any fee or permission needed;
-7. **cancellation**: whether and until when a booking can be cancelled, and what it costs.
+7. **cancellation**: a rule for cancelling a booking: free until a deadline, a fee ("30 % of the rental price"), or that it can't be cancelled. A fee alone counts; it needn't name a deadline.
 
 Only presence counts. A short statement counts ("unlimited kilometres", "travel to EU countries is allowed", "free cancellation up to 48 hours before pick-up"). A statement that something is decided at the counter without any rule doesn't. Never judge whether the terms are fair, generous or well written.
 
