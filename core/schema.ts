@@ -21,6 +21,10 @@ const value = {
   json: z.boolean().optional(),
   /** fetch the value as a URL and expect this of the response */
   follow: Follow.optional(),
+  /** a missing value passes: for assertions on something that may be absent, such as `meta[name=robots]` */
+  optional: z.boolean().optional(),
+  /** the value, resolved against the page, is the page's own URL (a self-referencing canonical) */
+  self: z.boolean().optional(),
 }
 export const ValueAssertion = z.object(value)
 export type ValueAssertion = z.infer<typeof ValueAssertion>
@@ -29,7 +33,18 @@ const HttpExpect = z.union([
   z.object({ status: z.number() }).strict(),
   z.object({ header: z.string(), ...value }).strict(),
   z.object({ body: z.literal(true), ...value }).strict(),
-  z.object({ select: z.string(), attr: z.string().optional(), ...value }).strict(),
+  z
+    .object({
+      select: z.string(),
+      attr: z.string().optional(),
+      /** how many elements may match: `max_count: 1` for one h1 */
+      min_count: z.number().int().nonnegative().optional(),
+      max_count: z.number().int().nonnegative().optional(),
+      /** in a crawl: no two pages share the value (titles, descriptions) */
+      unique: z.boolean().optional(),
+      ...value,
+    })
+    .strict(),
 ])
 export type HttpExpect = z.infer<typeof HttpExpect>
 
@@ -37,6 +52,10 @@ const RepoExpect = z.union([
   z.object({ file: z.string(), ...value }).strict(),
   /** a path that must not be tracked */
   z.object({ untracked: z.string() }).strict(),
+  // at least `min` tracked files match the glob, such as `brand/**/*.svg` or `{AGENTS,CLAUDE}.md`
+  z.object({ glob: z.string(), min: z.number().int().positive().default(1) }).strict(),
+  /** a regex over the tracked files matching `in`; `none` fails on any match instead of requiring one */
+  z.object({ grep: z.string(), in: z.string().default('**/*'), none: z.boolean().default(false) }).strict(),
 ])
 export type RepoExpect = z.infer<typeof RepoExpect>
 
@@ -48,7 +67,40 @@ export type GithubExpect = z.infer<typeof GithubExpect>
 export const Check = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('http'),
-    requests: z.array(z.object({ path: z.string().default('/'), expect: z.array(HttpExpect).min(1) })).min(1),
+    requests: z
+      .array(
+        z.object({
+          path: z.string().default('/'),
+          /** sent with the request: a crawler's `user-agent` */
+          headers: z.record(z.string(), z.string()).optional(),
+          expect: z.array(HttpExpect).min(1),
+        }),
+      )
+      .min(1),
+  }),
+  /** The home page and a sample of the sitemap's pages on the asset's host, each held to `expect`. One crawl serves every item. */
+  z.object({ kind: z.literal('crawl'), pages: z.number().int().positive().max(100).default(20), expect: z.array(HttpExpect).min(1) }),
+  /** DNS records of the asset's domain (its URL's host without `www.`), read over DNS-over-HTTPS; one matching record is enough. */
+  z.object({
+    kind: z.literal('dns'),
+    records: z
+      .array(
+        z.object({
+          /** `@` for the domain itself, else a label under it: `_dmarc` */
+          name: z.string().default('@'),
+          type: z.enum(['TXT', 'MX', 'CAA', 'A', 'AAAA', 'CNAME']),
+          expect: ValueAssertion.default({}),
+        }),
+      )
+      .min(1),
+  }),
+  /** PageSpeed Insights: Chrome's field data (CrUX p75, falling back to the lab run when there is none) and the Lighthouse score. */
+  z.object({
+    kind: z.literal('psi'),
+    path: z.string().default('/'),
+    strategy: z.enum(['mobile', 'desktop']).default('mobile'),
+    field: z.object({ lcp_ms: z.number().optional(), inp_ms: z.number().optional(), cls: z.number().optional() }).optional(),
+    lab: z.object({ performance: z.number().min(0).max(1).optional() }).optional(),
   }),
   z.object({ kind: z.literal('repo'), expect: z.array(RepoExpect).min(1) }),
   z.object({ kind: z.literal('github'), expect: z.array(GithubExpect).min(1) }),

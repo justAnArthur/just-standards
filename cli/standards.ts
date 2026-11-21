@@ -9,6 +9,7 @@ import { ConfigError, loadWorkspace, type Workspace } from '../core/load.ts'
 import { serveMcp } from '../core/mcp.ts'
 import { fixPrompt, PromptError, specOf } from '../core/prompt.ts'
 import { recheckLabeled } from '../core/labels.ts'
+import { recipeProblems } from '../core/recipes.ts'
 import { lines, listRuns, mergePr, prView, RunError, syncRuns, transcriptOf } from '../core/runs.ts'
 import type { Result } from '../core/schema.ts'
 
@@ -162,7 +163,12 @@ async function main() {
   if (command === 'status') return status(ws, rest)
   if (command === 'validate') {
     const items = [...ws.packs.values()].reduce((sum, pack) => sum + pack.entries.length, 0)
-    return console.log(`${ws.businesses.length} businesses, ${ws.workers.length} workers, ${ws.packs.size} packs, ${items} items: valid`)
+    const problems = await recipeProblems(ws)
+    const counts = `${ws.businesses.length} businesses, ${ws.workers.length} workers, ${ws.packs.size} packs, ${items} items`
+    if (problems.length === 0) return console.log(`${counts}: valid`)
+    // A recipe that doesn't say when it is done, or when to hand off, sends a worker off to guess (packs/RECIPE.md).
+    console.error(`${counts}; ${problems.length} recipes don't follow packs/RECIPE.md:\n${problems.map(p => `  ${p}`).join("\n")}`)
+    process.exit(1)
   }
   if (command === 'workspace') return console.log(JSON.stringify(await model(ws)))
   if (command === 'prompt') {

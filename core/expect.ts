@@ -37,9 +37,19 @@ async function follow(url: string, expect: NonNullable<ValueAssertion['follow']>
   if (expect.max_bytes && bytes > expect.max_bytes) return `${url} is ${bytes} bytes, over ${expect.max_bytes}`
 }
 
-/** The first way `value` misses the assertion, or undefined when it holds. `base` resolves relative URLs. */
+/** A URL without its fragment or a trailing slash, for comparing two spellings of one page. */
+export const sameUrl = (a: string, b: string) => {
+  const plain = (url: string) => {
+    const parsed = new URL(url)
+    parsed.hash = ''
+    return parsed.href.replace(/\/$/, '')
+  }
+  return plain(a) === plain(b)
+}
+
+/** The first way `value` misses the assertion, or undefined when it holds. `base` resolves relative URLs: it is the page's URL. */
 export async function assertValue(label: string, value: string | string[] | undefined, a: ValueAssertion, base?: string) {
-  if (isEmpty(value)) return `${label} is missing`
+  if (isEmpty(value)) return a.optional ? undefined : `${label} is missing`
   const text = Array.isArray(value) ? value.join(', ') : (value as string)
   const shown = text.length > 80 ? `${text.slice(0, 77)}…` : text
 
@@ -56,6 +66,15 @@ export async function assertValue(label: string, value: string | string[] | unde
     } catch {
       return `${label} is not valid JSON`
     }
+  }
+  if (a.self && base) {
+    let resolved: string
+    try {
+      resolved = new URL(text, base).href
+    } catch {
+      return `${label} "${shown}" is not a URL`
+    }
+    if (!sameUrl(resolved, base)) return `${label} is ${resolved}, not the page itself (${base})`
   }
   if (a.follow) return follow(new URL(text, base).href, a.follow)
 }

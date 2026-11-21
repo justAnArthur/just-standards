@@ -69,6 +69,6 @@ export async function checkPreview(ws: Workspace, record: RunRecord, sha: string
   if (asset.vercel_bypass) authorize(url, headers)
 
   const cells = cellsOf(business, ws).filter(cell => cell.asset.id === asset.id && record.items.includes(cell.item.key))
-  const results = await Promise.all(cells.map(cell => checkCell(business, { asset: { ...asset, url }, item: cell.item })))
+  const results = await Promise.all(cells.map(cell => checkCell(business, { asset: { ...asset, url }, item: cell.item }, ws.dir)))
   return { sha, checked_at, url, results }
 }

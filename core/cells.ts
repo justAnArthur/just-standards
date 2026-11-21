@@ -59,9 +59,9 @@ async function writeResults(ws: Workspace, business: string, results: Record<str
   await Bun.write(resultsFile(ws, business), `${JSON.stringify(results, null, 2)}\n`)
 }
 
-export async function checkCell(business: Business, cell: Cell): Promise<Result> {
+export async function checkCell(business: Business, cell: Cell, wsDir?: string): Promise<Result> {
   const started = performance.now()
-  const outcome = await runCheck({ business, asset: cell.asset, item: cell.item })
+  const outcome = await runCheck({ business, asset: cell.asset, item: cell.item, wsDir })
   return {
     business: business.id,
     asset: cell.asset.id,
@@ -79,7 +79,7 @@ export async function checkBusiness(ws: Workspace, business: Business, cells: Ce
   const results = await readResults(ws, business.id)
   const worker = async () => {
     for (let cell = queue.shift(); cell; cell = queue.shift()) {
-      const result = await checkCell(business, cell)
+      const result = await checkCell(business, cell, ws.dir)
       results[cellKey(result.asset, result.item)] = result
       onResult(result)
     }
