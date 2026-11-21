@@ -1,0 +1,11 @@
+id: internal-links
+version: 1
+title: Internal links lead somewhere
+label: internal links
+why: a link to a 404 or through a chain of redirects is a dead end for visitors and wastes the crawl budget that should reach real pages
+applies_to: [website]
+category: seo
+severity: must
+owner_role: seo
+check:
+  kind: script

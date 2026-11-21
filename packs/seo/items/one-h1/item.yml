@@ -1,0 +1,15 @@
+id: one-h1
+version: 1
+title: One h1 per page
+label: one h1
+why: the h1 is what search engines, screen readers and AI summaries take as the page's subject; none or several blur it
+applies_to: [website]
+category: seo
+severity: should
+owner_role: seo
+check:
+  kind: crawl
+  expect:
+    - select: h1
+      min_count: 1
+      max_count: 1

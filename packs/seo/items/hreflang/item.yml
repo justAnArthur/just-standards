@@ -1,0 +1,11 @@
+id: hreflang
+version: 1
+title: Language versions point at each other
+label: hreflang
+why: hreflang sends a searcher to the page in their language; one-way, broken or misspelled alternates are ignored, and the wrong language ranks
+applies_to: [website]
+category: i18n
+severity: must
+owner_role: seo
+check:
+  kind: script

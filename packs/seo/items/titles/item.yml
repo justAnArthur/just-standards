@@ -1,0 +1,17 @@
+id: titles
+version: 1
+title: Every page has its own title
+label: titles
+why: the title is the blue link in search results and the name an AI answer gives a page; a missing, duplicated or cut-off title loses the click
+applies_to: [website]
+category: seo
+severity: must
+owner_role: seo
+check:
+  kind: crawl
+  expect:
+    # `head > title`: an inline SVG's <title> is an icon's name, not the page's
+    - select: head > title
+      min_length: 10
+      max_length: 70
+      unique: true

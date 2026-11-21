@@ -1,0 +1,21 @@
+id: canonical-self
+version: 1
+title: Every page names itself as canonical
+label: canonical
+why: the canonical tells search engines which URL ranks; a missing, relative or wrong one splits ranking between duplicates or hands it to another page
+applies_to: [website]
+category: seo
+severity: must
+owner_role: seo
+check:
+  kind: crawl
+  expect:
+    # The crawl reads the home page and sitemap pages, which are all meant to be indexed: each must point at itself.
+    # A page that canonicalizes elsewhere doesn't belong in the sitemap (see recipe).
+    - select: link[rel="canonical"]
+      attr: href
+      absolute_url: true
+      self: true
+    # two canonicals and search engines ignore both
+    - select: link[rel="canonical"]
+      max_count: 1

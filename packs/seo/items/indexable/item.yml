@@ -1,0 +1,24 @@
+id: indexable
+version: 1
+title: Pages in the sitemap can be indexed
+label: indexable
+why: a stray noindex (often left from staging) silently drops pages from search while the sitemap still asks for them
+applies_to: [website]
+category: seo
+severity: must
+owner_role: seo
+check:
+  kind: crawl
+  expect:
+    # `none` is noindex plus nofollow
+    - select: meta[name="robots" i]
+      attr: content
+      optional: true
+      not_matches: 'noindex|\bnone\b'
+    - select: meta[name="googlebot" i]
+      attr: content
+      optional: true
+      not_matches: 'noindex|\bnone\b'
+    - header: x-robots-tag
+      optional: true
+      not_matches: 'noindex|\bnone\b'
