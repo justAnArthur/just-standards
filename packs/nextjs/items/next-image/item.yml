@@ -1,0 +1,11 @@
+id: next-image
+version: 1
+title: Images through next/image
+label: next/image
+why: a raw <img> skips resizing, modern formats and lazy loading, and its missing size shifts the layout
+applies_to: [repo]
+category: code
+severity: should
+owner_role: engineering
+check:
+  kind: script

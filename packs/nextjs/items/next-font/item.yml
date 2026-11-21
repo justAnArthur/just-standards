@@ -1,0 +1,11 @@
+id: next-font
+version: 1
+title: Fonts through next/font
+label: next/font
+why: a font CDN stylesheet blocks rendering, costs a connection to another host and shares visitors' IPs with it; next/font self-hosts and preloads
+applies_to: [repo]
+category: code
+severity: should
+owner_role: engineering
+check:
+  kind: script
