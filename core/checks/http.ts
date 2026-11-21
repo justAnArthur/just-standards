@@ -1,4 +1,4 @@
-import { assertValue, get } from '../expect.ts'
+import { assertValue, get, isPreview } from '../expect.ts'
 import { select } from '../html.ts'
 import type { Check, HttpExpect, Outcome } from '../schema.ts'
 import type { Context } from './context.ts'
@@ -15,6 +15,8 @@ export async function expectOne(expect: HttpExpect, response: Pick<Response, 'st
   if ('status' in expect) {
     return response.status === expect.status ? undefined : `${url} answered ${response.status}, expected ${expect.status}`
   }
+  // A preview's own noindex says nothing about the site.
+  if ('header' in expect && expect.header.toLowerCase() === 'x-robots-tag' && isPreview(url)) return undefined
   if ('header' in expect) return assertValue(`header ${expect.header}`, response.headers.get(expect.header) ?? undefined, expect, url)
   if ('body' in expect) return assertValue(`body of ${url}`, body, expect, url)
 

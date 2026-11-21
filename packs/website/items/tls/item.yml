@@ -6,6 +6,7 @@ why: an expired certificate takes the whole site down behind a browser warning, 
 applies_to: [website, webapp]
 category: security
 severity: must
+preview: false
 owner_role: engineering
 check:
   kind: script

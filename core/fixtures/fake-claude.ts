@@ -2,6 +2,7 @@
 // Stands in for `claude -p --input-format stream-json --output-format stream-json` in the runs tests.
 // FAKE_CLAUDE=no-pr ends without a PR URL; FAKE_CLAUDE=hang starts a child and waits forever.
 // FAKE_FINISH='<json>' starts the `standards` MCP server from --mcp-config, as Claude Code does, and calls finish with it.
+// A later user message is a send-back: FAKE_FIX=<path> writes that file in the worktree, then the turn ends with a result.
 import { lines } from '../runs.ts'
 
 const interactive = Bun.argv.includes('--permission-prompt-tool')
@@ -87,5 +88,14 @@ say({
   result: mode === 'no-pr' ? 'Could not open a pull request.' : `Opened the pull request.\n${PR}`,
 })
 
-// The session only ends when stdin closes.
-while (await next());
+// The session only ends when stdin closes; each user message until then is another turn.
+let turn = 1
+for (let message = await next(); message; message = await next()) {
+  if (message.type !== 'user') continue
+  turn++
+  const text: string = message.message.content[0].text
+  say({ type: 'assistant', session_id, message: { role: 'assistant', content: [{ type: 'text', text: `Again: ${text.split('\n')[0]}` }] } })
+  if (process.env.FAKE_FIX) await Bun.write(process.env.FAKE_FIX, 'node_modules/\n')
+  if (process.env.FAKE_FINISH) await callFinish(JSON.parse(process.env.FAKE_FINISH))
+  say({ type: 'result', subtype: 'success', is_error: false, session_id, total_cost_usd: 0.0123 * turn, num_turns: 2 * turn, result: `Fixed it.\n${PR}` })
+}

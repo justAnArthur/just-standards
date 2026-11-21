@@ -6,6 +6,7 @@ why: a site that answers on both www and the bare domain, or on http://, splits 
 applies_to: [website]
 category: seo
 severity: must
+preview: false
 owner_role: engineering
 check:
   kind: script

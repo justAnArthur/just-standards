@@ -6,6 +6,7 @@ why: ChatGPT, Claude, Perplexity and Gemini only cite and recommend sites their 
 applies_to: [website]
 category: ai
 severity: must
+preview: false
 owner_role: engineering
 check:
   kind: script

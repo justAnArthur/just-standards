@@ -6,6 +6,7 @@ why: nothing renders before the first byte; a slow server or an uncached page de
 applies_to: [website, webapp]
 category: performance
 severity: should
+preview: false
 owner_role: engineering
 check:
   kind: script

@@ -1,5 +1,5 @@
 import { resolve } from './checks/http.ts'
-import { get, sameUrl } from './expect.ts'
+import { get, local, sameUrl } from './expect.ts'
 
 const CHILD_SITEMAPS = 5
 const CONCURRENCY = 6
@@ -68,7 +68,8 @@ async function crawlFresh(base: string, count: number) {
   const urls = (await sitemapPages(await sitemapOf(base))) ?? []
   const home = resolve('/', base)
   // A sitemap may list a URL twice, or the home page in another spelling.
-  const own = [...new Set(urls.filter(url => hostOf(url) === hostOf(base)))].filter(url => !sameUrl(url, home) && !sameUrl(url, base))
+  // On a preview, the sitemap lists production URLs: they are read from the preview.
+  const own = [...new Set(urls.map(local).filter(url => hostOf(url) === hostOf(base)))].filter(url => !sameUrl(url, home) && !sameUrl(url, base))
   const sample = [home, ...spread(own, count - 1)]
   const pages: Page[] = []
   const queue = [...sample]

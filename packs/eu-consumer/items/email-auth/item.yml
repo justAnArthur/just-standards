@@ -6,6 +6,7 @@ why: booking confirmations land in the inbox instead of spam, and nobody can sen
 applies_to: [website, webapp]
 category: security
 severity: must
+preview: false
 owner_role: engineering
 check:
   kind: dns

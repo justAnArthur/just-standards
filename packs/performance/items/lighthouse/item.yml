@@ -6,6 +6,7 @@ why: the lab score names what makes the page slow before field data shows it, on
 applies_to: [website, webapp]
 category: performance
 severity: should
+preview: false
 owner_role: engineering
 check:
   kind: psi

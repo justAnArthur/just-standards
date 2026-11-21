@@ -6,6 +6,7 @@ why: Google ranks by them, and a slow, jumpy or laggy page loses visitors before
 applies_to: [website, webapp]
 category: performance
 severity: must
+preview: false
 owner_role: engineering
 check:
   kind: psi

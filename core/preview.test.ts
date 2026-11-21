@@ -10,6 +10,22 @@ import type { RunRecord } from './schema.ts'
 const SECRET = 'not-a-real-bypass'
 let dir = ''
 let server: ReturnType<typeof Bun.serve>
+// A preview of https://acme.example: its sitemap and canonicals name production, and it says noindex of its own.
+const PROD = 'https://acme.example'
+const aliased = Bun.serve({
+  port: 0,
+  fetch(request) {
+    const { pathname } = new URL(request.url)
+    const page = (path: string) =>
+      new Response(`<html lang="en"><head><title>Acme ${path}</title><link rel="canonical" href="${PROD}${path}"></head><body><h1>Acme</h1></body></html>`, {
+        headers: { 'content-type': 'text/html', 'x-robots-tag': 'noindex' },
+      })
+    if (pathname === '/robots.txt') return new Response(`Sitemap: ${PROD}/sitemap.xml`)
+    if (pathname === '/sitemap.xml') return new Response(`<urlset><url><loc>${PROD}/</loc></url><url><loc>${PROD}/a</loc></url></urlset>`)
+    if (pathname === '/' || pathname === '/a') return page(pathname)
+    return new Response('nope', { status: 404 })
+  },
+})
 const gh = process.env.STANDARDS_GH_BIN
 
 // A Vercel preview: without the bypass header it sends you to sign in.
@@ -30,6 +46,8 @@ case "$2" in
   "repos/acme/site/deployments?sha=abc1234") echo '[{"id":2},{"id":1}]' ;;
   "repos/acme/site/deployments/2/statuses") echo '[{"state":"failure"}]' ;;
   "repos/acme/site/deployments/1/statuses") echo '[{"state":"success","environment_url":"${server.url.origin}"},{"state":"in_progress"}]' ;;
+  "repos/acme/alias/deployments?sha=abc1234") echo '[{"id":9}]' ;;
+  "repos/acme/alias/deployments/9/statuses") echo '[{"state":"success","environment_url":"${aliased.url.origin}"}]' ;;
   *) echo '[]' ;;
 esac
 `,
@@ -40,10 +58,15 @@ esac
   await Bun.write(join(dir, 'businesses/acme.yml'), JSON.stringify({ id: 'acme', name: 'Acme', assets: [{ ...site, vercel_bypass: 'acme-bypass' }], packs: ['website'] }))
   await Bun.write(join(dir, 'businesses/open.yml'), JSON.stringify({ id: 'open', name: 'Open', assets: [site], packs: ['website'] }))
   await Bun.write(join(dir, 'secrets.yml'), `acme-bypass: ${SECRET}\n`)
+  await Bun.write(
+    join(dir, 'businesses/alias.yml'),
+    JSON.stringify({ id: 'alias', name: 'Alias', assets: [{ id: 'site', kind: 'website', url: PROD, repo: 'acme/alias' }], packs: ['seo', 'website'] }),
+  )
 })
 
 afterAll(async () => {
   server.stop(true)
+  aliased.stop(true)
   process.env.STANDARDS_GH_BIN = gh
   await rm(dir, { recursive: true, force: true })
 })
@@ -70,6 +93,17 @@ test('says why nothing was checked: a protected preview without a bypass, or no 
   expect(locked.results).toEqual([])
   expect(locked.note).toContain('is protected: set vercel_bypass on site')
   expect((await checkPreview(ws, record('acme'), 'fff0000')).note).toBe('no preview deployment of fff0000 yet')
+})
+
+test("a preview stands in for production: its production URLs are read from it, and its own noindex doesn't count", async () => {
+  const ws = await loadWorkspace(dir)
+  const items = ['seo/canonical-self', 'seo/indexable', 'website/tls']
+  const preview = await checkPreview(ws, { business: 'alias', asset: 'site', items, worktree: '/nowhere' } as RunRecord, 'abc1234')
+  expect(preview).toMatchObject({ url: aliased.url.origin, skipped: ['website/tls'] })
+  expect(preview.results.map(r => [r.item, r.state, r.evidence])).toEqual([
+    ['seo/canonical-self', 'pass', '2 pages (the home page and a sample of the sitemap)'],
+    ['seo/indexable', 'pass', '2 pages (the home page and a sample of the sitemap)'],
+  ])
 })
 
 test('a missing secret names the file', async () => {

@@ -245,11 +245,32 @@ describe('standards fix', () => {
     expect(run).toMatchObject({ state: 'done', pr: { url: PR9, number: 9, state: 'open', draft: true }, summary: finish.summary, missing: finish.missing })
     expect(await Bun.file(join(dir, 'gh.log')).text()).toContain(`pr ready ${PR9} --undo`)
     expect(await Bun.file(join(dir, 'gh.log')).text()).toContain(`label create std:repo/gitignore\npr edit ${PR9} --add-label std:repo/gitignore`)
-    // the repo has no deployments
-    expect(run.preview).toMatchObject({ sha: 'abc1234def', results: [], note: 'no preview deployment of abc1234 yet' })
+    // a repo asset's items are checked on the run's worktree: no .gitignore yet, and the worker named what is missing, so no send-back
+    expect(run.preview).toMatchObject({ sha: 'abc1234def', results: [{ item: 'repo/gitignore', state: 'fail' }] })
+    expect(run).toMatchObject({ verified: false, unverified: ['repo/gitignore'] })
+    expect(run.rounds).toBeUndefined()
     expect(await Bun.file(join(ws, '.state/runs', run.id, 'finish.json')).json()).toEqual(finish)
     const result = claudeLines(seen).find(m => m.type === 'user' && m.message.content[0].tool_use_id === 'toolu_2')
     expect(result.message.content[0].content).toContain('Recorded')
+  })
+
+  test('a worker whose item still fails on the preview is sent back in the same session, until it passes', async () => {
+    const finish = { pr_url: PR9, summary: 'Added a .gitignore.' }
+    const { seen, code } = await standards(['fix', 'acme', 'widgets', 'repo/gitignore', '--worker', 'fake'], {
+      FAKE_FINISH: JSON.stringify(finish),
+      FAKE_GH_SHA: 'def5678abc',
+      FAKE_FIX: '.gitignore',
+    }).finish()
+    expect(code).toBe(0)
+    const run = finished(seen)
+    expect(run).toMatchObject({ state: 'done', verified: true, rounds: 1, summary: finish.summary, pr: { url: PR9 } })
+    expect(run.unverified).toBeUndefined()
+    expect(run.preview?.results).toMatchObject([{ item: 'repo/gitignore', state: 'pass' }])
+    // the cost is the session's, after both turns
+    expect(run.cost_usd).toBe(0.0246)
+    const again = claudeLines(seen).find(m => m.type === 'assistant' && m.message.content[0].text?.startsWith('Again:'))
+    expect(again.message.content[0].text).toBe("Again: These standards still fail on the PR's preview (its worktree, commit def5678):")
+    expect(claudeLines(seen).filter(m => m.type === 'result')).toHaveLength(2)
   })
 
   test('SIGTERM kills the whole process tree and records stopped', async () => {

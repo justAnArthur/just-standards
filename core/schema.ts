@@ -163,6 +163,8 @@ export const Item = z.object({
   severity: Severity.default('should'),
   /** Items that must pass first, on this asset or one sharing its repo: a fix starts from what they provide (brand assets, a design system). */
   requires: z.array(ItemKey).default([]),
+  /** Whether a PR's preview can show it: `false` for what only production has (the TLS certificate, DNS, field data, the CDN). */
+  preview: z.boolean().default(true),
   /** Programs a worker needs to fix it (`ffmpeg`, `rsvg-convert`); a fix run checks they are installed before it starts. */
   tools: z.array(z.string().regex(/^[\w.-]+$/)).default([]),
   owner_role: z.string().optional(),
@@ -270,6 +272,12 @@ export interface RunRecord {
   summary?: string
   /** What a person must provide before the PR can merge, through the `finish` tool. The PR is then a draft. */
   missing?: string[]
+  /** The run's items all passed on the PR's preview; false when some still failed after the last round; left out when nothing could be checked. */
+  verified?: boolean
+  /** Items still failing on the preview when the run ended. */
+  unverified?: string[]
+  /** How many times the worker was sent back because an item still failed on the preview. */
+  rounds?: number
 }
 
 /** The run's items checked on the preview deployment of the PR's head commit. */
@@ -282,4 +290,6 @@ export interface Preview {
   results: Result[]
   /** Why nothing was checked: no deployment yet, or a protected one. */
   note?: string
+  /** Items only production can show (`preview: false`), left to the checks after the merge. */
+  skipped?: string[]
 }

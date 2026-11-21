@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises'
+import { mkdir, unlink } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { blockersOf, cellsOf, readResults } from './cells.ts'
@@ -9,6 +9,7 @@ import { expandHome, type Workspace } from './load.ts'
 import { type Finish, finishFile } from './mcp.ts'
 import { fixPrompt } from './prompt.ts'
 import { labelPr } from './labels.ts'
+import { hasDeployments } from './preview.ts'
 import { createWorktree, ghBin, lines, previewOf, RunError, runsDir, writeRecord } from './runs.ts'
 import type { Business, RunRecord, Worker } from './schema.ts'
 
@@ -227,40 +228,100 @@ export async function fix(ws: Workspace, business: Business, assetId: string, it
   }
 
   const events = Bun.file(join(runsDir(ws), id, 'events.ndjson')).writer()
-  let result: Result | undefined
-  for await (const line of lines(proc.stdout)) {
-    events.write(`${line}\n`)
-    events.flush()
-    options.emit({ type: 'claude', line })
-    const message = parse(line)
-    if (message?.type === 'system' && message.subtype === 'init') record.session_id = message.session_id
-    if (message?.type === 'result' && open) {
-      result = message as Result
-      open = false
-      proc.stdin.end()
+  const output = lines(proc.stdout)[Symbol.asyncIterator]()
+  /** Claude Code's output up to its next result, recorded and passed on; undefined when it ends first. */
+  async function nextResult(): Promise<Result | undefined> {
+    for (let next = await output.next(); !next.done; next = await output.next()) {
+      const line = next.value
+      events.write(`${line}\n`)
+      events.flush()
+      options.emit({ type: 'claude', line })
+      const message = parse(line)
+      if (message?.type === 'system' && message.subtype === 'init') record.session_id = message.session_id
+      if (message?.type === 'result') return message as Result
     }
+    return undefined
   }
+  const readFinish = async () => {
+    const finished = (await Bun.file(finishFile(ws.dir, id)).json().catch(() => undefined)) as Finish | undefined
+    if (finished) Object.assign(record, { summary: finished.summary, missing: finished.missing })
+    return finished
+  }
+
+  let result = await nextResult()
+  let failing: string[] = []
+  // Each round ends with a result. The worker is sent back while its items still fail on the PR's preview.
+  for (let round = 0; result && !stopped; round++) {
+    const finished = await readFinish()
+    record.cost_usd = result.total_cost_usd ?? record.cost_usd
+    record.session_id = result.session_id ?? record.session_id
+    if (result.is_error || result.subtype !== 'success') break
+    // A PR given to `finish` wins over one in the text.
+    record.pr ??= await findPr(finished?.pr_url ?? result.result ?? '', branch, worktree)
+    if (!record.pr) break
+    // The labels say which standards the PR touches; after it is merged and deployed, only those are checked again.
+    if (round === 0) await labelPr(record.pr.url, ws, items, worktree)
+    record.preview = await verify(ws, record, worktree, options.signal)
+    failing = record.preview?.results.filter(r => r.state !== 'pass').map(r => r.item) ?? []
+    await writeRecord(ws, record)
+    // Stop when it passes, can't be checked, the worker named what only a person can give, or the rounds are used up.
+    if (failing.length === 0 || record.missing?.length || round >= MAX_ROUNDS || stopped) break
+    record.rounds = round + 1
+    await unlink(finishFile(ws.dir, id)).catch(() => {})
+    send(JSON.stringify({ type: 'user', message: { role: 'user', content: [{ type: 'text', text: sendBack(record.preview!) }] }, parent_tool_use_id: null }))
+    result = await nextResult()
+  }
+  open = false
+  try {
+    proc.stdin.end()
+  } catch {}
+  while (!(await output.next()).done);
   await events.end()
   const code = await proc.exited
-  const finished = (await Bun.file(finishFile(ws.dir, id)).json().catch(() => undefined)) as Finish | undefined
-  record.summary = finished?.summary
-  record.missing = finished?.missing
 
   if (stopped) return finish('stopped', `stopped by ${stopped}`)
   if (!result) return finish('failed', `claude exited ${code} without a result ${(await stderr).trim().slice(-300)}`.trim())
-  record.cost_usd = result.total_cost_usd
-  record.session_id = result.session_id ?? record.session_id
-  // A PR given to `finish` wins over one in the text.
-  record.pr = await findPr(finished?.pr_url ?? result.result ?? '', branch, worktree)
-  if (stopped) return finish('stopped', `stopped by ${stopped}`)
   if (result.is_error || result.subtype !== 'success') return finish('failed', (result.result || result.subtype).slice(0, 300))
   if (!record.pr) return finish('failed', 'no pull request')
-  // The labels say which standards the PR touches; after it is merged and deployed, only those are checked again.
-  await labelPr(record.pr.url, ws, items, worktree)
-  // A PR that still needs a person reads as a draft, whatever the worker opened.
-  if (record.missing?.length) await markDraft(record.pr, worktree)
-  const head = await run([ghBin(), 'pr', 'view', record.pr.url, '--json', 'headRefOid'], worktree)
-  const sha = head.ok ? (JSON.parse(head.stdout) as { headRefOid?: string }).headRefOid : undefined
-  if (sha) record.preview = await previewOf(ws, record, sha)
+  const checked = (record.preview?.results.length ?? 0) > 0
+  if (checked) record.verified = failing.length === 0
+  if (failing.length) record.unverified = failing
+  // A PR that still needs a person, or still fails on its preview, reads as a draft, whatever the worker opened.
+  if (record.missing?.length || failing.length) await markDraft(record.pr, worktree)
   return finish('done')
+}
+
+/** How many times a worker is sent back to an item that still fails on the preview. */
+const MAX_ROUNDS = 2
+/** How long to wait for a preview deployment of the PR's head, in a repo that has deployments. */
+const PREVIEW_WAIT_MS = 10 * 60_000
+const PREVIEW_POLL_MS = 20_000
+
+/** The run's items on the preview of its PR's head commit, waiting a while for the deployment. */
+async function verify(ws: Workspace, record: RunRecord, worktree: string, signal?: AbortSignal) {
+  const head = await run([ghBin(), 'pr', 'view', record.pr!.url, '--json', 'headRefOid'], worktree)
+  const sha = head.ok ? (JSON.parse(head.stdout) as { headRefOid?: string }).headRefOid : undefined
+  if (!sha) return record.preview
+  const asset = ws.businesses.find(b => b.id === record.business)?.assets.find(a => a.id === record.asset)
+  const deadline = Date.now() + (asset?.url && asset.repo && (await hasDeployments(asset.repo)) ? PREVIEW_WAIT_MS : 0)
+  for (;;) {
+    const preview = await previewOf(ws, record, sha)
+    const waiting = preview.note?.startsWith('no preview deployment')
+    if (!waiting || Date.now() >= deadline || signal?.aborted) return preview
+    await Bun.sleep(previewPollMs())
+  }
+}
+
+const previewPollMs = () => Number(process.env.STANDARDS_PREVIEW_POLL_MS ?? PREVIEW_POLL_MS)
+
+/** The message that sends a worker back: what still fails on the preview, and what to do. */
+function sendBack(preview: NonNullable<RunRecord['preview']>) {
+  const failing = preview.results.filter(r => r.state !== 'pass')
+  return [
+    `These standards still fail on the PR's preview (${preview.url ?? 'its worktree'}, commit ${preview.sha.slice(0, 7)}):`,
+    '',
+    ...failing.map(r => `- \`${r.item}\`: ${r.evidence}`),
+    '',
+    'Fix them on the same branch, push, wait for the checks again, and call `finish` again with the same PR URL. If only a person can fix one (a secret, a paid account, a legal fact), say exactly what in `missing`.',
+  ].join('\n')
 }
