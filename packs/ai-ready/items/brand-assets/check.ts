@@ -1,12 +1,31 @@
 import { basename, dirname } from 'node:path'
 import type { Context } from '../../../../core/checks/context.ts'
 import type { Outcome } from '../../../../core/schema.ts'
-import { checkout, isOutcome } from '../../checkout.ts'
+import { imageSize } from '../../../sharing/items/og-image-size/check.ts'
+import { type Checkout, checkout, isOutcome } from '../../checkout.ts'
 
 /** A folder named `brand` or `branding`, anywhere: `brand/`, `public/brand/`, `assets/brand/`, `.github/brand/`. */
 const BRAND_DIR = /(^|\/)(brand|branding)$/
 const INDEX = /^(README|INDEX|index|readme|BRAND|brand)\.md$/
 const LOGO = /(logo|mark|lockup|wordmark|icon)[^/]*\.svg$/i
+const RASTER_LOGO = /(logo|mark|lockup|wordmark)[^/]*\.(png|webp|jpe?g)$/i
+/** A raster logo is enough to make og images and videos from when it is at least this big on its long side. */
+const MIN_RASTER = 512
+
+/** An SVG logo, else a raster one big enough, in the folder or named by its README from elsewhere in the repo. */
+async function logoOf(co: Checkout, files: string[], text: string) {
+  const named = co.files.filter(path => !files.includes(path) && (text.includes(path) || text.includes(`/${path.replace(/^public\//, '')}`)))
+  const candidates = [...files, ...named]
+  const svg = candidates.find(path => LOGO.test(path))
+  if (svg) return svg
+  for (const path of candidates.filter(path => RASTER_LOGO.test(path))) {
+    if (!co.bytes) return path
+    const bytes = await co.bytes(path)
+    const size = bytes && imageSize(bytes)
+    if (size && Math.max(size.width, size.height) >= MIN_RASTER) return path
+  }
+  return undefined
+}
 const COLOUR = /#[0-9a-f]{3,8}\b|\b(rgb|hsl|oklch|oklab)a?\(/i
 const FONT = /\b(fonts?|typefaces?|typography)\b|^#+\s*type\b/im
 const FONT_FILE = /\.(woff2?|ttf|otf)$/i
@@ -36,17 +55,18 @@ export default async function brandAssets(ctx: Context): Promise<Outcome> {
         return !text.includes(basename(path)) && !text.includes(relative.split('/')[0] as string)
       })
       const names = (paths: string[]) => `${paths.slice(0, 3).map(path => basename(path)).join(', ')}${paths.length > 3 ? ` and ${paths.length - 3} more` : ''}`
+      const logo = await logoOf(co, files, text)
       const missing = [
-        !files.some(path => LOGO.test(path)) && 'no logo SVG',
+        !logo && `no logo: an SVG, or a PNG, WebP or JPEG at least ${MIN_RASTER} px on its long side`,
         !index && 'no README saying what each file is for',
         !(COLOUR.test(text) || tokens.some(token => token && COLOUR.test(token))) && 'no brand colours (hex, rgb(), oklch()…) in a README or tokens file',
         !(FONT.test(text) || files.some(path => FONT_FILE.test(path))) && 'no brand fonts, named in the README or as files',
         index && unsaid.length > 0 && `${basename(index)} doesn't say what ${names(unsaid)} ${unsaid.length === 1 ? 'is' : 'are'} for`,
       ].filter((entry): entry is string => Boolean(entry))
-      return { dir, files, missing }
+      return { dir, files, missing, logo }
     }),
   )
   const best = reports.sort((a, b) => a.missing.length - b.missing.length)[0]!
   if (best.missing.length > 0) return { state: 'fail', evidence: `${best.dir}/: ${best.missing.join('; ')}` }
-  return { state: 'pass', evidence: `${best.dir}/: ${best.files.length} files, with a logo SVG, colours, fonts and a README for each` }
+  return { state: 'pass', evidence: `${best.dir}/: ${best.files.length} files, with a logo (${best.logo}), colours, fonts and a README for each` }
 }

@@ -10,6 +10,8 @@ export interface Checkout {
   local: boolean
   files: string[]
   read: (path: string) => Promise<string | undefined>
+  /** A file's bytes, from a local checkout only. */
+  bytes?: (path: string) => Promise<Uint8Array | undefined>
 }
 
 const MAX_BYTES = 1_000_000
@@ -26,6 +28,10 @@ export async function checkout({ asset }: Context): Promise<Checkout | Outcome> 
       read: async path => {
         const file = Bun.file(join(root, path))
         return (await file.exists()) && file.size <= MAX_BYTES ? file.text() : undefined
+      },
+      bytes: async path => {
+        const file = Bun.file(join(root, path))
+        return (await file.exists()) && file.size <= MAX_BYTES * 10 ? file.bytes() : undefined
       },
     }
   }

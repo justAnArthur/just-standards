@@ -6,7 +6,7 @@ import type { LoadedItem } from '../../core/load.ts'
 import type { Asset, Business } from '../../core/schema.ts'
 
 /** A git repo in a temp dir with these files tracked. */
-export async function gitRepo(files: Record<string, string>) {
+export async function gitRepo(files: Record<string, string | Uint8Array>) {
   const dir = await mkdtemp(join(tmpdir(), 'standards-pack-'))
   for (const [path, text] of Object.entries(files)) await Bun.write(join(dir, path), text)
   for (const args of [['init', '-q'], ['add', '.']]) Bun.spawnSync(['git', ...args], { cwd: dir })

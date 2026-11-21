@@ -1,5 +1,5 @@
 id: ai-ready
-version: 1
+version: 2
 title: AI-ready repo
 description: >-
   What an agent needs in a repo to work without asking: how to run it, the design system, the brand assets, the env
@@ -13,6 +13,9 @@ items:
   - content-source
   - sites-map
 changelog:
+  - version: 2
+    date: 2026-11-21
+    notes: "brand-assets v2 takes a raster logo (PNG, WebP or JPEG, at least 512 px on its long side) when the brand has no SVG, in the brand folder or named by its README from elsewhere in the repo: a worker shouldn't trace a logo."
   - version: 1
     date: 2026-11-21
     notes: First version.

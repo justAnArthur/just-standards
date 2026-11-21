@@ -5,7 +5,7 @@ import check from './check.ts'
 
 const dirs: string[] = []
 afterAll(() => Promise.all(dirs.map(dir => rm(dir, { recursive: true, force: true }))))
-const run = async (files: Record<string, string>) => {
+const run = async (files: Record<string, string | Uint8Array>) => {
   const dir = await gitRepo(files)
   dirs.push(dir)
   return check(contextOf({ path: dir }))
@@ -38,4 +38,21 @@ test('colours may come from a tokens file and fonts from font files', async () =
     'assets/brand/Inter.woff2': 'x',
   })
   expect(outcome.state).toBe('pass')
+})
+
+/** A PNG header that says it is `width` × `height`. */
+function png(width: number, height: number) {
+  const bytes = new Uint8Array(33)
+  bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52])
+  new DataView(bytes.buffer).setUint32(16, width)
+  new DataView(bytes.buffer).setUint32(20, height)
+  return bytes
+}
+
+test("without an SVG, a raster logo of 512 px or more counts, in the folder or named by the README from elsewhere", async () => {
+  const readme = "# Brand\n\nThe logo is `public/acme-logo.png`. Indigo `#2e2a6b`. Fonts: Geist.\n"
+  const big = await run({ "brand/README.md": readme, "public/acme-logo.png": png(512, 512) })
+  expect(big).toEqual({ state: "pass", evidence: "brand/: 1 files, with a logo (public/acme-logo.png), colours, fonts and a README for each" })
+  const small = await run({ "brand/README.md": readme, "public/acme-logo.png": png(64, 64) })
+  expect(small.evidence).toBe("brand/: no logo: an SVG, or a PNG, WebP or JPEG at least 512 px on its long side")
 })
