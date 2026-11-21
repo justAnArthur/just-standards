@@ -31,19 +31,19 @@ afterAll(async () => {
 })
 
 test('applies_when keeps an item to the assets whose checkout uses that dependency in that range', async () => {
-  const ws = await loadWorkspace(dir)
+  const ws = await loadWorkspace(dir, join(dir, 'no-bundled-packs'))
   const cells = cellsOf(ws.businesses[0]!, ws).map(cell => `${cell.asset.id}:${cell.item.id}`)
   expect(cells.sort()).toEqual(['new:any', 'new:new-only', 'old:any'])
 })
 
 test('a fix prompt names the sources an item follows', async () => {
-  const ws = await loadWorkspace(dir)
+  const ws = await loadWorkspace(dir, join(dir, 'no-bundled-packs'))
   const prompt = await fixPrompt(ws, ws.businesses[0]!, 'new', ['fw/new-only'], 'b')
   expect(prompt).toContain(`Follows: [Production checklist](${server.url.origin}/checklist), [Old guide](${server.url.origin}/gone). Where the source and the recipe differ, the source wins`)
 })
 
 test('sources: new, then the same despite noise in scripts, then changed when the text changes; a 404 is gone', async () => {
-  const ws = await loadWorkspace(dir)
+  const ws = await loadWorkspace(dir, join(dir, 'no-bundled-packs'))
   const lockFile = join(dir, 'sources.lock.json')
   const states = async (update = true) => Object.fromEntries((await checkSources(ws, { update, lockFile })).map(c => [new URL(c.url).pathname, c.state]))
   expect(await states()).toEqual({ '/checklist': 'new', '/gone': 'gone' })
