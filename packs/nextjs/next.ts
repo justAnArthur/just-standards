@@ -87,25 +87,74 @@ export async function nextApps(co: Checkout): Promise<NextApp[]> {
 
 const RELATIVE_IMPORT = /(?:from\s+|require\(\s*|import\(\s*)['"](\.{1,2}\/[^'"]+)['"]/g
 
-/** The app's Next config as text: `next.config.*`, its siblings (`next.config.shared.js`) and the local files they import. */
-export async function configText(app: NextApp, co: Checkout) {
+/** The app's Next config files: `next.config.*`, its siblings (`next.config.shared.js`) and the local files they import. */
+export async function configFiles(app: NextApp, co: Checkout) {
   const prefix = app.root ? `${app.root}/` : ''
   const queue = app.files.filter(path => path.startsWith(prefix) && /^next\.config[\w.-]*\.(js|mjs|cjs|ts|mts)$/.test(path.slice(prefix.length)))
   const seen = new Set<string>()
-  const texts: string[] = []
+  const files: { path: string; text: string }[] = []
   while (queue.length > 0) {
     const path = queue.shift() as string
     if (seen.has(path)) continue
     seen.add(path)
     const text = (await co.read(path)) ?? ''
-    texts.push(text)
+    files.push({ path, text })
     for (const [, target] of text.matchAll(RELATIVE_IMPORT)) {
       const base = join(dirname(path), target as string)
       const found = co.files.find(file => file === base || (file.startsWith(base) && /^\.(js|mjs|cjs|ts|mts)$/.test(file.slice(base.length))))
       if (found) queue.push(found)
     }
   }
-  return texts.join('\n')
+  return files
+}
+
+/** The app's Next config as one text (see configFiles). */
+export const configText = async (app: NextApp, co: Checkout) => (await configFiles(app, co)).map(file => file.text).join('\n')
+
+/** The 1-based lines of `text` matching `pattern`, comments left out (block comments too). */
+export const codeLines = (text: string, pattern: RegExp) =>
+  withoutComments(text)
+    .split('\n')
+    .flatMap((line, index) => (pattern.test(line) ? [index + 1] : []))
+
+/** The `next` range in package.json, or the pnpm catalog entry it points at (`catalog:`, `catalog:<name>`). */
+export async function rangeOf(app: NextApp, co: Checkout) {
+  const range = app.next
+  if (!range?.startsWith('catalog:')) return range
+  const workspace = Bun.YAML.parse((await co.read('pnpm-workspace.yaml')) ?? '{}') as {
+    catalog?: Record<string, string>
+    catalogs?: Record<string, Record<string, string>>
+  } | null
+  const name = range.slice('catalog:'.length)
+  return (name && name !== 'default' ? workspace?.catalogs?.[name] : workspace?.catalog)?.next
+}
+
+/** The `next` version the app runs: the installed one in a local checkout, else the lowest its range allows. Undefined for `latest` and the like. */
+export async function versionOf(app: NextApp, co: Checkout) {
+  if (co.local) {
+    const installed = Bun.file(join(co.where, app.root, 'node_modules/next/package.json'))
+    if (await installed.exists()) {
+      const { version } = (await installed.json()) as { version?: string }
+      if (version) return version
+    }
+  }
+  const found = (await rangeOf(app, co))?.match(/\d+(\.\d+){0,2}/)?.[0]
+  if (!found) return undefined
+  const parts = found.split('.')
+  while (parts.length < 3) parts.push('0')
+  return parts.join('.')
+}
+
+/** Whether `version` is `min` or later; an unknown version counts as the latest. */
+export const atLeast = (version: string | undefined, min: string) => version === undefined || Bun.semver.order(version, min) >= 0
+
+/** The app's package.json scripts. */
+export async function scriptsOf(app: NextApp, co: Checkout): Promise<Record<string, string>> {
+  try {
+    return (JSON.parse((await co.read(app.root ? `${app.root}/package.json` : 'package.json')) ?? '{}') as { scripts?: Record<string, string> }).scripts ?? {}
+  } catch {
+    return {}
+  }
 }
 
 export const notNext = (co: Checkout): Outcome => ({
@@ -162,4 +211,127 @@ export async function perApp(ctx: Context, each: (app: NextApp, co: Checkout) =>
   const failures = findings.flatMap(({ app, found }) => ('fail' in found ? [named(app, found.fail)] : []))
   if (failures.length > 0) return { state: 'fail', evidence: failures.join('; ') }
   return { state: 'pass', evidence: findings.map(({ app, found }) => named(app, 'pass' in found ? found.pass : '')).join('; ') }
+}
+
+/** The 1-based line of `index` in `text`. */
+export const lineAt = (text: string, index: number) => text.slice(0, index).split('\n').length
+
+/** The end of the quoted string opening at `index`, on the same line; -1 when it doesn't close there (an apostrophe in JSX text). */
+function stringEnd(text: string, index: number) {
+  const quote = text[index]
+  for (let i = index + 1; i < text.length; i++) {
+    if (text[i] === '\\') i++
+    else if (text[i] === quote) return i
+    else if (text[i] === '\n' && quote !== '`') return -1
+  }
+  return -1
+}
+
+/** `text` with its comments blanked out (newlines kept, so lines and indexes stay where they were). */
+export function withoutComments(text: string) {
+  const out = text.split('')
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i]
+    if (char === "'" || char === '"' || char === '`') {
+      const end = stringEnd(text, i)
+      if (end > 0) i = end
+    } else if (char === '/' && text[i + 1] === '/' && text[i - 1] !== ':') {
+      for (; i < text.length && text[i] !== '\n'; i++) out[i] = ' '
+    } else if (char === '/' && text[i + 1] === '*') {
+      const end = text.indexOf('*/', i + 2)
+      const stop = end < 0 ? text.length : end + 2
+      for (; i < stop; i++) if (text[i] !== '\n') out[i] = ' '
+      i--
+    }
+  }
+  return out.join('')
+}
+
+const CLOSE: Record<string, string> = { '{': '}', '(': ')', '[': ']' }
+
+/** The index of the bracket closing the one at `open` (`{`, `(` or `[`), skipping strings; -1 when unclosed. Run it on text without comments. */
+export function closing(text: string, open: number) {
+  const stack: string[] = []
+  for (let i = open; i < text.length; i++) {
+    const char = text[i] as string
+    if (char === "'" || char === '"' || char === '`') {
+      const end = stringEnd(text, i)
+      if (end > 0) i = end
+    } else if (CLOSE[char]) stack.push(CLOSE[char])
+    else if (char === stack[stack.length - 1]) {
+      stack.pop()
+      if (stack.length === 0) return i
+    }
+  }
+  return -1
+}
+
+/**
+ * The lines a function spans, from the line naming it to the end of its body: for `name` at `at`, its parameters in
+ * `(…)`, an optional return type, then a `{…}` body or an arrow's expression. Undefined when it isn't followed by one.
+ */
+export function functionSpan(text: string, at: number): [number, number] | undefined {
+  const open = text.indexOf('(', at)
+  if (open < 0 || /[;}]/.test(text.slice(at, open))) return undefined
+  const params = closing(text, open)
+  if (params < 0) return undefined
+  let depth = 0
+  for (let i = params + 1; i < text.length; i++) {
+    const char = text[i]
+    if (char === '<') depth++
+    else if (char === '>' && text[i - 1] !== '=') depth--
+    else if (depth === 0 && char === '{') return [lineAt(text, at), lineAt(text, closing(text, i))]
+    else if (depth === 0 && char === '=' && text[i + 1] === '>') {
+      const rest = text.slice(i + 2).match(/^\s*/)?.[0].length ?? 0
+      const start = i + 2 + rest
+      if ('{(['.includes(text[start] as string)) return [lineAt(text, at), lineAt(text, closing(text, start))]
+      return [lineAt(text, at), lineAt(text, start)]
+    } else if (depth === 0 && char === ';') return undefined
+  }
+  return undefined
+}
+
+/** Local names bound to `module`'s exports: `{ cookies as getCookies }` gives getCookies → cookies. */
+export function importsFrom(text: string, module: string) {
+  const names = new Map<string, string>()
+  const pattern = new RegExp(`import\\s*(?:type\\s*)?\\{([^}]*)\\}\\s*from\\s*['"]${module.replace(/[/.]/g, '\\$&')}['"]`, 'g')
+  for (const [, list] of text.matchAll(pattern)) {
+    for (const part of (list as string).split(',')) {
+      const [imported, local] = part.trim().replace(/^type\s+/, '').split(/\s+as\s+/)
+      if (imported) names.set((local ?? imported).trim(), imported.trim())
+    }
+  }
+  return names
+}
+
+/** Whether the file starts with a directive such as `'use client'` (after comments and other directives). */
+export function hasDirective(text: string, directive: RegExp) {
+  for (const statement of withoutComments(text).split(/[;\n]/)) {
+    const trimmed = statement.trim()
+    if (!trimmed) continue
+    const match = trimmed.match(/^(['"])([^'"]*)\1$/)
+    if (!match) return false
+    if (directive.test(match[2] as string)) return true
+  }
+  return false
+}
+
+/** Each JSX element `<tag …>` in `text` (without comments): where it starts and its whole opening tag, braces and strings included. */
+export function elements(text: string, tag: string) {
+  const found: { index: number; line: number; open: string }[] = []
+  const pattern = new RegExp(`<${tag}(?=[\\s/>])`, 'g')
+  for (const match of text.matchAll(pattern)) {
+    let i = match.index + match[0].length
+    for (let depth = 0; i < text.length && i < match.index + 4000; i++) {
+      const char = text[i]
+      if (char === '{') depth++
+      else if (char === '}') depth--
+      else if ((char === '"' || char === "'" || char === '`') && (depth > 0 || char !== '`')) {
+        const end = stringEnd(text, i)
+        if (end > 0) i = end
+      } else if (char === '>' && depth === 0) break
+    }
+    found.push({ index: match.index, line: lineAt(text, match.index), open: text.slice(match.index, i + 1) })
+  }
+  return found
 }

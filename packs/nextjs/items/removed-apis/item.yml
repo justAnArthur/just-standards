@@ -1,0 +1,19 @@
+id: removed-apis
+version: 1
+title: Nothing the installed Next.js removed
+label: removed APIs
+why: >-
+  an option, import or script the installed major removed fails the build, the lint run or the page that relies on it;
+  the upgrade guides list each one
+applies_to: [repo]
+category: code
+severity: must
+sources:
+  - title: Next.js docs, upgrading to version 16
+    url: https://nextjs.org/docs/app/guides/upgrading/version-16
+  - title: Next.js docs, upgrading to version 15
+    url: https://nextjs.org/docs/app/guides/upgrading/version-15
+applies_when: { dependency: next, version: ">=15" }
+owner_role: engineering
+check:
+  kind: script

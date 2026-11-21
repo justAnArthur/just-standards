@@ -1,0 +1,21 @@
+id: deprecated-apis
+version: 1
+title: Nothing the installed Next.js deprecated
+label: deprecated APIs
+why: a deprecated API still works until the next major removes it; moving off it now keeps that upgrade a version bump
+applies_to: [repo]
+category: code
+severity: should
+sources:
+  - title: Next.js docs, upgrading to version 16
+    url: https://nextjs.org/docs/app/guides/upgrading/version-16
+  - title: Next.js docs, upgrading to version 15
+    url: https://nextjs.org/docs/app/guides/upgrading/version-15
+  - title: Next.js docs, Image Component
+    url: https://nextjs.org/docs/app/api-reference/components/image
+  - title: Next.js docs, Route Segment Config
+    url: https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config
+applies_when: { dependency: next, version: ">=15" }
+owner_role: engineering
+check:
+  kind: script

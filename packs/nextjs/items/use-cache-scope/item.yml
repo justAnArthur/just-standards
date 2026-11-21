@@ -1,0 +1,19 @@
+id: use-cache-scope
+version: 1
+title: "'use cache' functions are async and read no request data"
+label: use cache scope
+why: >-
+  a 'use cache' function that calls cookies() or headers() fails with next-request-in-use-cache, on a dynamic route only
+  at request time, after `next build` passed; a cached function that isn't async fails the build
+applies_to: [repo]
+category: code
+severity: must
+sources:
+  - title: Next.js docs, use cache
+    url: https://nextjs.org/docs/app/api-reference/directives/use-cache
+  - title: Next.js docs, cacheComponents
+    url: https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents
+applies_when: { dependency: next }
+owner_role: engineering
+check:
+  kind: script

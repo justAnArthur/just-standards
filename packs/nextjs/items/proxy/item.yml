@@ -1,0 +1,19 @@
+id: proxy
+version: 1
+title: proxy.ts, not middleware.ts
+label: proxy
+why: >-
+  Next 16 deprecated the middleware file and export for proxy; a renamed file that still exports `middleware`, or sets
+  a runtime, doesn't run as intended
+applies_to: [repo]
+category: code
+severity: should
+sources:
+  - title: Next.js docs, upgrading to version 16 (middleware to proxy)
+    url: https://nextjs.org/docs/app/guides/upgrading/version-16
+  - title: Next.js docs, proxy.js
+    url: https://nextjs.org/docs/app/api-reference/file-conventions/proxy
+applies_when: { dependency: next, version: ">=16" }
+owner_role: engineering
+check:
+  kind: script

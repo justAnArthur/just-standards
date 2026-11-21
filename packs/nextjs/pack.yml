@@ -1,17 +1,36 @@
 id: nextjs
-version: 1
+version: 2
 title: Next.js
 description: >-
-  The rules Next.js App Router repos keep breaking, read from the code. Adopt it for Next.js repos only; on any other repo
-  every item reports "not a Next.js repo" as an error. The items read a checkout, so a site's code is its own asset:
-  `kind: repo` with `path` (a local checkout) and `repo`. A monorepo's Next apps are each checked.
+  What the official Next.js docs require or strongly recommend (the production checklist, the version 15 and 16
+  upgrade guides, the API reference), as far as code and config show it. Every item applies only to an asset whose
+  local checkout depends on next, in the version range the item names, so a repo without Next.js gets none of them.
+  The items read a checkout, so a site's code is its own asset: `kind: repo` with `path` (a local checkout) and `repo`.
+  A monorepo's Next apps are each checked, when the asset's path is the app (or its root package.json names next).
 items:
   - no-segment-config
   - next-image
   - next-font
   - metadata-api
   - framework-current
+  - { id: async-request-apis, since: 2 }
+  - { id: removed-apis, since: 2 }
+  - { id: use-cache-scope, since: 2 }
+  - { id: env-vars, since: 2 }
+  - { id: deprecated-apis, since: 2 }
+  - { id: proxy, since: 2 }
+  - { id: error-pages, since: 2 }
+  - { id: next-script, since: 2 }
+  - { id: image-config, since: 2 }
+  - { id: lint, since: 2 }
 changelog:
   - version: 1
     date: 2026-11-21
     notes: First version.
+  - version: 2
+    date: 2026-11-21
+    notes: >-
+      Follows the official docs: every item cites its sources and applies only where the checkout uses next (non-Next
+      repos get no cells instead of errors). New: async-request-apis, removed-apis, use-cache-scope, env-vars,
+      deprecated-apis, proxy, error-pages, next-script, image-config, lint. no-segment-config v2 also rejects
+      dynamicParams and an empty generateStaticParams, and no longer preferredRegion (deprecated, not rejected).

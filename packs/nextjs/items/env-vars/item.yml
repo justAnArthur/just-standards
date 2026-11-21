@@ -1,0 +1,23 @@
+id: env-vars
+version: 1
+title: Secrets stay server-side, the browser reads only NEXT_PUBLIC_
+label: env vars
+why: >-
+  a NEXT_PUBLIC_ variable is inlined into the JavaScript every visitor downloads, so a token or secret under that prefix
+  is published; and any other variable read in a Client Component is an empty string there
+applies_to: [repo]
+category: security
+severity: must
+sources:
+  - title: Next.js docs, Production Checklist (Environment Variables)
+    url: https://nextjs.org/docs/app/guides/production-checklist
+  - title: Next.js docs, How to use environment variables
+    url: https://nextjs.org/docs/app/guides/environment-variables
+  - title: Next.js docs, Server and Client Components (Preventing environment poisoning)
+    url: https://nextjs.org/docs/app/getting-started/server-and-client-components
+  - title: Next.js docs, Data Security
+    url: https://nextjs.org/docs/app/guides/data-security
+applies_when: { dependency: next }
+owner_role: engineering
+check:
+  kind: script
