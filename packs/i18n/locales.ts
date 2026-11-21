@@ -28,7 +28,7 @@ export const primary = (code: string | undefined) => code?.trim().split(/[-_]/)[
 
 const englishNames = new Intl.DisplayNames(['en'], { type: 'language', fallback: 'none' })
 
-/** A language code Intl knows: `sk`, `en-GB`, `fo`; not `xx`, `ai`'s neighbours made up, or a path such as `blog`. */
+/** A language code Intl knows, with an optional script and region: `sk`, `en-GB`, `fo`; not `xx`, `it-sluzby` or `blog`. */
 export function isLanguage(code: string) {
   if (!/^[a-z]{2,3}([-_][a-z]{4})?([-_]([a-z]{2}|\d{3}))?$/i.test(code)) return false
   try {
