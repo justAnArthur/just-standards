@@ -1,0 +1,16 @@
+id: consent-mode
+version: 1
+title: Google tags start with Consent Mode v2 denied
+label: consent mode
+why: >-
+  without Consent Mode v2 defaults of "denied" before any choice, Google tags store and send identifiers before consent,
+  and since March 2024 Google Ads stops using conversions and audiences from the EEA that carry no consent signals
+applies_to: [website, webapp]
+category: privacy
+severity: should
+owner_role: marketing
+check:
+  kind: browser
+  pages: [/]
+  viewport: mobile
+  script: check.ts

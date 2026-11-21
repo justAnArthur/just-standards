@@ -1,0 +1,17 @@
+id: reduced-motion
+version: 1
+title: Nothing moves on load for a visitor who asked for reduced motion
+label: reduced motion
+why: >-
+  visitors with vestibular disorders set "reduce motion" because sliding carousels, parallax and looping animations make
+  them dizzy or sick; a site that ignores the setting is unusable for them (WCAG 2.3.3, 2.2.2)
+applies_to: [website, webapp]
+category: accessibility
+severity: nice
+owner_role: engineering
+check:
+  kind: browser
+  pages: [/]
+  viewport: mobile
+  reduced_motion: true
+  script: check.ts

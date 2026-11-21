@@ -1,0 +1,16 @@
+id: modern-images
+version: 1
+title: Content images are AVIF or WebP, and not oversized
+label: modern images
+why: >-
+  images are most of a page's bytes; AVIF and WebP are a third to half the size of JPEG and PNG, and an image delivered at
+  twice the size it is shown costs four times the pixels
+applies_to: [website, webapp]
+category: performance
+severity: should
+owner_role: engineering
+check:
+  kind: browser
+  pages: [/]
+  viewport: mobile
+  script: check.ts

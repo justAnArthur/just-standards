@@ -1,0 +1,13 @@
+id: accessibility-statement
+version: 1
+title: An accessibility statement is linked from the home page
+label: a11y statement
+why: >-
+  the EAA (Annex V) and its national laws (Slovakia's 351/2022, Germany's BFSG) ask a service to say how it meets the
+  accessibility requirements, against which standard, and how to report a barrier; visitors and regulators look for it in the footer
+applies_to: [website, webapp]
+category: accessibility
+severity: should
+owner_role: legal
+check:
+  kind: script

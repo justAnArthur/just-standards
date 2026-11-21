@@ -3,13 +3,17 @@
   "private": true,
   "description": "Standards for everything I run: packs of checks and fixes, with Claude Code as the fixer",
   "type": "module",
-  "bin": { "standards": "./cli/standards.ts" },
+  "bin": {
+    "standards": "./cli/standards.ts"
+  },
   "scripts": {
     "check": "tsc -p . --noEmit",
     "test": "bun test ./core ./packs",
     "standards": "bun cli/standards.ts"
   },
   "dependencies": {
+    "axe-core": "^4.14.1",
+    "playwright-core": "^1.65.1",
     "zod": "^4.1.0"
   },
   "devDependencies": {

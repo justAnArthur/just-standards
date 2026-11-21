@@ -1,15 +1,23 @@
 id: performance
-version: 1
+version: 2
 title: Performance
 description: >-
   How fast the site is for real visitors on a phone: Core Web Vitals and Lighthouse through PageSpeed Insights (an optional
-  `psi-key` in secrets.yml lifts its rate limit), time to first byte, and caching and compression of what the home page loads.
+  `psi-key` in secrets.yml lifts its rate limit), time to first byte, and caching and compression of what the home page loads; in a real browser, the page's weight,
+  console errors, render-blocking third parties and image formats.
 items:
   - cwv-field
   - lighthouse
   - ttfb
   - static-cache
+  - { id: page-weight, since: 2 }
+  - { id: no-console-errors, since: 2 }
+  - { id: third-party, since: 2 }
+  - { id: modern-images, since: 2 }
 changelog:
   - version: 1
     date: 2026-11-21
     notes: First version.
+  - version: 2
+    date: 2026-11-21
+    notes: "page-weight, no-console-errors, third-party and modern-images (should), checked in a real browser."

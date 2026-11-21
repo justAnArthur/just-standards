@@ -1,0 +1,17 @@
+id: accessibility
+version: 1
+title: Accessibility
+description: >-
+  What the European Accessibility Act (in force since 2025-06-28; booking transport and rental services online is in
+  scope) asks of a consumer site, checked in a real browser: no serious axe-core violations, a keyboard that reaches
+  everything with visible focus, a skip link, motion that respects the visitor's setting, and an accessibility statement.
+items:
+  - axe
+  - keyboard-nav
+  - skip-link
+  - reduced-motion
+  - accessibility-statement
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: "First version: axe (home and two sitemap pages), keyboard-nav, skip-link, reduced-motion (browser); accessibility-statement (http)."

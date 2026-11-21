@@ -1,0 +1,17 @@
+id: keyboard-nav
+version: 1
+title: The keyboard reaches the navigation and forms, with visible focus
+label: keyboard
+why: >-
+  many disabled visitors (and power users) never touch a mouse; when Tab skips the menu or the booking form, or focus is
+  invisible, they cannot book at all (WCAG 2.1.1, 2.1.2, 2.4.7)
+applies_to: [website, webapp]
+category: accessibility
+severity: must
+owner_role: engineering
+check:
+  kind: browser
+  pages: [/]
+  viewport: desktop
+  keyboard: { tabs: 80 }
+  script: check.ts

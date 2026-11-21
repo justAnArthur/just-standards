@@ -9,6 +9,15 @@ export function authorize(origin: string, headers: Record<string, string>) {
   extraHeaders.set(new URL(origin).origin, headers)
 }
 
+/** The headers `authorize` set for the origin of `url`, for a client of its own (the browser). */
+export function headersFor(url: string) {
+  try {
+    return extraHeaders.get(new URL(url).origin)
+  } catch {
+    return undefined
+  }
+}
+
 /** While a preview is checked: production origins (with and without `www.`) → the preview's origin. */
 const aliases = new Map<string, string>()
 const previews = new Set<string>()
@@ -33,6 +42,9 @@ export function alias(production: string, preview: string) {
     previews.delete(to)
   }
 }
+
+/** Whether any request is redirected to a preview or carries extra headers: the browser then routes every request through `local` and `headersFor`. */
+export const rewriting = () => aliases.size > 0 || extraHeaders.size > 0
 
 /** Whether `url` is on a preview being checked: previews send `x-robots-tag: noindex` of their own. */
 export const isPreview = (url: string) => {
