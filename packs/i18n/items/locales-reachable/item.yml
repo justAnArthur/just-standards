@@ -1,0 +1,11 @@
+id: locales-reachable
+version: 1
+title: Every language the site offers has a working home page
+label: locales reachable
+why: a language in the switcher or the hreflang alternates whose home is a 404, an error or a page in another language sends visitors and search engines to a dead end
+applies_to: [website]
+category: i18n
+severity: must
+owner_role: engineering
+check:
+  kind: script

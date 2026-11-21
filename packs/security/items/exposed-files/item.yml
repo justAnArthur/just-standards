@@ -1,0 +1,11 @@
+id: exposed-files
+version: 1
+title: No source, secrets or server internals are served
+label: exposed files
+why: a served .git folder hands out the source and its history, a served .env or backup hands out database and API keys; bots probe these paths on every site within hours of launch
+applies_to: [website, webapp]
+category: security
+severity: must
+owner_role: engineering
+check:
+  kind: script

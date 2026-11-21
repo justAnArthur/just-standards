@@ -1,0 +1,11 @@
+id: footer-year
+version: 1
+title: The copyright year is this year
+label: footer year
+why: last year's date in the footer is the first sign of a site nobody maintains, and a year that only JavaScript fills in shows as a gap to crawlers
+applies_to: [website]
+category: content
+severity: should
+owner_role: content
+check:
+  kind: script

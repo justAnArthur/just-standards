@@ -1,0 +1,11 @@
+id: copy-language
+version: 1
+title: The copy is in the page's language, with its diacritics
+label: copy language
+why: untranslated English on a Slovak page, or Slovak without háčky and dĺžne, reads as unfinished, and search engines and AI answers match the page to the wrong audience
+applies_to: [website]
+category: i18n
+severity: should
+owner_role: content
+check:
+  kind: script

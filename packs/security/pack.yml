@@ -1,0 +1,16 @@
+id: security
+version: 1
+title: Security
+description: What a public site's responses give away or leave open, read from the outside like a scanner would - files that should never be served, the browser's protections in the headers, cookie flags, version banners.
+items:
+  - exposed-files
+  - csp
+  - frame-protection
+  - referrer-policy
+  - cookie-flags
+  - permissions-policy
+  - server-leak
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: "First version: exposed-files (must); csp, frame-protection, referrer-policy, cookie-flags (should); permissions-policy, server-leak (nice)."

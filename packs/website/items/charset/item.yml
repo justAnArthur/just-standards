@@ -1,0 +1,11 @@
+id: charset
+version: 1
+title: The page declares UTF-8 where browsers read it
+label: charset
+why: a page whose encoding isn't declared (or is declared after the first 1024 bytes) can render "PoÅ¾iÄovÅˆa" instead of "Požičovňa" in some browsers, crawlers and AI readers
+applies_to: [website, webapp]
+category: content
+severity: must
+owner_role: engineering
+check:
+  kind: script

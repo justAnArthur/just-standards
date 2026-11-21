@@ -1,0 +1,11 @@
+id: no-placeholder
+version: 1
+title: No placeholder or broken template text
+label: placeholders
+why: Lorem ipsum, a TODO, "{{name}}" or a price of "NaN €" on a live page reads as broken, and search and AI tools quote it
+applies_to: [website, webapp]
+category: content
+severity: must
+owner_role: content
+check:
+  kind: script

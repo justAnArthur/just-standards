@@ -1,0 +1,14 @@
+id: content
+version: 1
+title: Content
+description: What a visitor sees that was left behind or broke - an old year in the footer, an expired offer, broken images, placeholder text, no way to get in touch. Read on the home page and a sample of the sitemap (one crawl shared with seo).
+items:
+  - promo-freshness
+  - broken-images
+  - no-placeholder
+  - contact-reachable
+  - footer-year
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: "First version: promo-freshness (ai), broken-images, no-placeholder, contact-reachable (must); footer-year (should). A favicon item was left out: website/icons covers it."

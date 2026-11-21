@@ -1,5 +1,5 @@
 id: website
-version: 3
+version: 4
 title: Website
 description: What every public website I run carries, so it previews well, gets indexed and is readable by AI tools.
 items:
@@ -17,7 +17,15 @@ items:
   - { id: not-found, since: 3 }
   - { id: tls, since: 3 }
   - { id: html-lang, since: 3 }
+  - { id: viewport, since: 4 }
+  - { id: charset, since: 4 }
+  - { id: manifest, since: 4 }
+  - { id: domain-expiry, since: 4 }
+  - { id: theme-color, since: 4 }
 changelog:
+  - version: 4
+    date: 2026-11-21
+    notes: "Added viewport and charset (must), manifest and domain-expiry (should; domain-expiry reads RDAP, else the registry's WHOIS, which is how .sk is read) and theme-color (nice)."
   - version: 3
     date: 2026-11-21
     notes: "Added canonical-host (one host answers 200, the other and http:// redirect to it permanently), not-found (an unknown path answers 404 with a page that links home), tls (the certificate is valid 21 more days, no http:// subresources) and html-lang. Every recipe follows packs/RECIPE.md; og-video's worker now makes the video from what the repo has."

@@ -1,0 +1,19 @@
+id: viewport
+version: 1
+title: The page fits the phone and can be zoomed
+label: viewport
+why: without width=device-width a phone renders the desktop layout shrunk to fit; user-scalable=no or maximum-scale=1 stops people with low vision from zooming, which WCAG 1.4.4 and the European Accessibility Act require
+applies_to: [website, webapp]
+category: accessibility
+severity: must
+owner_role: engineering
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        - select: meta[name="viewport"]
+          attr: content
+          matches: 'width\s*=\s*device-width'
+          # zooming turned off, or capped below 2× (WCAG asks for 200 %)
+          not_matches: 'user-scalable\s*=\s*(no|0)\b|maximum-scale\s*=\s*(0*1(\.\d*)?|0*\.\d+|0)\s*($|[,;])'

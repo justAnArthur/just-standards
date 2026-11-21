@@ -1,0 +1,12 @@
+id: domain-expiry
+version: 1
+title: The domain is registered for two more months
+label: domain expiry
+why: an expired domain takes the site, its e-mail and its search ranking down at once, and can be bought by someone else; a renewal that is two months out is caught while it is still a routine task
+applies_to: [website, webapp]
+category: ops
+severity: should
+preview: false
+owner_role: engineering
+check:
+  kind: script

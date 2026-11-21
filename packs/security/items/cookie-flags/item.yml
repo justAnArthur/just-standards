@@ -1,0 +1,11 @@
+id: cookie-flags
+version: 1
+title: Cookies carry Secure and SameSite, sessions HttpOnly
+label: cookie flags
+why: a cookie without Secure can be read on a hijacked http:// request, one without SameSite rides along on other sites' requests, and a session cookie script can read is what an injected script steals
+applies_to: [website, webapp]
+category: security
+severity: should
+owner_role: engineering
+check:
+  kind: script
