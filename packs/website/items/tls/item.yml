@@ -8,5 +8,10 @@ category: security
 severity: must
 preview: false
 owner_role: engineering
+sources:
+  - title: 'MDN: Mixed content'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Mixed_content'
+  - title: 'web.dev: What is mixed content?'
+    url: 'https://web.dev/articles/what-is-mixed-content'
 check:
   kind: script

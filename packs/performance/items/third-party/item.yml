@@ -9,6 +9,11 @@ applies_to: [website, webapp]
 category: performance
 severity: should
 owner_role: engineering
+sources:
+  - title: 'Chrome for Developers (Lighthouse): Eliminate render-blocking resources'
+    url: 'https://developer.chrome.com/docs/lighthouse/performance/render-blocking-resources'
+  - title: 'web.dev: Loading third-party JavaScript'
+    url: 'https://web.dev/articles/optimizing-content-efficiency-loading-third-party-javascript'
 check:
   kind: browser
   pages: [/]

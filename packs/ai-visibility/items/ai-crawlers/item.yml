@@ -8,5 +8,12 @@ category: ai
 severity: must
 preview: false
 owner_role: engineering
+sources:
+  - title: 'OpenAI: Overview of OpenAI crawlers (OAI-SearchBot, GPTBot, ChatGPT-User)'
+    url: 'https://developers.openai.com/api/docs/bots'
+  - title: 'Anthropic: Does Anthropic crawl data from the web, and how can site owners block the crawler?'
+    url: 'https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler'
+  - title: 'Perplexity: Perplexity crawlers (PerplexityBot, Perplexity-User)'
+    url: 'https://docs.perplexity.ai/docs/resources/perplexity-crawlers'
 check:
   kind: script

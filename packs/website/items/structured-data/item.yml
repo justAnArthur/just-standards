@@ -7,6 +7,13 @@ applies_to: [website]
 category: seo
 severity: should
 owner_role: seo
+sources:
+  - title: 'Google Search Central: Organization structured data'
+    url: 'https://developers.google.com/search/docs/appearance/structured-data/organization'
+  - title: 'Google Search Central: Introduction to structured data markup'
+    url: 'https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data'
+  - title: 'schema.org: Organization'
+    url: 'https://schema.org/Organization'
 check:
   kind: http
   requests:

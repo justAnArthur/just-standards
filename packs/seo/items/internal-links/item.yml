@@ -7,5 +7,10 @@ applies_to: [website]
 category: seo
 severity: must
 owner_role: seo
+sources:
+  - title: 'Google Search Central: Link best practices for Google'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/links-crawlable'
+  - title: 'Google Search Central: Redirects and Google Search'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/301-redirects'
 check:
   kind: script

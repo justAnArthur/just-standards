@@ -7,5 +7,10 @@ applies_to: [website]
 category: content
 severity: should
 owner_role: content
+sources:
+  - title: 'Google Search Central: Local business structured data, opening hours'
+    url: 'https://developers.google.com/search/docs/appearance/structured-data/local-business'
+  - title: 'schema.org: specialOpeningHoursSpecification'
+    url: 'https://schema.org/specialOpeningHoursSpecification'
 check:
   kind: script

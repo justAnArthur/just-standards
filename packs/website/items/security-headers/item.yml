@@ -7,6 +7,13 @@ applies_to: [website, webapp]
 category: security
 severity: must
 owner_role: engineering
+sources:
+  - title: 'MDN: Strict-Transport-Security'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security'
+  - title: 'MDN: X-Content-Type-Options'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Content-Type-Options'
+  - title: 'OWASP HTTP Headers Cheat Sheet: Strict-Transport-Security'
+    url: 'https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#strict-transport-security-hsts'
 check:
   kind: http
   requests:

@@ -7,5 +7,8 @@ applies_to: [website]
 category: i18n
 severity: nice
 owner_role: engineering
+sources:
+  - title: 'Google Search Central: Managing multi-regional and multilingual sites'
+    url: 'https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites'
 check:
   kind: script

@@ -8,5 +8,8 @@ category: performance
 severity: should
 preview: false
 owner_role: engineering
+sources:
+  - title: 'web.dev: Time to First Byte (TTFB)'
+    url: 'https://web.dev/articles/ttfb'
 check:
   kind: script

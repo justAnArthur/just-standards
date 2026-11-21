@@ -1,8 +1,8 @@
 ## Done when
-The check passes on the PR's preview, and browser tabs, bookmarks and home-screen shortcuts show the brand mark: a favicon (SVG, plus a 32×32 PNG or ICO fallback) and a 180×180 `apple-touch-icon` PNG, each answering 200.
+The check passes on the PR's preview, and browser tabs, bookmarks and home-screen shortcuts show the brand mark: a favicon (SVG, plus a square PNG or ICO fallback of at least 48×48, which Google Search recommends) and a 180×180 `apple-touch-icon` PNG, each answering 200.
 
 ## Make what is missing
-Make every size from the logo SVG in the repo's brand folder, with `rsvg-convert` or `sharp`: 32×32, 180×180 (on the brand background, no transparency: iOS fills it black), and for a web app also 192×192, 512×512 and a maskable 512×512 with a `site.webmanifest`. Use the logo's mark (the symbol) rather than the full wordmark when the brand has one: a wordmark is unreadable at 32 px.
+Make every size from the logo SVG in the repo's brand folder, with `rsvg-convert` or `sharp`: 48×48 (or 96×96), 180×180 (on the brand background, no transparency: iOS fills it black), and for a web app also 192×192, 512×512 and a maskable 512×512 with a `site.webmanifest`. Use the logo's mark (the symbol) rather than the full wordmark when the brand has one: a wordmark is unreadable at 32 px.
 
 ## Stacks
 - **Next.js:** `app/icon.svg` (or `icon.png`) and `app/apple-icon.png`; Next writes the `<link>` tags. Under an `app/[locale]` segment they still go at the `app/` root.

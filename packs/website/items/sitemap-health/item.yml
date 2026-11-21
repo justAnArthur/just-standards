@@ -7,5 +7,10 @@ applies_to: [website]
 category: seo
 severity: must
 owner_role: seo
+sources:
+  - title: 'Google Search Central: Build and submit a sitemap'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap'
+  - title: 'sitemaps.org: Sitemaps XML format, sitemap file location'
+    url: 'https://www.sitemaps.org/protocol.html#location'
 check:
   kind: script

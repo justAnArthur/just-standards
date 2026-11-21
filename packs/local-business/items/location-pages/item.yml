@@ -7,5 +7,8 @@ applies_to: [website]
 category: seo
 severity: should
 owner_role: seo
+sources:
+  - title: 'Google Search Central: Local business (LocalBusiness) structured data'
+    url: 'https://developers.google.com/search/docs/appearance/structured-data/local-business'
 check:
   kind: script

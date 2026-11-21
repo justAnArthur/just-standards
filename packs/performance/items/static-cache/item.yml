@@ -7,5 +7,12 @@ applies_to: [website, webapp]
 category: performance
 severity: should
 owner_role: engineering
+sources:
+  - title: 'web.dev: Prevent unnecessary network requests with the HTTP Cache'
+    url: 'https://web.dev/articles/http-cache'
+  - title: 'Chrome for Developers (Lighthouse): Serve static assets with an efficient cache policy'
+    url: 'https://developer.chrome.com/docs/lighthouse/performance/uses-long-cache-ttl'
+  - title: 'Chrome for Developers (Lighthouse): Enable text compression'
+    url: 'https://developer.chrome.com/docs/lighthouse/performance/uses-text-compression'
 check:
   kind: script

@@ -8,5 +8,12 @@ category: seo
 severity: must
 preview: false
 owner_role: engineering
+sources:
+  - title: 'Google Search Central: How to specify a canonical URL (redirects)'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls'
+  - title: 'Google Search Central: Redirects and Google Search'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/301-redirects'
+  - title: 'HSTS Preload List: submission requirements (redirect to HTTPS on the same host first)'
+    url: 'https://hstspreload.org/'
 check:
   kind: script

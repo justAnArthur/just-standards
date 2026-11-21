@@ -7,6 +7,11 @@ applies_to: [website, webapp]
 category: brand
 severity: nice
 owner_role: engineering
+sources:
+  - title: 'MDN: meta name="theme-color"'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta/name/theme-color'
+  - title: 'HTML Living Standard: the theme-color meta name'
+    url: 'https://html.spec.whatwg.org/multipage/semantics.html#meta-theme-color'
 check:
   kind: http
   requests:

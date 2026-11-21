@@ -8,6 +8,11 @@ category: performance
 severity: should
 preview: false
 owner_role: engineering
+sources:
+  - title: 'Chrome for Developers: Lighthouse performance scoring'
+    url: 'https://developer.chrome.com/docs/lighthouse/performance/performance-scoring'
+  - title: 'PageSpeed Insights: About PageSpeed Insights'
+    url: 'https://developers.google.com/speed/docs/insights/v5/about'
 check:
   kind: psi
   strategy: mobile

@@ -7,5 +7,10 @@ applies_to: [website, webapp]
 category: content
 severity: must
 owner_role: engineering
+sources:
+  - title: 'HTML Living Standard: specifying the document''s character encoding'
+    url: 'https://html.spec.whatwg.org/multipage/semantics.html#charset'
+  - title: 'MDN: the meta element, charset'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta#charset'
 check:
   kind: script

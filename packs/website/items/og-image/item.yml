@@ -7,6 +7,9 @@ applies_to: [website, webapp]
 category: sharing
 severity: must
 owner_role: seo
+sources:
+  - title: 'The Open Graph protocol: basic metadata (og:image)'
+    url: 'https://ogp.me/#metadata'
 check:
   kind: http
   requests:

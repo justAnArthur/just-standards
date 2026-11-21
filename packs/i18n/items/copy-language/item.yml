@@ -7,5 +7,10 @@ applies_to: [website]
 category: i18n
 severity: should
 owner_role: content
+sources:
+  - title: 'Google Search Central: Managing multi-regional and multilingual sites'
+    url: 'https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites'
+  - title: 'W3C Internationalization: Declaring language in HTML'
+    url: 'https://www.w3.org/International/questions/qa-html-language-declarations'
 check:
   kind: script
