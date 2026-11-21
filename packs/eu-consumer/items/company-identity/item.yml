@@ -1,0 +1,11 @@
+id: company-identity
+version: 1
+title: The site says which company runs it
+label: company identity
+why: e-commerce law (SK zákon 22/2004, EU Directive 2000/31/EC Art. 5) asks for the operator's name, seat, register entry, tax IDs and contact on the site; customers and AI answers check who they deal with
+applies_to: [website, webapp]
+category: legal
+severity: must
+owner_role: legal
+check:
+  kind: script

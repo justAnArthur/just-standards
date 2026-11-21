@@ -1,0 +1,11 @@
+id: adr-info
+version: 1
+title: Out-of-court dispute resolution is explained
+label: ADR info
+why: traders must tell consumers which ADR body handles disputes (Directive 2013/11/EU, SK zákon 391/2015); the EU ODR platform closed in July 2025, so a link to it is stale
+applies_to: [website, webapp]
+category: legal
+severity: should
+owner_role: legal
+check:
+  kind: script

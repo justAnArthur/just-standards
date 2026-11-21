@@ -1,0 +1,11 @@
+id: privacy-policy
+version: 1
+title: Every page links a privacy policy in its language
+label: privacy policy
+why: GDPR (Art. 12-13) asks for the processing information to be easy to reach; visitors and regulators look for it in the footer of whatever page they are on
+applies_to: [website, webapp]
+category: privacy
+severity: must
+owner_role: legal
+check:
+  kind: script

@@ -1,0 +1,21 @@
+id: email-auth
+version: 1
+title: SPF and an enforcing DMARC on the domain
+label: SPF + DMARC
+why: booking confirmations land in the inbox instead of spam, and nobody can send mail as the domain; Gmail and Yahoo reject bulk mail without them
+applies_to: [website, webapp]
+category: security
+severity: must
+owner_role: engineering
+check:
+  kind: dns
+  records:
+    - type: TXT
+      expect:
+        matches: '^v=spf1\b'
+        # +all lets anyone send as the domain
+        not_matches: '[+]all\b'
+    - name: _dmarc
+      type: TXT
+      expect:
+        matches: '^v=DMARC1;(.*;)?\s*p=(quarantine|reject)\b'
