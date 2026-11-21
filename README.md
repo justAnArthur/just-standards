@@ -9,13 +9,22 @@ Standards for everything I run, written as packs. Each standard in a pack is a c
 ![The desktop app: one business, its assets × pack items, with failing, passing and in-flight cells](.github/screenshot.png)
 
 ```text
-core/           model, pack loader, check runners (http, repo, github, script, ai), fix prompts
+core/           model, pack loader, check runners (http, crawl, dns, psi, repo, github, script, ai), fix prompts
 cli/            the `standards` CLI
 app/            the desktop app (just-apps: mounted at apps/standards there, builds only inside just-apps)
-packs/website/  og tags, og:video, icons, robots + sitemap, sitemap health (script), JSON-LD, llms.txt, security headers, hero copy (AI), canonical host, 404, TLS, lang
-packs/sharing/  the full Open Graph set, a 1200×630 share image, the X large-image card
-packs/repo/     README, banner, description, topics, homepage, license; its fixer is the repo-standard skill
-docs/           the MVP spec
+stacks/         what fix runs learned about a stack (next, payload-next), added to prompts
+packs/RECIPE.md the recipe template every item follows
+packs/website/        og tags, og:video, icons, robots + sitemap, sitemap health, JSON-LD, llms.txt, security headers, hero, canonical host, 404, TLS, lang
+packs/sharing/        the full Open Graph set, a 1200×630 share image, the X large-image card
+packs/seo/            titles, descriptions, self canonicals, one h1, hreflang, internal links, alt text, indexable, breadcrumbs, URL hygiene
+packs/ai-visibility/  AI crawlers let through, server-rendered content, entity facts, customer answers
+packs/eu-consumer/    privacy policy, terms, company identity, ADR, security.txt, SPF and DMARC
+packs/analytics/      an analytics tool on the page
+packs/performance/    Core Web Vitals (CrUX), Lighthouse, TTFB, static caching
+packs/nextjs/         no segment config under cacheComponents, next/image, next/font, the Metadata API, a current Next
+packs/ai-ready/       AGENTS.md, a design system, brand assets, .env.example, content source, sites map
+packs/repo/           README, banner, description, topics, homepage, license, .gitignore, no .env; its fixer is the repo-standard skill
+docs/           the MVP spec, the milestones, the M8 plan
 assets/         brand masters (logo, app icon, lockups) and social images
 ```
 

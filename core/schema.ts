@@ -53,7 +53,16 @@ const RepoExpect = z.union([
   /** a path that must not be tracked */
   z.object({ untracked: z.string() }).strict(),
   // at least `min` tracked files match the glob, such as `brand/**/*.svg` or `{AGENTS,CLAUDE}.md`
-  z.object({ glob: z.string(), min: z.number().int().positive().default(1) }).strict(),
+  z
+    .object({
+      glob: z.string(),
+      min: z.number().int().nonnegative().default(1),
+      /** at most this many: `max: 0` forbids the files */
+      max: z.number().int().nonnegative().optional(),
+      /** globs left out of the count: `**\/.env.example` */
+      except: z.array(z.string()).default([]),
+    })
+    .strict(),
   /** a regex over the tracked files matching `in`; `none` fails on any match instead of requiring one */
   z.object({ grep: z.string(), in: z.string().default('**/*'), none: z.boolean().default(false) }).strict(),
 ])

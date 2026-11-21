@@ -15,7 +15,8 @@ const SCHEMA = JSON.stringify({
 // No WebFetch: it hands the model a summary of the page, so quotes in the evidence were unverifiable. The engine fetches the pages instead.
 const TOOLS = ['Read', 'Grep', 'Glob']
 const MAX_PAGE_CHARS = 60_000
-const DROPPED = 'script, style, svg, noscript, template, iframe, link, meta[name="viewport"]'
+// JSON-LD stays: an AI check compares what the page says with what its structured data says.
+const DROPPED = 'script:not([type="application/ld+json"]), style, svg, noscript, template, iframe, link, meta[name="viewport"]'
 const NOISY_ATTR = /^(class|style|srcset|sizes|data-.*|aria-hidden|loading|decoding|fetchpriority)$/
 
 // Markers of a Claude Code session this process may run inside; a nested `claude` would join it.
@@ -39,12 +40,19 @@ export async function readable(html: string) {
 
 type Page = { url: string; html: string } | { url: string; error: string }
 
+/** A long page keeps its head and its end, where the footer (company IDs, contacts) is, and loses the middle. */
+const cut = (html: string) => {
+  const tail = Math.floor(MAX_PAGE_CHARS / 3)
+  const head = MAX_PAGE_CHARS - tail
+  return `${html.slice(0, head)}\n(… ${html.length - MAX_PAGE_CHARS} characters left out …)\n${html.slice(-tail)}`
+}
+
 async function fetchPage(url: string): Promise<Page> {
   try {
     const response = await get(url)
     if (!response.ok) return { url, error: `answered ${response.status}` }
     const html = await readable(await response.text())
-    return { url, html: html.length > MAX_PAGE_CHARS ? `${html.slice(0, MAX_PAGE_CHARS)}\n(cut at ${MAX_PAGE_CHARS} characters)` : html }
+    return { url, html: html.length > MAX_PAGE_CHARS ? cut(html) : html }
   } catch (error) {
     return { url, error: `did not respond (${(error as Error).message})` }
   }

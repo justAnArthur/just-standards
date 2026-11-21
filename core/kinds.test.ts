@@ -3,6 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { runCheck } from './checks/index.ts'
+import { forgetPsi } from './checks/psi.ts'
 import type { LoadedItem } from './load.ts'
 import { Check, type Asset, type Business } from './schema.ts'
 
@@ -108,6 +109,7 @@ describe('psi', () => {
     expect(field.state).toBe('fail')
     expect(field.evidence).toContain('LCP 3.1 s, over 2.5 s; INP 120 ms; CLS 0.04; (field, mobile); Lighthouse performance 93')
 
+    forgetPsi()
     psiAnswer = {
       lighthouseResult: { categories: { performance: { score: 0.95 } }, audits: { 'largest-contentful-paint': { numericValue: 1800 }, 'cumulative-layout-shift': { numericValue: 0.02 } } },
     }
@@ -120,7 +122,14 @@ describe('repo', () => {
   test('glob counts tracked files; grep finds a pattern, or with none forbids it', async () => {
     const a = asset({ kind: 'repo', path: repoDir })
     expect(await run({ kind: 'repo', expect: [{ glob: 'brand/**/*.svg' }] }, a)).toMatchObject({ state: 'pass' })
-    expect((await run({ kind: 'repo', expect: [{ glob: '{AGENTS,CLAUDE}.md' }] }, a)).evidence).toBe('0 tracked files match {AGENTS,CLAUDE}.md, expected at least 1')
+    expect((await run({ kind: 'repo', expect: [{ glob: '{AGENTS,CLAUDE}.md' }] }, a)).evidence).toBe('no tracked file matches {AGENTS,CLAUDE}.md')
+    // max: 0 forbids files, except the ones listed
+    const envs = { kind: 'repo', expect: [{ glob: '**/.env{,.*,_*}', max: 0, except: ['**/.env.example'] }] }
+    expect(await run(envs, a)).toMatchObject({ state: 'pass' })
+    await Bun.write(join(repoDir, 'web/.env_site'), 'X=1')
+    await Bun.write(join(repoDir, 'web/.env.example'), 'X=')
+    Bun.spawnSync(['git', 'add', '.'], { cwd: repoDir })
+    expect(await run(envs, a)).toEqual({ state: 'fail', evidence: `tracked in ${repoDir}: web/.env_site` })
     const segment = await run({ kind: 'repo', expect: [{ grep: '^export const (dynamic|revalidate)\\b', in: 'app/**/*.{ts,tsx}', none: true }] }, a)
     expect(segment).toEqual({ state: 'fail', evidence: '/^export const (dynamic|revalidate)\\b/ in app/page.tsx:1' })
     expect(await run({ kind: 'repo', expect: [{ grep: 'Layout', in: 'app/**' }] }, a)).toMatchObject({ state: 'pass' })

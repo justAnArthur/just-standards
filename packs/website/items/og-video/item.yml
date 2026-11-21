@@ -6,6 +6,7 @@ why: link previews on LinkedIn and X can play a short loop instead of a still, w
 applies_to: [website]
 category: sharing
 severity: should
+requires: [ai-ready/brand-assets]
 tools: [ffmpeg]
 owner_role: content
 check:

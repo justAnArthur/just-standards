@@ -2,7 +2,7 @@
 
 **Goal:** every rental site (avis.sk, avisvan.sk, paylesscar.sk, avis.fo, rentcarnow.sk, and the rest) is measurably "perfect", and a worker can bring a site there without a person filling the gaps.
 
-**Status:** M8a is built ([docs/m8a.md](m8a.md)); M8b–M8e are next. The decisions are at the end.
+**Status:** M8a ([docs/m8a.md](m8a.md)) and M8b ([docs/m8b.md](m8b.md)) are built; M8c–M8e are next. The decisions are at the end.
 
 **The principle:** standards catch what gets forgotten, breaks, or never got done. They don't judge whether a design or a feature is good. An AI check asks whether something is there and true (a line under the heading, the company ID in the footer), never whether it is good. A worker builds from what the repo gives it: its design system, brand assets and docs. When the repo lacks them, that is the failing standard (`repo/brand-assets`), not a task handed to a person.
 

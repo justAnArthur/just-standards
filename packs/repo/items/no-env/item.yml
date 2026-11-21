@@ -1,8 +1,8 @@
 id: no-env
-version: 1
-title: No tracked .env
+version: 2
+title: No tracked .env files
 label: no .env
-why: a committed .env leaks secrets to everyone who can read the repo
+why: a committed .env file, anywhere in the repo, leaks secrets to everyone who can read it and stays in the history
 applies_to: [repo]
 category: security
 severity: must
@@ -10,4 +10,6 @@ owner_role: engineering
 check:
   kind: repo
   expect:
-    - untracked: .env
+    - glob: '**/.env{,.*,_*}'
+      max: 0
+      except: ['**/.env.example', '**/.env.sample', '**/.env.template', '**/.env.*.example', '**/.env.dist']

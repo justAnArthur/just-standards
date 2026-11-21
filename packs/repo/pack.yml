@@ -1,5 +1,5 @@
 id: repo
-version: 1
+version: 2
 title: Repo
 description: Every GitHub repo I keep reads well from the outside. The fixer for all of it is the repo-standard skill in this folder (SKILL.md).
 items:
@@ -12,6 +12,9 @@ items:
   - gitignore
   - no-env
 changelog:
+  - version: 2
+    date: 2026-11-21
+    notes: "no-env v2 fails any tracked .env file in the repo (packages/web/.env, .env_site, .env.local), not only the root one; .env.example and friends are fine. Recipes follow packs/RECIPE.md."
   - version: 1
     date: 2026-11-19
     notes: The repo-standard skill's checks as a pack.

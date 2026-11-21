@@ -62,8 +62,13 @@ async function expectOne(expect: RepoExpect, src: Source) {
   if ('untracked' in expect) return (await src.tracked(expect.untracked)) ? `${expect.untracked} is tracked in ${src.where}` : undefined
   if ('glob' in expect) {
     const glob = new Bun.Glob(expect.glob)
-    const found = (await src.files()).filter(path => glob.match(path)).length
-    return found >= expect.min ? undefined : `${found} tracked files match ${expect.glob}, expected at least ${expect.min}`
+    const except = expect.except.map(pattern => new Bun.Glob(pattern))
+    const found = (await src.files()).filter(path => glob.match(path) && !except.some(e => e.match(path)))
+    if (expect.max !== undefined && found.length > expect.max) {
+      return `tracked in ${src.where}: ${found.slice(0, SHOWN).join(', ')}${found.length > SHOWN ? ` and ${found.length - SHOWN} more` : ''}`
+    }
+    const min = expect.max === 0 ? 0 : expect.min
+    return found.length >= min ? undefined : `no tracked file matches ${expect.glob}${expect.min > 1 ? ` (${found.length} of ${expect.min})` : ''}`
   }
   if ('grep' in expect) return grepFiles(expect, src)
   return assertValue(expect.file, await src.read(expect.file), expect)

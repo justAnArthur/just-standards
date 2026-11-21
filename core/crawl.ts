@@ -1,5 +1,5 @@
 import { resolve } from './checks/http.ts'
-import { get } from './expect.ts'
+import { get, sameUrl } from './expect.ts'
 
 const CHILD_SITEMAPS = 5
 const CONCURRENCY = 6
@@ -17,10 +17,15 @@ async function text(url: string) {
 
 const locs = (xml: string) => [...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/g)].map(match => (match[1] as string).replaceAll('&amp;', '&'))
 
-/** The sitemap robots.txt names, or `/sitemap.xml`. */
+/** The sitemap robots.txt names, else `/sitemap.xml`, else `/sitemap-index.xml` (Astro's default) when only that one answers. */
 export async function sitemapOf(base: string) {
   const robots = (await text(resolve('/robots.txt', base))) ?? ''
-  return robots.match(/^sitemap:\s*(\S+)/im)?.[1] ?? resolve('/sitemap.xml', base)
+  const named = robots.match(/^sitemap:\s*(\S+)/im)?.[1]
+  if (named) return named
+  const plain = resolve('/sitemap.xml', base)
+  if (await text(plain)) return plain
+  const index = resolve('/sitemap-index.xml', base)
+  return (await text(index)) ? index : plain
 }
 
 /** The page URLs of a sitemap, following an index into its first few children; undefined when there is none. */
@@ -61,9 +66,10 @@ async function fetchPage(url: string): Promise<Page> {
 
 async function crawlFresh(base: string, count: number) {
   const urls = (await sitemapPages(await sitemapOf(base))) ?? []
-  const own = urls.filter(url => hostOf(url) === hostOf(base))
   const home = resolve('/', base)
-  const sample = [home, ...spread(own.filter(url => url !== home && url !== base), count - 1)]
+  // A sitemap may list a URL twice, or the home page in another spelling.
+  const own = [...new Set(urls.filter(url => hostOf(url) === hostOf(base)))].filter(url => !sameUrl(url, home) && !sameUrl(url, base))
+  const sample = [home, ...spread(own, count - 1)]
   const pages: Page[] = []
   const queue = [...sample]
   const worker = async () => {

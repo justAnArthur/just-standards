@@ -29,6 +29,28 @@ async function keyOf(wsDir: string | undefined) {
   return typeof value === 'string' && value ? value : undefined
 }
 
+/** cwv-field and lighthouse read the same run: one call per page and strategy per process. */
+const answers = new Map<string, Promise<{ ok: boolean; status: number; answer: Answer }>>()
+
+/** For tests that answer the same page differently. */
+export const forgetPsi = () => answers.clear()
+
+function ask(query: URLSearchParams) {
+  const key = `${query.get('url')} ${query.get('strategy')}`
+  let pending = answers.get(key)
+  if (!pending) {
+    pending = fetch(`${psiUrl()}?${query}`, { signal: AbortSignal.timeout(120_000) }).then(async response => ({
+      ok: response.ok,
+      status: response.status,
+      answer: (await response.json()) as Answer,
+    }))
+    // A failed call isn't kept: the next item may try again.
+    pending.catch(() => answers.delete(key))
+    answers.set(key, pending)
+  }
+  return pending
+}
+
 const ms = (value: number) => (value >= 1000 ? `${(value / 1000).toFixed(1)} s` : `${Math.round(value)} ms`)
 
 export async function psi(check: PsiCheck, { asset, wsDir }: Context): Promise<Outcome> {
@@ -39,9 +61,14 @@ export async function psi(check: PsiCheck, { asset, wsDir }: Context): Promise<O
   if (key) query.set('key', key)
   let answer: Answer
   try {
-    const response = await fetch(`${psiUrl()}?${query}`, { signal: AbortSignal.timeout(120_000) })
-    answer = (await response.json()) as Answer
-    if (!response.ok || answer.error) return { state: 'error', evidence: `PageSpeed Insights: ${answer.error?.message ?? response.status}` }
+    const asked = await ask(query)
+    answer = asked.answer
+    if (!asked.ok || answer.error) {
+      if (!key && /quota/i.test(answer.error?.message ?? '')) {
+        return { state: 'error', evidence: "PageSpeed Insights' shared keyless quota is used up: put a psi-key in the workspace's secrets.yml" }
+      }
+      return { state: 'error', evidence: `PageSpeed Insights: ${answer.error?.message ?? asked.status}` }
+    }
   } catch (error) {
     return { state: 'error', evidence: `PageSpeed Insights did not answer for ${page}: ${(error as Error).message}` }
   }
