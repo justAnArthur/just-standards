@@ -572,7 +572,6 @@ export const legal: Record<LegalPage, Record<Locale, LegalDoc>> = {
           blocks: [
             {
               list: [
-                'Výber dátumu používa ovládací prvok prehliadača; jeho prístupnosť závisí od prehliadača. Dátum môžete vždy zadať aj priamo.',
                 'Odkaz na mapu vedie na stránku OpenStreetMap, ktorej prístupnosť neovplyvňujeme. Adresu, súradnice a opis cesty uvádzame priamo na stránke pobočky.',
               ],
             },
@@ -619,7 +618,6 @@ export const legal: Record<LegalPage, Record<Locale, LegalDoc>> = {
           blocks: [
             {
               list: [
-                'The date fields use the browser’s own date picker, whose accessibility depends on the browser. You can always type the date instead.',
                 'The map link leads to OpenStreetMap, whose accessibility we don’t control. The address, the coordinates and the directions are on each branch’s page.',
               ],
             },

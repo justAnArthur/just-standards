@@ -1,6 +1,6 @@
 # Before and after
 
-Checked 2026-11-21 10:54 UTC with 9 packs, in 29 s. Passing checks per pack; waived cells (production-only, the same for both) are not counted.
+Checked 2026-11-21 10:59 UTC with 9 packs, in 40 s. Passing checks per pack; waived cells (production-only, the same for both) are not counted.
 
 | pack | before | after |
 |---|---|---|

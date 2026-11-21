@@ -5,8 +5,6 @@ export const dictionary = {
   sk: {
     skip: 'Preskočiť na hlavný obsah',
     nav: { label: 'Hlavná navigácia', fleet: 'Vozový park a ceny', locations: 'Pobočky', faq: 'Časté otázky', contact: 'Kontakt', book: 'Rezervovať' },
-    switchTo: 'English',
-    switchLabel: 'Prepnúť do angličtiny',
     breadcrumb: 'Omrvinková navigácia',
     home: 'Domov',
     booking: {
@@ -85,8 +83,6 @@ export const dictionary = {
   en: {
     skip: 'Skip to main content',
     nav: { label: 'Main navigation', fleet: 'Fleet and prices', locations: 'Pick-up points', faq: 'FAQ', contact: 'Contact', book: 'Book a car' },
-    switchTo: 'Slovenčina',
-    switchLabel: 'Switch to Slovak',
     breadcrumb: 'Breadcrumb',
     home: 'Home',
     booking: {

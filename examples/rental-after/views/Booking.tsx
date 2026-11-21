@@ -103,9 +103,9 @@ export function Booking({
                     </div>
                     <div className="sm:text-right">
                       <p className="text-sm text-muted">{c.total}</p>
-                      <p className="text-2xl font-semibold">{eur(quote.total, lang)}</p>
+                      <p className="text-2xl font-semibold">{eur(quote.total, lang, true)}</p>
                       <p className="text-sm text-muted">
-                        {eur(quote.perDay, lang)} {c.perDay} · {c.included}
+                        {eur(quote.perDay, lang, true)} {c.perDay} · {c.included}
                       </p>
                     </div>
                   </li>

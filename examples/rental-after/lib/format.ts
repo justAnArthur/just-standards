@@ -3,9 +3,9 @@ import type { Locale } from '@/lib/i18n'
 
 const intl: Record<Locale, string> = { sk: 'sk-SK', en: 'en-GB' }
 
-/** A price in euros as each language writes it: "29 €", "0,20 €"; "€29", "€0.20". */
-export function eur(amount: number, lang: Locale) {
-  const digits = Number.isInteger(amount) ? 0 : 2
+/** A price in euros as each language writes it: "29 €", "0,20 €"; "€29", "€0.20". `cents` always shows two decimals. */
+export function eur(amount: number, lang: Locale, cents = false) {
+  const digits = cents || !Number.isInteger(amount) ? 2 : 0
   return new Intl.NumberFormat(intl[lang], { style: 'currency', currency: 'EUR', minimumFractionDigits: digits, maximumFractionDigits: digits }).format(amount)
 }
 

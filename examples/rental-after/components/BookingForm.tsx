@@ -1,5 +1,6 @@
 import { locations } from '@/content/business'
 import { t } from '@/content/dictionary'
+import { addDays } from '@/lib/booking'
 import { type Locale, pathOf } from '@/lib/i18n'
 
 export interface BookingQuery {
@@ -12,10 +13,33 @@ export interface BookingQuery {
 }
 
 const TIMES = Array.from({ length: 16 }, (_, i) => `${String(i + 7).padStart(2, '0')}:00`)
+/** How far ahead the form books. */
+const DAYS_AHEAD = 180
+
+const dayLabel = (iso: string, lang: Locale) =>
+  new Intl.DateTimeFormat(lang === 'sk' ? 'sk-SK' : 'en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(
+    new Date(`${iso}T12:00:00Z`),
+  )
+
+/** The dates on offer, as a list: one Tab stop, the same in every browser, readable by every screen reader. */
+function DateOptions({ today, lang, selected }: { today: string; lang: Locale; selected: string }) {
+  const dates = Array.from({ length: DAYS_AHEAD }, (_, i) => addDays(today, i))
+  // a date in the URL beyond the list stays selectable
+  if (!dates.includes(selected) && selected >= today) dates.push(selected)
+  return (
+    <>
+      {dates.map(date => (
+        <option key={date} value={date}>
+          {dayLabel(date, lang)}
+        </option>
+      ))}
+    </>
+  )
+}
 
 /**
- * The booking search: pick-up and return point, dates and times. A plain GET form to the booking page, so it works
- * with the keyboard alone and without JavaScript.
+ * The booking search: pick-up and return point, dates and times. A plain GET form of selects to the booking page, so it
+ * works with the keyboard alone and without JavaScript.
  */
 export function BookingForm({ lang, query, today, compact = false }: { lang: Locale; query: BookingQuery; today: string; compact?: boolean }) {
   const d = t(lang).booking
@@ -56,7 +80,9 @@ export function BookingForm({ lang, query, today, compact = false }: { lang: Loc
             <label htmlFor="from" className={label}>
               {d.from}
             </label>
-            <input id="from" name="from" type="date" required min={today} defaultValue={query.from} className={field} />
+            <select id="from" name="from" required defaultValue={query.from} className={field}>
+              <DateOptions today={today} lang={lang} selected={query.from} />
+            </select>
           </div>
           <div>
             <label htmlFor="fromTime" className={label}>
@@ -74,7 +100,9 @@ export function BookingForm({ lang, query, today, compact = false }: { lang: Loc
             <label htmlFor="to" className={label}>
               {d.to}
             </label>
-            <input id="to" name="to" type="date" required min={today} defaultValue={query.to} className={field} />
+            <select id="to" name="to" required defaultValue={query.to} className={field}>
+              <DateOptions today={today} lang={lang} selected={query.to} />
+            </select>
           </div>
           <div>
             <label htmlFor="toTime" className={label}>

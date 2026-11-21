@@ -127,7 +127,7 @@ export function Footer({ lang }: { lang: Locale }) {
         <div className="mx-auto max-w-6xl space-y-2 px-4 py-6 text-sm sm:px-6">
           <p>{f.fictional}</p>
           <p>
-            © <CurrentYear /> {company.legalName}. {f.rights}
+            © <CurrentYear /> {company.legalName} {f.rights}
           </p>
         </div>
       </div>
