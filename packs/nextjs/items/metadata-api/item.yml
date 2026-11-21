@@ -6,6 +6,14 @@ why: head tags written by hand in the App Router get duplicated or dropped; meta
 applies_to: [repo]
 category: code
 severity: should
+sources:
+  - title: Next.js docs, Metadata and OG images
+    url: https://nextjs.org/docs/app/getting-started/metadata-and-og-images
+  - title: Next.js docs, generateMetadata
+    url: https://nextjs.org/docs/app/api-reference/functions/generate-metadata
+  - title: Next.js docs, Production Checklist
+    url: https://nextjs.org/docs/app/guides/production-checklist
+applies_when: { dependency: next }
 owner_role: engineering
 check:
   kind: script

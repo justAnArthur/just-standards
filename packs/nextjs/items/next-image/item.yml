@@ -6,6 +6,12 @@ why: a raw <img> skips resizing, modern formats and lazy loading, and its missin
 applies_to: [repo]
 category: code
 severity: should
+sources:
+  - title: Next.js docs, Image Component
+    url: https://nextjs.org/docs/app/api-reference/components/image
+  - title: Next.js docs, Production Checklist
+    url: https://nextjs.org/docs/app/guides/production-checklist
+applies_when: { dependency: next }
 owner_role: engineering
 check:
   kind: script

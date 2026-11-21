@@ -1,0 +1,19 @@
+id: next-script
+version: 1
+title: Scripts load through next/script
+label: next/script
+why: >-
+  a raw <script> in a component loads in the order React renders it, blocks or races hydration, and runs again on
+  client navigation; next/script loads it once, with a strategy
+applies_to: [repo]
+category: performance
+severity: should
+sources:
+  - title: Next.js docs, Production Checklist
+    url: https://nextjs.org/docs/app/guides/production-checklist
+  - title: Next.js docs, How to load and optimize scripts
+    url: https://nextjs.org/docs/app/guides/scripts
+applies_when: { dependency: next }
+owner_role: engineering
+check:
+  kind: script

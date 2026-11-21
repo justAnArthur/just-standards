@@ -1,0 +1,21 @@
+id: lint
+version: 1
+title: A linter runs Next's rules
+label: lint
+why: >-
+  Next's lint rules catch what breaks performance and accessibility (raw <img>, sync scripts, hook misuse, missing alt
+  text) as it's written; since Next 16 the build no longer lints, so a repo without a configured linter checks none of it
+applies_to: [repo]
+category: code
+severity: should
+sources:
+  - title: Next.js docs, ESLint Plugin
+    url: https://nextjs.org/docs/app/api-reference/config/eslint
+  - title: Next.js docs, upgrading to version 16 (next lint removed)
+    url: https://nextjs.org/docs/app/guides/upgrading/version-16
+  - title: Next.js docs, Production Checklist
+    url: https://nextjs.org/docs/app/guides/production-checklist
+applies_when: { dependency: next }
+owner_role: engineering
+check:
+  kind: script

@@ -1,11 +1,21 @@
 id: no-segment-config
-version: 1
-title: No route segment config with cacheComponents
+version: 2
+title: Nothing cacheComponents rejects in app/
 label: segment config
-why: with cacheComponents on, `export const dynamic` and its siblings fail `next build`, and the deploy with it
+why: >-
+  with cacheComponents on, `export const dynamic` and its siblings, and a generateStaticParams that returns no params,
+  fail `next build`, and the deploy with it
 applies_to: [repo]
 category: code
 severity: must
+sources:
+  - title: Next.js docs, Route Segment Config
+    url: https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config
+  - title: Next.js docs, cacheComponents
+    url: https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents
+  - title: Next.js docs, Migrating to Cache Components
+    url: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+applies_when: { dependency: next }
 owner_role: engineering
 check:
   kind: script

@@ -1,0 +1,19 @@
+id: async-request-apis
+version: 1
+title: params, searchParams, cookies() and headers() are awaited
+label: async request APIs
+why: >-
+  since Next 15 these are Promises; 15 still tolerated sync access with a warning, 16 removed it, so a sync read is a
+  type error in the build or undefined at runtime
+applies_to: [repo]
+category: code
+severity: must
+sources:
+  - title: Next.js docs, upgrading to version 16 (Async Request APIs)
+    url: https://nextjs.org/docs/app/guides/upgrading/version-16
+  - title: Next.js docs, upgrading to version 15 (Async Request APIs)
+    url: https://nextjs.org/docs/app/guides/upgrading/version-15
+applies_when: { dependency: next, version: ">=15" }
+owner_role: engineering
+check:
+  kind: script

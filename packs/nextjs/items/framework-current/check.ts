@@ -1,7 +1,7 @@
 import type { Context } from '../../../../core/checks/context.ts'
 import { get } from '../../../../core/expect.ts'
 import type { Outcome } from '../../../../core/schema.ts'
-import { type Checkout, type NextApp, perApp } from '../../next.ts'
+import { perApp, rangeOf } from '../../next.ts'
 
 const registry = () => process.env.STANDARDS_NPM_REGISTRY ?? 'https://registry.npmjs.org'
 
@@ -14,18 +14,6 @@ function latestNext() {
     return ((await response.json()) as { version: string }).version
   })
   return latest
-}
-
-/** The range in package.json, or the pnpm catalog entry it points at (`catalog:`, `catalog:<name>`). */
-async function rangeOf(app: NextApp, co: Checkout) {
-  const range = app.next
-  if (!range?.startsWith('catalog:')) return range
-  const workspace = Bun.YAML.parse((await co.read('pnpm-workspace.yaml')) ?? '{}') as {
-    catalog?: Record<string, string>
-    catalogs?: Record<string, Record<string, string>>
-  } | null
-  const name = range.slice('catalog:'.length)
-  return (name && name !== 'default' ? workspace?.catalogs?.[name] : workspace?.catalog)?.next
 }
 
 const major = (range: string) => Number(range.match(/\d+/)?.[0])

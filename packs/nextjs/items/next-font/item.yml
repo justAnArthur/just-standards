@@ -6,6 +6,12 @@ why: a font CDN stylesheet blocks rendering, costs a connection to another host 
 applies_to: [repo]
 category: code
 severity: should
+sources:
+  - title: Next.js docs, Font Module
+    url: https://nextjs.org/docs/app/api-reference/components/font
+  - title: Next.js docs, Production Checklist
+    url: https://nextjs.org/docs/app/guides/production-checklist
+applies_when: { dependency: next }
 owner_role: engineering
 check:
   kind: script

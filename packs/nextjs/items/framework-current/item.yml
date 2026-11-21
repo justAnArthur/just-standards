@@ -6,6 +6,12 @@ why: two majors behind, security fixes stop coming and every upgrade becomes a r
 applies_to: [repo]
 category: code
 severity: should
+sources:
+  - title: Next.js Support Policy
+    url: https://nextjs.org/support-policy
+  - title: Next.js docs, Upgrade Guides
+    url: https://nextjs.org/docs/app/guides/upgrading
+applies_when: { dependency: next }
 owner_role: engineering
 check:
   kind: script

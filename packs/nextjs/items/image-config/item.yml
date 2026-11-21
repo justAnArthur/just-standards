@@ -1,0 +1,19 @@
+id: image-config
+version: 1
+title: The image optimizer serves only the site's own image hosts
+label: image hosts
+why: >-
+  images.domains and a `**` hostname let anyone run any image on the internet through the site's optimizer, at the
+  site's cost; SVGs passed through without a CSP can carry scripts
+applies_to: [repo]
+category: security
+severity: should
+sources:
+  - title: Next.js docs, Image Component (remotePatterns, domains, dangerouslyAllowSVG)
+    url: https://nextjs.org/docs/app/api-reference/components/image
+  - title: Next.js docs, upgrading to version 16 (images.domains)
+    url: https://nextjs.org/docs/app/guides/upgrading/version-16
+applies_when: { dependency: next }
+owner_role: engineering
+check:
+  kind: script

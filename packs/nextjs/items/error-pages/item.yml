@@ -1,0 +1,23 @@
+id: error-pages
+version: 1
+title: Own 404 and error pages in app/
+label: error pages
+why: >-
+  without a root not-found and a global-error, an unknown URL or a crash in the root layout shows Next's bare default
+  page, off-brand and with no way back to the site
+applies_to: [repo]
+category: ops
+severity: should
+sources:
+  - title: Next.js docs, Production Checklist
+    url: https://nextjs.org/docs/app/guides/production-checklist
+  - title: Next.js docs, Error Handling
+    url: https://nextjs.org/docs/app/getting-started/error-handling
+  - title: Next.js docs, error.js and global-error.js
+    url: https://nextjs.org/docs/app/api-reference/file-conventions/error
+  - title: Next.js docs, not-found.js and global-not-found.js
+    url: https://nextjs.org/docs/app/api-reference/file-conventions/not-found
+applies_when: { dependency: next }
+owner_role: engineering
+check:
+  kind: script
