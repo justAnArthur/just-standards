@@ -9,6 +9,13 @@ applies_to: [website, webapp]
 category: accessibility
 severity: must
 owner_role: engineering
+sources:
+  - title: 'W3C: Web Content Accessibility Guidelines (WCAG) 2.2'
+    url: 'https://www.w3.org/TR/WCAG22/'
+  - title: 'axe-core: rule descriptions and their WCAG success criteria'
+    url: 'https://raw.githubusercontent.com/dequelabs/axe-core/develop/doc/rule-descriptions.md'
+  - title: 'EU Accessibility Act (Directive 2019/882), Annex I: accessibility requirements'
+    url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32019L0882#anx_I'
 check:
   kind: browser
   pages: [/]

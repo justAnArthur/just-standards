@@ -7,5 +7,12 @@ applies_to: [website, webapp]
 category: security
 severity: should
 owner_role: engineering
+sources:
+  - title: 'MDN: Content Security Policy (CSP)'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP'
+  - title: 'web.dev: Mitigate cross-site scripting (XSS) with a strict Content Security Policy'
+    url: 'https://web.dev/articles/strict-csp'
+  - title: 'OWASP Content Security Policy Cheat Sheet'
+    url: 'https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html'
 check:
   kind: script

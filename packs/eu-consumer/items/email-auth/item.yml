@@ -8,6 +8,13 @@ category: security
 severity: must
 preview: false
 owner_role: engineering
+sources:
+  - title: 'RFC 7208: Sender Policy Framework (SPF)'
+    url: 'https://www.rfc-editor.org/rfc/rfc7208.html'
+  - title: 'RFC 7489: Domain-based Message Authentication, Reporting, and Conformance (DMARC)'
+    url: 'https://www.rfc-editor.org/rfc/rfc7489.html'
+  - title: 'Yahoo Sender Hub: Sender best practices (requirements for bulk senders)'
+    url: 'https://senders.yahooinc.com/best-practices/'
 check:
   kind: dns
   records:

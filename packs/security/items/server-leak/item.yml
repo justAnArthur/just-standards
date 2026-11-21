@@ -7,5 +7,10 @@ applies_to: [website, webapp]
 category: security
 severity: nice
 owner_role: engineering
+sources:
+  - title: 'OWASP HTTP Headers Cheat Sheet: Server and X-Powered-By'
+    url: 'https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#server'
+  - title: 'OWASP WSTG: Fingerprint web server'
+    url: 'https://wstg.owasp.org/latest/05-Information_Gathering/02-Fingerprint_Web_Server/'
 check:
   kind: script

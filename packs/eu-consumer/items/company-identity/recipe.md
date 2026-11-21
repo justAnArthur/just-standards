@@ -1,5 +1,5 @@
 ## Done when
-The check passes on the PR's preview: the site states who operates it, in plain text, on the home page's footer, the contact page or an imprint page: the legal name with its form (s.r.o., a.s.), the registered address, the company ID and the register entry (SK: IČO and "zapísaná v Obchodnom registri Mestského súdu …, oddiel …, vložka č. …"), the tax IDs when it is a VAT payer (DIČ, IČ DPH), and an e-mail or phone.
+The check passes on the PR's preview: the site states who operates it, in plain text, on the home page's footer, the contact page or an imprint page: the legal name with its form (s.r.o., a.s.), the registered address, the company ID and the register entry (SK: IČO and "zapísaná v Obchodnom registri Mestského súdu …, oddiel …, vložka č. …"), the tax IDs when it is a VAT payer (DIČ, IČ DPH), an e-mail address and a phone number (SK § 4(1)(c) of zákon 22/2004 asks for both), and, in Slovakia, the name and address of the supervisory authority (§ 4(1)(e): the Slovenská obchodná inšpekcia's inspectorate for the region of the seat, unless the business context names another).
 
 ## Make what is missing
 - Take every fact from the business context or from the site's own terms (VOP), which usually open with them. Never from memory.

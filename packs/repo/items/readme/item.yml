@@ -7,6 +7,9 @@ applies_to: [repo]
 category: docs
 severity: must
 owner_role: engineering
+sources:
+  - title: 'GitHub Docs: About READMEs'
+    url: 'https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes'
 check:
   kind: github
   expect:

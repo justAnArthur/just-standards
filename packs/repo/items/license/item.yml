@@ -7,6 +7,11 @@ applies_to: [repo]
 category: legal
 severity: should
 owner_role: engineering
+sources:
+  - title: 'GitHub Docs: Licensing a repository'
+    url: 'https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository'
+  - title: 'Choose an open source license (by GitHub)'
+    url: 'https://choosealicense.com/'
 check:
   kind: github
   expect:

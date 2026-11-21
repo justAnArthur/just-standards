@@ -2,10 +2,13 @@ id: faq-schema
 version: 1
 title: The FAQ page carries FAQPage JSON-LD that matches its questions
 label: FAQ schema
-why: renters ask the same questions (deposit, age, insurance, abroad); FAQPage structured data whose questions are the page's own lets search and AI answers quote the site instead of a competitor
+why: renters ask the same questions (deposit, age, insurance, abroad); FAQPage structured data whose questions are the page's own hands AI assistants and other search engines the answers in a form they parse (Google stopped showing FAQ rich results in May 2026)
 applies_to: [website]
 category: seo
 severity: should
 owner_role: seo
+sources:
+  - title: 'schema.org: FAQPage'
+    url: 'https://schema.org/FAQPage'
 check:
   kind: script

@@ -7,5 +7,10 @@ applies_to: [repo]
 category: docs
 severity: must
 owner_role: engineering
+sources:
+  - title: 'AGENTS.md: the open format for guiding coding agents'
+    url: 'https://agents.md/'
+  - title: 'Claude Code docs: Manage Claude''s memory (CLAUDE.md, imports)'
+    url: 'https://code.claude.com/docs/en/memory'
 check:
   kind: script

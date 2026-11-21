@@ -7,5 +7,10 @@ applies_to: [website, webapp]
 category: security
 severity: should
 owner_role: engineering
+sources:
+  - title: 'MDN: Set-Cookie header'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie'
+  - title: 'OWASP Session Management Cheat Sheet: cookies'
+    url: 'https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#cookies'
 check:
   kind: script

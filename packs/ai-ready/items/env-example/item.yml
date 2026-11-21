@@ -7,5 +7,8 @@ applies_to: [repo]
 category: docs
 severity: must
 owner_role: engineering
+sources:
+  - title: 'The Twelve-Factor App: III. Config'
+    url: 'https://12factor.net/config'
 check:
   kind: script

@@ -7,5 +7,12 @@ applies_to: [website, webapp]
 category: legal
 severity: must
 owner_role: legal
+sources:
+  - title: 'Consumer Rights Directive 2011/83/EU (consolidated), Article 6: information requirements for distance contracts'
+    url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02011L0083-20260927#art_6'
+  - title: 'E-Commerce Directive 2000/31/EC, Article 10(3): terms available to store and reproduce'
+    url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02000L0031-20240217'
+  - title: 'Zákon č. 108/2024 Z. z. o ochrane spotrebiteľa, § 5 Všeobecné informačné povinnosti obchodníka'
+    url: 'https://static.slov-lex.sk/static/SK/ZZ/2024/108/20260927.html#paragraf-5'
 check:
   kind: script

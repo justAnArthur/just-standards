@@ -7,5 +7,10 @@ applies_to: [website]
 category: content
 severity: should
 owner_role: content
+sources:
+  - title: 'schema.org: Car'
+    url: 'https://schema.org/Car'
+  - title: 'Google Search Central: Product structured data'
+    url: 'https://developers.google.com/search/docs/appearance/structured-data/product'
 check:
   kind: script
