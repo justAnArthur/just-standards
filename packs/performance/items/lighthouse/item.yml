@@ -1,0 +1,13 @@
+id: lighthouse
+version: 1
+title: Lighthouse performance 90+ on mobile
+label: Lighthouse
+why: the lab score names what makes the page slow before field data shows it, on a mid-range phone and a slow network
+applies_to: [website, webapp]
+category: performance
+severity: should
+owner_role: engineering
+check:
+  kind: psi
+  strategy: mobile
+  lab: { performance: 0.9 }

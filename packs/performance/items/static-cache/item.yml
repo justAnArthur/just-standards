@@ -1,0 +1,11 @@
+id: static-cache
+version: 1
+title: Hashed assets cached for a year, HTML compressed
+label: static cache
+why: a returning visitor should download no script or stylesheet twice, and every visitor should get the HTML compressed
+applies_to: [website, webapp]
+category: performance
+severity: should
+owner_role: engineering
+check:
+  kind: script

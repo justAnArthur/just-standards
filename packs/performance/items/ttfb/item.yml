@@ -1,0 +1,11 @@
+id: ttfb
+version: 1
+title: Home page answers within 800 ms
+label: TTFB
+why: nothing renders before the first byte; a slow server or an uncached page delays every other metric
+applies_to: [website, webapp]
+category: performance
+severity: should
+owner_role: engineering
+check:
+  kind: script
