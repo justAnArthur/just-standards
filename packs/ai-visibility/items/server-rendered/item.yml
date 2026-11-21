@@ -1,0 +1,11 @@
+id: server-rendered
+version: 1
+title: The content is in the HTML as served
+label: server-rendered
+why: most AI crawlers run no JavaScript; a page that arrives as an empty app shell is blank to them, and slow to index for search engines
+applies_to: [website]
+category: ai
+severity: must
+owner_role: engineering
+check:
+  kind: script

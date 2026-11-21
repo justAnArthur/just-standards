@@ -1,0 +1,11 @@
+id: ai-crawlers
+version: 1
+title: AI crawlers are let in
+label: AI crawlers
+why: ChatGPT, Claude, Perplexity and Gemini only cite and recommend sites their crawlers can read; a robots.txt rule or a CDN's "block AI bots" switch takes the site out of their answers
+applies_to: [website]
+category: ai
+severity: must
+owner_role: engineering
+check:
+  kind: script

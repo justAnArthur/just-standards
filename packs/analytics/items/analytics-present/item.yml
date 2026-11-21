@@ -1,0 +1,11 @@
+id: analytics-present
+version: 1
+title: The home page loads an analytics tool
+label: analytics
+why: without analytics nobody knows which pages, campaigns or changes bring bookings; a tool dropped in a rebuild goes unnoticed for months
+applies_to: [website, webapp]
+category: analytics
+severity: must
+owner_role: marketing
+check:
+  kind: script

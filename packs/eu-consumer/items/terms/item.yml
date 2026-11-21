@@ -1,0 +1,11 @@
+id: terms
+version: 1
+title: The terms are linked from the home page
+label: terms
+why: a consumer must be able to read the terms (VOP, rental conditions) and the complaints procedure before ordering; Slovak and EU consumer law make them binding only when they were available
+applies_to: [website, webapp]
+category: legal
+severity: must
+owner_role: legal
+check:
+  kind: script

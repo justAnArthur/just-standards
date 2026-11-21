@@ -1,0 +1,10 @@
+id: analytics
+version: 1
+title: Analytics
+description: What a site needs so its owner can tell which pages and campaigns work.
+items:
+  - analytics-present
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: "First version: a known analytics tool (Umami, GA4, GTM, Plausible, Matomo, Fathom, Simple Analytics, PostHog, Vercel Analytics) is in the home page's HTML, loaded directly or held for consent."

@@ -1,0 +1,11 @@
+id: security-txt
+version: 1
+title: security.txt with a contact and a future expiry
+label: security.txt
+why: someone who finds a vulnerability knows where to report it (RFC 9116); an expired file tells them nobody reads it
+applies_to: [website, webapp]
+category: security
+severity: should
+owner_role: engineering
+check:
+  kind: script
