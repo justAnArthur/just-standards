@@ -28,6 +28,12 @@ bun cli/standards.ts check rental-after --workspace examples/workspace
 bun cli/standards.ts spec rental-after site --workspace examples/workspace   # every adopted standard as one brief
 ```
 
+Screenshots of both sites side by side (first screen on a desktop and a phone, the 404 page, and how a link looks in Google and when shared), from the last builds, into `results/screens/`:
+
+```bash
+bun examples/screenshots.ts
+```
+
 ## Results
 
 With the packs on this branch (2026-11-21, `results/summary.md`):

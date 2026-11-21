@@ -115,6 +115,9 @@ function browser() {
   return launched
 }
 
+/** The process's Chromium, started the way `browser` items start it: for scripts such as examples/screenshots.ts. */
+export const sharedBrowser = () => browser()
+
 /** Whether a Chromium can be launched here; tests skip without one. */
 export async function canLaunch() {
   try {
