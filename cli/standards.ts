@@ -2,6 +2,7 @@
 import { join } from 'node:path'
 import { parseArgs } from 'node:util'
 import { type CellStatus, cellsOf, checkBusiness, statusOf } from '../core/cells.ts'
+import { closeBrowser } from '../core/checks/browser.ts'
 import { allowWorker, clone, initWorkspace, removeBusiness, removeWorker, setBusiness, setWorker } from '../core/config.ts'
 import { fix } from '../core/fix.ts'
 import { githubLogin, githubStatus } from '../core/github.ts'
@@ -106,6 +107,8 @@ async function check(ws: Workspace, ids: string[]) {
     if (!json) console.log(`\n${business.name} · ${cells.length} checks`)
     await checkBusiness(ws, business, cells, printResult)
   }
+  // browser items share one Chromium; closed now rather than after its idle wait
+  await closeBrowser()
 }
 
 async function status(ws: Workspace, ids: string[]) {

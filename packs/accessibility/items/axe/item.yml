@@ -1,0 +1,19 @@
+id: axe
+version: 1
+title: No serious or critical axe-core violations
+label: axe
+why: >-
+  the EAA asks for WCAG 2.1 AA (through EN 301 549); axe-core's serious and critical findings (contrast, missing labels,
+  unnamed buttons and links, images without alt) are the barriers that stop a screen-reader or low-vision visitor from booking
+applies_to: [website, webapp]
+category: accessibility
+severity: must
+owner_role: engineering
+check:
+  kind: browser
+  pages: [/]
+  # and two pages spread across the sitemap: the fleet, a location, the contact page
+  sample: 2
+  viewport: desktop
+  expect:
+    - axe: { impact: [serious, critical] }

@@ -1,0 +1,16 @@
+id: third-party
+version: 1
+title: No third-party script or stylesheet blocks the first render
+label: 3rd-party blocking
+why: >-
+  a render-blocking file from another host holds the whole page blank until that host answers; when it is slow or down,
+  so is the site
+applies_to: [website, webapp]
+category: performance
+severity: should
+owner_role: engineering
+check:
+  kind: browser
+  pages: [/]
+  viewport: mobile
+  script: check.ts

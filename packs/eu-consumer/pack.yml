@@ -1,5 +1,5 @@
 id: eu-consumer
-version: 1
+version: 2
 title: EU consumer
 description: What a site selling to consumers in the EU (and, by our own rule, the Faroe Islands) must say about who runs it, its terms, privacy and disputes, and the basics of mail and security contact.
 items:
@@ -9,7 +9,12 @@ items:
   - adr-info
   - security-txt
   - email-auth
+  - { id: cookie-consent, since: 2 }
+  - { id: consent-mode, since: 2 }
 changelog:
   - version: 1
     date: 2026-11-21
     notes: "First version: privacy policy on every sampled page, terms from the home page, company identity and ADR information (AI), security.txt, SPF and DMARC."
+  - version: 2
+    date: 2026-11-21
+    notes: "cookie-consent (must) and consent-mode (should), checked in a real browser: nothing tracks before a choice, reject is on the first layer and works, Google tags start with Consent Mode v2 denied."

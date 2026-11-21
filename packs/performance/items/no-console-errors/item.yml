@@ -1,0 +1,17 @@
+id: no-console-errors
+version: 1
+title: No JavaScript errors on the home page and two others
+label: console errors
+why: >-
+  an uncaught exception or a failed resource is a feature that broke silently, such as a form that doesn't send, a gallery that doesn't open, a tag that doesn't fire
+applies_to: [website, webapp]
+category: performance
+severity: should
+owner_role: engineering
+check:
+  kind: browser
+  pages: [/]
+  sample: 2
+  viewport: mobile
+  expect:
+    - console: {}

@@ -1,0 +1,18 @@
+id: page-weight
+version: 1
+title: The home page loads under 1.5 MB, scripts under 400 KB
+label: page weight
+why: >-
+  every megabyte is seconds on a phone on mobile data, and JavaScript costs twice: to download and to run; a page that
+  grew with each release is slow long before anyone notices
+applies_to: [website, webapp]
+category: performance
+severity: should
+owner_role: engineering
+check:
+  kind: browser
+  pages: [/]
+  viewport: mobile
+  expect:
+    # bytes over the wire (compressed), everything the page loads until the network is quiet; change the limits per site in a workspace pack
+    - transfer: { total_kb: 1500, js_kb: 400 }

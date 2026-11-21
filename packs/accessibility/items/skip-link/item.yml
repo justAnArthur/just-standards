@@ -1,0 +1,15 @@
+id: skip-link
+version: 1
+title: The first Tab offers a skip link to the content
+label: skip link
+why: without one, a keyboard or screen-reader visitor tabs through the whole header and menu on every page before reaching the content (WCAG 2.4.1)
+applies_to: [website, webapp]
+category: accessibility
+severity: should
+owner_role: engineering
+check:
+  kind: browser
+  pages: [/]
+  viewport: desktop
+  keyboard: { tabs: 3 }
+  script: check.ts

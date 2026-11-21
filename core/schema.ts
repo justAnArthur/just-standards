@@ -73,7 +73,62 @@ export type GithubField = z.infer<typeof GithubField>
 const GithubExpect = z.object({ field: GithubField, ...value }).strict()
 export type GithubExpect = z.infer<typeof GithubExpect>
 
+const Impact = z.enum(['minor', 'moderate', 'serious', 'critical'])
+
+/**
+ * Assertions over what a `browser` visit collected, on every page visited:
+ * - `axe`: no violation of WCAG 2.2 A/AA rules with one of `impact`;
+ * - `console`: no `console.error` or uncaught exception, except messages matching `ignore`;
+ * - `transfer`: bytes over the wire (compressed, headers included) of everything the page loaded, and of its scripts;
+ * - `trackers`: before any interaction, no request to a known tracker and no tracker or third-party cookie
+ *   (`core/trackers.ts`); `allow_cookies` names cookies that are fine anyway.
+ */
+const BrowserExpect = z.union([
+  z.object({ axe: z.object({ impact: z.array(Impact).min(1).default(['serious', 'critical']) }) }).strict(),
+  z.object({ console: z.object({ ignore: z.string().optional() }) }).strict(),
+  z.object({ transfer: z.object({ total_kb: z.number().positive().optional(), js_kb: z.number().positive().optional() }) }).strict(),
+  z.object({ trackers: z.object({ allow_cookies: z.string().optional() }) }).strict(),
+])
+export type BrowserExpect = z.infer<typeof BrowserExpect>
+
 export const Check = z.discriminatedUnion('kind', [
+  /**
+   * A real Chromium (playwright-core) loads each page in a fresh incognito context and collects: every request (URL,
+   * type, bytes, third party, tracker), the cookies set before any interaction, console errors and uncaught exceptions,
+   * optionally axe-core's violations (`axe`, implied by an `axe` expectation) and where focus lands on `keyboard.tabs`
+   * Tab presses. Production URLs are read from a preview being checked, with its bypass header.
+   *
+   * Judging is declarative where it can be: `expect` (see BrowserExpect). What a list can't say goes in `script`, the
+   * item's own module:
+   *   export async function probe(page, visit): unknown  // optional; runs in the settled page, may click; kept as visit.probe
+   *   export default async function (visits: Visit[], ctx: Context): Outcome
+   * Both may be given; the outcome fails when either does.
+   *
+   *   check:
+   *     kind: browser
+   *     pages: [/]        # paths of the asset's URL
+   *     sample: 2         # and two pages sampled from the sitemap
+   *     viewport: desktop
+   *     expect:
+   *       - axe: { impact: [serious, critical] }
+   */
+  z.object({
+    kind: z.literal('browser'),
+    pages: z.array(z.string()).min(1).default(['/']),
+    /** pages sampled across the sitemap, on the asset's host, besides `pages` */
+    sample: z.number().int().min(0).max(10).default(0),
+    /** mobile: 390×844 at 2× with touch; desktop: 1366×900 */
+    viewport: z.enum(['mobile', 'desktop']).default('mobile'),
+    /** emulate `prefers-reduced-motion: reduce` */
+    reduced_motion: z.boolean().default(false),
+    /** run axe-core on each page (WCAG 2.2 A and AA rules) */
+    axe: z.boolean().default(false),
+    /** press Tab this many times from the top of the page, recording each stop */
+    keyboard: z.object({ tabs: z.number().int().positive().max(200).default(40) }).optional(),
+    expect: z.array(BrowserExpect).default([]),
+    /** the item's module: `probe` and a default judge (see above) */
+    script: z.string().optional(),
+  }),
   z.object({
     kind: z.literal('http'),
     requests: z

@@ -9,7 +9,7 @@ Standards for everything I run, written as packs. Each standard in a pack is a c
 ![The desktop app: one business, its assets × pack items, with failing, passing and in-flight cells](.github/screenshot.png)
 
 ```text
-core/           model, pack loader, check runners (http, crawl, dns, psi, repo, github, script, ai), fix prompts
+core/           model, pack loader, check runners (http, crawl, dns, psi, browser, repo, github, script, ai), fix prompts
 cli/            the `standards` CLI
 app/            the desktop app (just-apps: mounted at apps/standards there, builds only inside just-apps)
 stacks/         what fix runs learned about a stack (next, payload-next), added to prompts
@@ -18,9 +18,10 @@ packs/website/        og tags, og:video, icons, robots + sitemap, sitemap health
 packs/sharing/        the full Open Graph set, a 1200×630 share image, the X large-image card
 packs/seo/            titles, descriptions, self canonicals, one h1, hreflang, internal links, alt text, indexable, breadcrumbs, URL hygiene
 packs/ai-visibility/  AI crawlers let through, server-rendered content, entity facts, customer answers
-packs/eu-consumer/    privacy policy, terms, company identity, ADR, security.txt, SPF and DMARC
+packs/eu-consumer/    privacy policy, terms, company identity, ADR, security.txt, SPF and DMARC, cookie consent, Consent Mode v2
 packs/analytics/      an analytics tool on the page
-packs/performance/    Core Web Vitals (CrUX), Lighthouse, TTFB, static caching
+packs/performance/    Core Web Vitals (CrUX), Lighthouse, TTFB, static caching, page weight, console errors, render-blocking third parties, image formats
+packs/accessibility/  axe-core, keyboard reach and visible focus, skip link, reduced motion, accessibility statement
 packs/nextjs/         no segment config under cacheComponents, next/image, next/font, the Metadata API, a current Next
 packs/ai-ready/       AGENTS.md, a design system, brand assets, .env.example, content source, sites map
 packs/repo/           README, banner, description, topics, homepage, license, .gitignore, no .env; its fixer is the repo-standard skill
@@ -30,7 +31,7 @@ assets/         brand masters (logo, app icon, lockups) and social images
 
 ## CLI
 
-Needs [Bun](https://bun.sh) and, for the repo pack, `gh`. A workspace is a folder with `businesses/*.yml` and `workers.yml` (format in the [spec](docs/mvp-spec.md#3-files)).
+Needs [Bun](https://bun.sh), for the repo pack `gh`, and for browser items a Chromium that playwright-core can start (`bunx playwright-core install chromium-headless-shell`; an older Playwright's build, Google Chrome or `STANDARDS_CHROMIUM` also do). A workspace is a folder with `businesses/*.yml` and `workers.yml` (format in the [spec](docs/mvp-spec.md#3-files)).
 
 ```bash
 bun install

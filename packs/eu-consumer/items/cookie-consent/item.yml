@@ -1,0 +1,20 @@
+id: cookie-consent
+version: 1
+title: Nothing tracks before consent, and rejecting is one click
+label: cookie consent
+why: >-
+  the ePrivacy Directive and GDPR allow non-essential cookies and trackers only after a free, informed choice; regulators
+  (and the EDPB's cookie-banner taskforce) fine sites that track on load or hide "reject" behind a settings screen
+applies_to: [website, webapp]
+category: privacy
+severity: must
+owner_role: legal
+check:
+  kind: browser
+  pages: [/]
+  viewport: mobile
+  expect:
+    # loaded fresh, with nothing clicked: no request to a known tracker, no tracker or third-party cookie
+    - trackers: {}
+  # the banner: a reject as easy as accept, and nothing tracks after it is clicked
+  script: check.ts
