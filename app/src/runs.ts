@@ -18,6 +18,12 @@ export interface RunRecord extends Omit<FixRun, 'transcript' | 'pr'> {
   summary?: string
   /** What a person must provide before the PR can merge; the PR is then a draft. */
   missing?: string[]
+  /** The run's items all passed on the PR's preview (false: some still failed after the last round). */
+  verified?: boolean
+  /** Items still failing on the preview when the run ended. */
+  unverified?: string[]
+  /** How many times the worker was sent back to an item still failing on the preview. */
+  rounds?: number
   /** How the worktree got its dependencies. */
   setup?: { command: string; ok: boolean; error?: string }
   /** The run's items checked on the PR's preview deployment. */
@@ -27,6 +33,8 @@ export interface RunRecord extends Omit<FixRun, 'transcript' | 'pr'> {
     url?: string
     results: { item: string; state: 'pass' | 'fail' | 'error'; evidence: string }[]
     note?: string
+    /** Items only production can show, checked after the merge. */
+    skipped?: string[]
   }
 }
 

@@ -167,6 +167,9 @@ export function RunPane({ run, business, live, loaded, onRead, onRespond, onAllo
     record.model,
     record.branch,
     record.pr?.draft && 'draft PR',
+    record.verified === true && 'verified on the preview',
+    record.verified === false && 'still failing on the preview',
+    record.rounds && `sent back ${record.rounds === 1 ? 'once' : `${record.rounds} times`}`,
     running ? `running for ${time}` : time,
     record.cost_usd !== undefined && `$${record.cost_usd.toFixed(2)}`,
   ]
@@ -249,6 +252,9 @@ function PreviewChecks({ preview }: { preview: NonNullable<RunRecord['preview']>
         </a>
       )}
       {preview.note && <p className="text-body text-muted-foreground">{preview.note}</p>}
+      {preview.skipped?.length ? (
+        <p className="text-caption text-muted-foreground">Only production can show {preview.skipped.join(', ')}: checked after the merge.</p>
+      ) : null}
       {preview.results.length > 0 && (
         <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
           {preview.results.map(result => (
