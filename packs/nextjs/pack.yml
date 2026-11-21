@@ -1,0 +1,17 @@
+id: nextjs
+version: 1
+title: Next.js
+description: >-
+  The rules Next.js App Router repos keep breaking, read from the code. Adopt it for Next.js repos only; on any other repo
+  every item reports "not a Next.js repo" as an error. The items read a checkout, so a site's code is its own asset:
+  `kind: repo` with `path` (a local checkout) and `repo`. A monorepo's Next apps are each checked.
+items:
+  - no-segment-config
+  - next-image
+  - next-font
+  - metadata-api
+  - framework-current
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: First version.

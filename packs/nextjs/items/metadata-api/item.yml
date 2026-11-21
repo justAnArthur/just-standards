@@ -1,0 +1,11 @@
+id: metadata-api
+version: 1
+title: Metadata through the Metadata API
+label: metadata API
+why: head tags written by hand in the App Router get duplicated or dropped; metadata and generateMetadata merge layouts and pages
+applies_to: [repo]
+category: code
+severity: should
+owner_role: engineering
+check:
+  kind: script

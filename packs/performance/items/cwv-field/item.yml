@@ -1,0 +1,14 @@
+id: cwv-field
+version: 1
+title: Core Web Vitals pass on mobile
+label: Web Vitals
+why: Google ranks by them, and a slow, jumpy or laggy page loses visitors before it loads
+applies_to: [website, webapp]
+category: performance
+severity: must
+owner_role: engineering
+check:
+  kind: psi
+  strategy: mobile
+  # CrUX p75 over 28 days, "good" thresholds; a site without enough Chrome traffic falls back to the lab run (no INP there)
+  field: { lcp_ms: 2500, inp_ms: 200, cls: 0.1 }

@@ -1,0 +1,11 @@
+id: brand-assets
+version: 1
+title: Logo, colours and fonts in a brand folder, with a README
+label: brand assets
+why: og images, icons and videos are made from the brand; without the files and what each is for, a worker can't make them right
+applies_to: [repo]
+category: brand
+severity: must
+owner_role: design
+check:
+  kind: script

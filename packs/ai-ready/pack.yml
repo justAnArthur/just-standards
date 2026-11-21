@@ -1,0 +1,18 @@
+id: ai-ready
+version: 1
+title: AI-ready repo
+description: >-
+  What an agent needs in a repo to work without asking: how to run it, the design system, the brand assets, the env
+  vars, where content comes from and which site is which. For repo assets; env-example reads every source file and
+  needs the asset's local `path`, the rest also read GitHub.
+items:
+  - agents-md
+  - design-system
+  - brand-assets
+  - env-example
+  - content-source
+  - sites-map
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: First version.

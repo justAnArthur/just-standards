@@ -1,0 +1,21 @@
+id: sites-map
+version: 1
+title: Which folder or config is which site, with its domain
+label: sites map
+why: in a repo serving several sites, an agent that can't tell them apart fixes the wrong one, or all of them
+applies_to: [repo]
+category: docs
+severity: should
+owner_role: engineering
+check:
+  kind: ai
+  model: haiku
+  prompt: |
+    Find out whether this repo serves several websites: sites with their own domain or brand, deployed separately or
+    told apart by host. Look for per-site folders, config files or env files (`sites/`, `apps/*`, a sites or tenants
+    list, per-site `.env_*` files, domains in config or middleware), with Glob and Grep.
+    One deployment under one domain is one site, however many sections, sub-paths or docs pages it has.
+    Pass, and say so, when it serves one site or none.
+    When it serves several, read AGENTS.md, CLAUDE.md and README.md at the root (those that exist): pass if they list each
+    site with the folder or config that makes it and its domain; fail if a site, its folder or its domain is missing.
+    Name the sites you found.

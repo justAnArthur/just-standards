@@ -1,0 +1,11 @@
+id: no-segment-config
+version: 1
+title: No route segment config with cacheComponents
+label: segment config
+why: with cacheComponents on, `export const dynamic` and its siblings fail `next build`, and the deploy with it
+applies_to: [repo]
+category: code
+severity: must
+owner_role: engineering
+check:
+  kind: script

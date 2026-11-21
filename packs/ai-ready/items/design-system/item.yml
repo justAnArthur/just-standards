@@ -1,0 +1,14 @@
+id: design-system
+version: 1
+title: The design system is written down in one place
+label: design system
+why: a worker builds pages, cards and videos from the repo's tokens and components; without them written down it invents a look
+applies_to: [repo]
+category: brand
+severity: must
+owner_role: design
+check:
+  kind: repo
+  expect:
+    # a design doc, Storybook or Ladle stories, anywhere in the repo
+    - glob: '{**/DESIGN.md,**/design.md,**/DESIGN-SYSTEM.md,**/design-system.md,docs/design/**/*.md,docs/design-system/**/*.md,**/*.stories.{ts,tsx,js,jsx,mdx,svelte,vue},**/.storybook/main.{ts,js,mjs,cjs},**/.ladle/components.{ts,tsx,js,jsx}}'
