@@ -1,0 +1,21 @@
+id: content-source
+version: 1
+title: Where content comes from, and how to change it locally
+label: content source
+why: an agent that doesn't know the copy lives in the CMS edits a fallback in the code, or a seed nobody reads
+applies_to: [repo]
+category: docs
+severity: should
+owner_role: engineering
+check:
+  kind: ai
+  model: haiku
+  prompt: |
+    Read AGENTS.md, CLAUDE.md and README.md at the root of the current directory (those that exist, and the files they
+    point to with `@file`), and glance at the repo's layout with Glob.
+    Pass if they say where the content a visitor sees comes from (a CMS such as Payload, Strapi or Sanity; Markdown or
+    MDX files in a named folder; a database; an API) and how to change it locally (start the CMS admin and where, seed it,
+    edit which files).
+    Also pass, and say so, when the repo serves no content of its own (a library, a CLI, an engine).
+    Fail when content clearly exists (a CMS dependency, content folders, seed files) but the docs don't say where it lives
+    or how to change it. Name the file and quote the sentence that says it, or name what is missing.

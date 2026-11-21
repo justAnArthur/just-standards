@@ -1,0 +1,11 @@
+id: agents-md
+version: 1
+title: AGENTS.md says how to install, run, build, test and lint
+label: AGENTS.md
+why: an agent that has to guess the commands runs the wrong ones, or none, and ships code nobody built or tested
+applies_to: [repo]
+category: docs
+severity: must
+owner_role: engineering
+check:
+  kind: script

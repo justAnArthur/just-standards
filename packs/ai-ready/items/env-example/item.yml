@@ -1,0 +1,11 @@
+id: env-example
+version: 1
+title: .env.example lists every variable the code reads
+label: .env.example
+why: a variable missing from the example is found when the app crashes in a worktree, a preview or a new machine
+applies_to: [repo]
+category: docs
+severity: must
+owner_role: engineering
+check:
+  kind: script
