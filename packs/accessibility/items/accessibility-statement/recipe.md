@@ -7,7 +7,7 @@ Write the statement from what the site is and what the checks found, in every si
 - **The standard:** "This site aims to conform to WCAG 2.1 level AA (EN 301 549 v3.2.1), as the European Accessibility Act (Directive (EU) 2019/882) and Act No. 351/2022 Coll. require."
 - **Status:** partly or fully conformant. List the known gaps honestly from the `accessibility` items still failing (axe rules, keyboard, third-party widgets such as the booking engine), each with what is being done.
 - **Feedback:** how to report a barrier (the contact e-mail and phone from the business context) and the date of the last review.
-- **Enforcement:** the national market-surveillance body (Slovakia: the Slovak Trade Inspection, SOI).
+- **Enforcement:** the market-surveillance authority the national law names for services, with how to contact it; take its name from the law itself (Act 351/2022 in Slovakia), not from memory.
 Link it in the footer next to the privacy policy: "Vyhlásenie o prístupnosti" (sk), "Accessibility statement" (en), "Erklärung zur Barrierefreiheit" (de), and the Faroese from the site's own translations.
 
 ## Stacks
