@@ -1,0 +1,32 @@
+- id: sonnet-fixer
+  runtime: claude-code
+  profile: ~/.claude
+  model: sonnet
+  effort: medium
+  permission_mode: acceptEdits
+  allow: 
+    - Bash(git *)
+    - Bash(gh pr *)
+    - Bash(gh repo edit *)
+    - Bash(bun *)
+    - Bash(npm *)
+- id: opus-fixer
+  runtime: claude-code
+  profile: ~/.claude
+  model: opus
+  effort: high
+  permission_mode: acceptEdits
+  allow: 
+    - Bash(git *)
+    - Bash(gh pr *)
+    - Bash(gh repo edit *)
+    - Bash(bun *)
+    - Bash(npm *)
+- id: opus-reviewer
+  runtime: claude-code
+  profile: ~/.claude
+  model: opus
+  effort: high
+  permission_mode: plan
+  allow: 
+    []

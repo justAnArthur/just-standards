@@ -1,0 +1,6 @@
+# each app's own .gitignore covers its build; these are here for anything run from examples/
+rental-*/node_modules/
+rental-*/.next/
+rental-*/.brand-tmp/
+workspace/.state/
+workspace/secrets.yml

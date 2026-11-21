@@ -1,0 +1,17 @@
+# Príklad Rent, the fictional car and van rental of examples/, as the bare create-next-app scaffold (examples/rental-before).
+# Paths are relative to the just-standards checkout: run the CLI from its root (examples/run.ts does).
+# examples/run.ts rewrites the packs line with every pack in packs/ but repo, which reads GitHub.
+id: rental-before
+name: Príklad Rent (before)
+assets:
+  - { id: site, kind: website, url: http://localhost:3101, stack: next }
+  - { id: code, kind: repo, path: examples/rental-before, stack: next }
+packs: [ai-ready, ai-visibility, analytics, eu-consumer, nextjs, performance, seo, sharing, website]
+# The same waivers for before and after: what only the production domain can show.
+waivers:
+  - { item: website/tls, asset: site, reason: "localhost serves plain HTTP; the certificate belongs to the production host" }
+  - { item: website/canonical-host, asset: site, reason: "localhost has no www twin and no https listener; the host redirects are the production domain's" }
+  - { item: eu-consumer/email-auth, asset: site, reason: "localhost has no DNS; SPF and DMARC live on the production domain" }
+  - { item: performance/cwv-field, asset: site, reason: "PageSpeed Insights can't reach localhost, and field data needs real Chrome traffic on the production domain" }
+  - { item: performance/lighthouse, asset: site, reason: "PageSpeed Insights can't reach localhost" }
+  - { item: website/domain-expiry, asset: site, reason: "localhost has no domain registration; expiry is the production domain's" }
