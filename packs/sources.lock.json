@@ -7,11 +7,25 @@
       "repo/no-env"
     ]
   },
+  "https://about.validator.nu/": {
+    "sha256": "f36a788d27f6cb3247b30acdc7a4ae44fb53ad24a8fe5d111037c9f413f178c1",
+    "checked_at": "2026-11-21T12:16:46.913Z",
+    "items": [
+      "scanners/html-valid"
+    ]
+  },
   "https://agents.md/": {
     "sha256": "110baaa0229c5b9bf7a0f64acfc86671216599c6719f7f0d16746275b4c119cc",
     "checked_at": "2026-11-21T12:08:15.876Z",
     "items": [
       "ai-ready/agents-md"
+    ]
+  },
+  "https://biomejs.dev/reference/cli/#biome-check": {
+    "sha256": "e4d4038318f4ace570310475bb862b5b634f101c8bbe9312be0e0845a3c0d3d9",
+    "checked_at": "2026-11-21T12:16:48.979Z",
+    "items": [
+      "scanners/lint-clean"
     ]
   },
   "https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html": {
@@ -29,29 +43,29 @@
     ]
   },
   "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#permissions-policy-formerly-feature-policy": {
-    "sha256": "e54c4d7a64e7fc7e3a5f3d5833e5b797e87408ef3736a00a280f5de2a463a5a2",
-    "checked_at": "2026-11-21T12:08:04.239Z",
+    "sha256": "bd7bf500ae1bcb6f4b69c1b934c7aeeeec5601ea4f65ad9de64ce79ae3377ecb",
+    "checked_at": "2026-11-21T12:16:31.994Z",
     "items": [
       "security/permissions-policy"
     ]
   },
   "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#referrer-policy": {
-    "sha256": "e54c4d7a64e7fc7e3a5f3d5833e5b797e87408ef3736a00a280f5de2a463a5a2",
-    "checked_at": "2026-11-21T12:08:04.048Z",
+    "sha256": "bd7bf500ae1bcb6f4b69c1b934c7aeeeec5601ea4f65ad9de64ce79ae3377ecb",
+    "checked_at": "2026-11-21T12:16:31.821Z",
     "items": [
       "security/referrer-policy"
     ]
   },
   "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#server": {
-    "sha256": "e54c4d7a64e7fc7e3a5f3d5833e5b797e87408ef3736a00a280f5de2a463a5a2",
-    "checked_at": "2026-11-21T12:08:04.314Z",
+    "sha256": "bd7bf500ae1bcb6f4b69c1b934c7aeeeec5601ea4f65ad9de64ce79ae3377ecb",
+    "checked_at": "2026-11-21T12:16:32.056Z",
     "items": [
       "security/server-leak"
     ]
   },
   "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#strict-transport-security-hsts": {
-    "sha256": "e54c4d7a64e7fc7e3a5f3d5833e5b797e87408ef3736a00a280f5de2a463a5a2",
-    "checked_at": "2026-11-21T12:08:09.305Z",
+    "sha256": "bd7bf500ae1bcb6f4b69c1b934c7aeeeec5601ea4f65ad9de64ce79ae3377ecb",
+    "checked_at": "2026-11-21T12:16:37.247Z",
     "items": [
       "website/security-headers"
     ]
@@ -78,8 +92,8 @@
     ]
   },
   "https://code.claude.com/docs/en/memory": {
-    "sha256": "34971285d9aca20445713be92df6519714940f315e088cf62a205de4aa6c6cec",
-    "checked_at": "2026-11-21T12:08:15.983Z",
+    "sha256": "b647454341f633d343ecebb087a028ac05ba7d74924e42853818faac52a944a7",
+    "checked_at": "2026-11-21T12:16:43.825Z",
     "items": [
       "ai-ready/agents-md"
     ]
@@ -120,8 +134,8 @@
     ]
   },
   "https://developer.chrome.com/docs/lighthouse/performance/uses-long-cache-ttl": {
-    "sha256": "eeb2afb5bd906b4cd51d90ee4b4f2269ca40eeba49778970983dc3bb36a00049",
-    "checked_at": "2026-11-21T12:08:27.972Z",
+    "sha256": "f81b038fff5fbcb37a2e63c40f9a259504c3c314af4320738a1183c587aaa1a9",
+    "checked_at": "2026-11-21T12:16:59.995Z",
     "items": [
       "performance/static-cache"
     ]
@@ -183,8 +197,8 @@
     ]
   },
   "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP": {
-    "sha256": "d14c5e8b5350ced96046b2c8ca6d4e9ed7200783f5a1046c7f4c85edef4a9a13",
-    "checked_at": "2026-11-21T12:08:03.340Z",
+    "sha256": "ead32c67b081cdbbd6bc5d7e8d342db7ad511fe56e2fd2682f6e52d470c887b4",
+    "checked_at": "2026-11-21T12:16:30.713Z",
     "items": [
       "security/csp"
     ]
@@ -211,15 +225,15 @@
     ]
   },
   "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie": {
-    "sha256": "8ea98a2f2c1bfd3fc0aa35a26d3f1d47c48258502bc6bca6cae381e62cb12aa7",
-    "checked_at": "2026-11-21T12:08:04.070Z",
+    "sha256": "c0563cf2839b6460515cb04644aecc40065dca447fc4b1121db4c0c0efa63f1c",
+    "checked_at": "2026-11-21T12:16:31.845Z",
     "items": [
       "security/cookie-flags"
     ]
   },
   "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security": {
-    "sha256": "1de1ace05809f795f970dba4e500c98fabd21a70639bd5462299c2fde23d0c17",
-    "checked_at": "2026-11-21T12:08:09.225Z",
+    "sha256": "e1fb50c8f9eb39e7faffc69d9d49bdf14d3b7f11b908e353f4e35d03dc4aa624",
+    "checked_at": "2026-11-21T12:16:37.172Z",
     "items": [
       "website/security-headers"
     ]
@@ -252,6 +266,20 @@
       "website/tls"
     ]
   },
+  "https://developer.mozilla.org/en-US/observatory": {
+    "sha256": "98e11a7ed85aa16838c2914903c35e6f26900db1b0c73705d7240a94635690dd",
+    "checked_at": "2026-11-21T12:16:45.265Z",
+    "items": [
+      "scanners/observatory"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/observatory/docs/tests_and_scoring": {
+    "sha256": "eab4676b8d9f9c9c6b389fc66b955a989bc54d24306a6689a4a809d2cbe591a3",
+    "checked_at": "2026-11-21T12:16:45.852Z",
+    "items": [
+      "scanners/observatory"
+    ]
+  },
   "https://developers.google.com/crawling/docs/robots-txt/robots-txt-spec": {
     "sha256": "b14b3b3a0c0dabcfe0db316ddce78b0f6e6d06a4c9032f0e50a285b17f6faf25",
     "checked_at": "2026-11-21T12:08:07.455Z",
@@ -268,8 +296,8 @@
     ]
   },
   "https://developers.google.com/maps/documentation/urls/get-started": {
-    "sha256": "ffa2e9ed8fa2713e98226717768098784a83f53bd16635cf92f1fc295515a657",
-    "checked_at": "2026-11-21T12:08:17.636Z",
+    "sha256": "82fcd41070224e860303957725fda452c3cd71e7dea6bc760bf2224c17ee63be",
+    "checked_at": "2026-11-21T12:16:45.198Z",
     "items": [
       "local-business/map-link"
     ]
@@ -325,8 +353,8 @@
     ]
   },
   "https://developers.google.com/search/docs/appearance/structured-data/local-business": {
-    "sha256": "49504db56ebfc8ccb9bf8c41b55f61a1c5f7ab5bd032ad79263dea04dd552ade",
-    "checked_at": "2026-11-21T12:07:59.909Z",
+    "sha256": "1654481f3636279371d582369d09e2005e56a8ec2ddd991b40a18e010908281e",
+    "checked_at": "2026-11-21T12:16:27.825Z",
     "items": [
       "ai-visibility/entity-facts",
       "local-business/location-pages",
@@ -334,15 +362,15 @@
     ]
   },
   "https://developers.google.com/search/docs/appearance/structured-data/local-business#structured-data-type-definitions": {
-    "sha256": "49504db56ebfc8ccb9bf8c41b55f61a1c5f7ab5bd032ad79263dea04dd552ade",
-    "checked_at": "2026-11-21T12:08:16.919Z",
+    "sha256": "1654481f3636279371d582369d09e2005e56a8ec2ddd991b40a18e010908281e",
+    "checked_at": "2026-11-21T12:16:44.382Z",
     "items": [
       "local-business/locations-schema"
     ]
   },
   "https://developers.google.com/search/docs/appearance/structured-data/organization": {
-    "sha256": "282772a282be81a2a381a766355aace8c54a6c4881207a47b7d92c91b2c7717a",
-    "checked_at": "2026-11-21T12:08:08.638Z",
+    "sha256": "9a86374b40745ba8bb158b19d2625cb05c80b7bfeb5b7009211dbf7f556361b5",
+    "checked_at": "2026-11-21T12:16:36.444Z",
     "items": [
       "website/structured-data"
     ]
@@ -425,8 +453,8 @@
     ]
   },
   "https://developers.google.com/search/docs/crawling-indexing/url-structure": {
-    "sha256": "86afc14058e9a855772d38b31db2ed2c97e2b8ae70ce6686f2cfbc65c0e161c0",
-    "checked_at": "2026-11-21T12:08:36.013Z",
+    "sha256": "898bcfe8e76b925d8aee64b002f3dcd6cc1c5412d571d17db9cc833d3f317e42",
+    "checked_at": "2026-11-21T12:17:08.737Z",
     "items": [
       "seo/url-hygiene"
     ]
@@ -486,6 +514,7 @@
     "sha256": "e1f09f3905167ef368c24f471f5dcb36c1027acc0148b08e8d4163dbc15d5f0b",
     "checked_at": "2026-11-21T12:08:37.695Z",
     "items": [
+      "scanners/secrets-history",
       "repo/no-env"
     ]
   },
@@ -517,6 +546,13 @@
       "repo/license"
     ]
   },
+  "https://docs.npmjs.com/cli/v11/using-npm/scripts": {
+    "sha256": "e09f0b56a55b5b5b7bab6c53ea91ffadaa7326f7a2ed534d139903a834eb305f",
+    "checked_at": "2026-11-21T12:16:48.470Z",
+    "items": [
+      "scanners/lint-clean"
+    ]
+  },
   "https://docs.perplexity.ai/docs/resources/perplexity-crawlers": {
     "sha256": "2a86fda0aefee7c3fe725a358d5ffdea803186bfee275b154bb421d72404d467",
     "checked_at": "2026-11-21T12:07:58.343Z",
@@ -525,10 +561,17 @@
     ]
   },
   "https://ec.europa.eu/newsroom/article29/items/622227": {
-    "sha256": "5c79e6ce1285f4d44a1073736ecedae3269f93fbf8903cccebb6ee171784023b",
-    "checked_at": "2026-11-21T12:08:21.008Z",
+    "sha256": "1b225c3ba5b7c6775c1c1e6c43bfe34967fa379655504ccad8186a28f6de66a9",
+    "checked_at": "2026-11-21T12:16:54.028Z",
     "items": [
       "eu-consumer/privacy-policy"
+    ]
+  },
+  "https://eslint.org/docs/latest/use/command-line-interface": {
+    "sha256": "b413c1c8abdf6baab04dae5d350c8586cde88267880cad30fa7ae7bfd9da99f1",
+    "checked_at": "2026-11-21T12:16:48.604Z",
+    "items": [
+      "scanners/lint-clean"
     ]
   },
   "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:01998L0006-20220528#art_2": {
@@ -626,9 +669,51 @@
       "repo/gitignore"
     ]
   },
+  "https://github.com/gitleaks/gitleaks": {
+    "sha256": "65232ffb0dc119cd606c02b53f18832edc1669d0c30ac741d894b98ca5f9bdb3",
+    "checked_at": "2026-11-21T12:16:48.020Z",
+    "items": [
+      "scanners/secrets-history"
+    ]
+  },
+  "https://github.com/mdn/mdn-http-observatory": {
+    "sha256": "85df55524cf2098a62d45987d55a7da31ce721a6a76043a4d77b56f4974c8587",
+    "checked_at": "2026-11-21T12:16:45.837Z",
+    "items": [
+      "scanners/observatory"
+    ]
+  },
+  "https://github.com/validator/validator/wiki/Output-%C2%BB-JSON": {
+    "sha256": "32137236fd3279d206cffb294cfbaef6ac54673b4498453e21c73721d004dcc7",
+    "checked_at": "2026-11-21T12:16:46.785Z",
+    "items": [
+      "scanners/html-valid"
+    ]
+  },
+  "https://github.com/validator/validator/wiki/Service-%C2%BB-Input-%C2%BB-POST-body": {
+    "sha256": "16b7ea85a0d1545bc3361d7858e5cade4def5f40b6a4089e213912b36082ba56",
+    "checked_at": "2026-11-21T12:16:46.410Z",
+    "items": [
+      "scanners/html-valid"
+    ]
+  },
+  "https://google.github.io/osv.dev/get-v1-vulns/": {
+    "sha256": "f5c1d82aed18b3e5e823c6ec2fc92166753e0039acfc4fc86a1a6bc4b289143f",
+    "checked_at": "2026-11-21T12:16:47.263Z",
+    "items": [
+      "scanners/dependency-vulns"
+    ]
+  },
+  "https://google.github.io/osv.dev/post-v1-querybatch/": {
+    "sha256": "ba7de7eb905afde918ab15d84146f091f2b127584e5eb2e2d0ebaafe2d204169",
+    "checked_at": "2026-11-21T12:16:47.113Z",
+    "items": [
+      "scanners/dependency-vulns"
+    ]
+  },
   "https://hstspreload.org/": {
-    "sha256": "9b433d07620fb5d000d04d579be8121222242b5efd1060b7c3b3e65eebd4980d",
-    "checked_at": "2026-11-21T12:08:11.157Z",
+    "sha256": "ce385cb401594773ca4bc6724223df795b779bc419cd9057ff0f4ace025b5ba7",
+    "checked_at": "2026-11-21T12:16:38.986Z",
     "items": [
       "website/canonical-host"
     ]
@@ -648,26 +733,204 @@
     ]
   },
   "https://llmstxt.org/": {
-    "sha256": "44bf998f641d273412c1f61be33f2ed0aaa54e855c35e067d108c6d136961b0b",
-    "checked_at": "2026-11-21T12:08:09.203Z",
+    "sha256": "09e85e96032c594646a817d91befa2c4fcf5ebe759b5d6fdb9c463ad494116db",
+    "checked_at": "2026-11-21T12:16:37.148Z",
     "items": [
       "website/llms-txt"
     ]
   },
+  "https://nextjs.org/docs/app/api-reference/components/font": {
+    "sha256": "5c3f19cf51351058c71157e15f5d0cfed1ac5d8cb3932f764621d3ee4fc02cde",
+    "checked_at": "2026-11-21T12:16:49.779Z",
+    "items": [
+      "nextjs/next-font"
+    ]
+  },
+  "https://nextjs.org/docs/app/api-reference/components/image": {
+    "sha256": "cfd62724a9c6dd52cc45f68b740107aa72ad50a046ac1c57d7a250b115f4533e",
+    "checked_at": "2026-11-21T12:16:49.634Z",
+    "items": [
+      "nextjs/next-image",
+      "nextjs/deprecated-apis",
+      "nextjs/image-config"
+    ]
+  },
+  "https://nextjs.org/docs/app/api-reference/config/eslint": {
+    "sha256": "8c6849656c5f89f5e9d9b3a35816924707cfd8badd9c99c0ac272b6ea771354d",
+    "checked_at": "2026-11-21T12:16:51.372Z",
+    "items": [
+      "nextjs/lint"
+    ]
+  },
+  "https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents": {
+    "sha256": "26c1bdd13b77046df519b4254f30aadb3a3af5fed7f0b03ead8aae3167d970af",
+    "checked_at": "2026-11-21T12:16:49.452Z",
+    "items": [
+      "nextjs/no-segment-config",
+      "nextjs/use-cache-scope"
+    ]
+  },
+  "https://nextjs.org/docs/app/api-reference/directives/use-cache": {
+    "sha256": "fb7162ba4fa447aa03979c94767f9a9094346e11163e8b7a91af0d79a4d10019",
+    "checked_at": "2026-11-21T12:16:50.358Z",
+    "items": [
+      "nextjs/use-cache-scope"
+    ]
+  },
+  "https://nextjs.org/docs/app/api-reference/file-conventions/error": {
+    "sha256": "bed26d2991d3305f17f0622a8f01dfee21ab95e836e01ad025a15f0cdbdf23f8",
+    "checked_at": "2026-11-21T12:16:51.155Z",
+    "items": [
+      "nextjs/error-pages"
+    ]
+  },
+  "https://nextjs.org/docs/app/api-reference/file-conventions/not-found": {
+    "sha256": "98dc692e34f5386b62430c5e243b76d9bb3793bd7543aeea8520a083abc6a9bd",
+    "checked_at": "2026-11-21T12:16:51.217Z",
+    "items": [
+      "nextjs/error-pages"
+    ]
+  },
+  "https://nextjs.org/docs/app/api-reference/file-conventions/proxy": {
+    "sha256": "9b215d1f2aba7c9f0c710f68c295b635daa2abf1257b2bb23700da26af11d872",
+    "checked_at": "2026-11-21T12:16:51.028Z",
+    "items": [
+      "nextjs/proxy"
+    ]
+  },
+  "https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config": {
+    "sha256": "6770aed2783e6a2f2b4182b072cb654a0e44e59260ff9ea91c2258e86c806918",
+    "checked_at": "2026-11-21T12:16:49.391Z",
+    "items": [
+      "nextjs/no-segment-config",
+      "nextjs/deprecated-apis"
+    ]
+  },
+  "https://nextjs.org/docs/app/api-reference/functions/generate-metadata": {
+    "sha256": "8d5f20d744b4e785c8c81b375f725de9b7ccc27146ea102ec9b63536d682ef5f",
+    "checked_at": "2026-11-21T12:16:49.954Z",
+    "items": [
+      "nextjs/metadata-api"
+    ]
+  },
+  "https://nextjs.org/docs/app/getting-started/error-handling": {
+    "sha256": "fd17af041fc6444f0684bd2a207c0a28d625bacdfce3fd15797f9e3f1dd728a3",
+    "checked_at": "2026-11-21T12:16:51.093Z",
+    "items": [
+      "nextjs/error-pages"
+    ]
+  },
+  "https://nextjs.org/docs/app/getting-started/metadata-and-og-images": {
+    "sha256": "0c3d0c60f0e31254ba5cda8006e61dc87554eb981b3c4268aa0e50149eb1f30f",
+    "checked_at": "2026-11-21T12:16:49.855Z",
+    "items": [
+      "nextjs/metadata-api"
+    ]
+  },
+  "https://nextjs.org/docs/app/getting-started/server-and-client-components": {
+    "sha256": "f63d5e60ce20d516ad2c7d78b08002bd93824f0250ba9452f366110c529a29ca",
+    "checked_at": "2026-11-21T12:16:50.605Z",
+    "items": [
+      "nextjs/env-vars"
+    ]
+  },
+  "https://nextjs.org/docs/app/guides/data-security": {
+    "sha256": "5843914bb8d7563625c1d3981a18ad4c95ad5e148f392670807b6675db81bac9",
+    "checked_at": "2026-11-21T12:16:50.732Z",
+    "items": [
+      "nextjs/env-vars"
+    ]
+  },
+  "https://nextjs.org/docs/app/guides/environment-variables": {
+    "sha256": "e2b5a83323951bb87542a4306a30a0056fd5a1731ba1a8978ca8f6a7c6ba9b90",
+    "checked_at": "2026-11-21T12:16:50.508Z",
+    "items": [
+      "nextjs/env-vars"
+    ]
+  },
+  "https://nextjs.org/docs/app/guides/migrating-to-cache-components": {
+    "sha256": "cdf211055d2cbe8429e9ed0a8b201191296ce5fb86ea141b01fe73b98fbe0758",
+    "checked_at": "2026-11-21T12:16:49.540Z",
+    "items": [
+      "nextjs/no-segment-config"
+    ]
+  },
+  "https://nextjs.org/docs/app/guides/production-checklist": {
+    "sha256": "acc93a784ee974bf843c473f89d61acb02209fdde2c96911ed3c0a94c1bbc30d",
+    "checked_at": "2026-11-21T12:16:49.690Z",
+    "items": [
+      "nextjs/next-image",
+      "nextjs/next-font",
+      "nextjs/metadata-api",
+      "nextjs/env-vars",
+      "nextjs/error-pages",
+      "nextjs/next-script",
+      "nextjs/lint"
+    ]
+  },
+  "https://nextjs.org/docs/app/guides/scripts": {
+    "sha256": "6638d08f5cb0c6a4063158f24cdfde54f91d3ab393e654de7078727df5ce96d6",
+    "checked_at": "2026-11-21T12:16:51.301Z",
+    "items": [
+      "nextjs/next-script"
+    ]
+  },
+  "https://nextjs.org/docs/app/guides/upgrading": {
+    "sha256": "e15b5dd54b707d3b4019a9ffb3e8ae7e000ef154b39daa36616600f398e0ba25",
+    "checked_at": "2026-11-21T12:16:50.069Z",
+    "items": [
+      "nextjs/framework-current"
+    ]
+  },
+  "https://nextjs.org/docs/app/guides/upgrading/version-15": {
+    "sha256": "2f17f4f0f70cd9d22b09a4359ed5daf679dada446905647c5c1e4f4daf8d24aa",
+    "checked_at": "2026-11-21T12:16:50.253Z",
+    "items": [
+      "nextjs/async-request-apis",
+      "nextjs/removed-apis",
+      "nextjs/deprecated-apis"
+    ]
+  },
+  "https://nextjs.org/docs/app/guides/upgrading/version-16": {
+    "sha256": "60d5db7958ba874a813dfe7b116927e3d708e9d4e95b095ec0c5b6ca8dc3f45c",
+    "checked_at": "2026-11-21T12:16:50.189Z",
+    "items": [
+      "nextjs/async-request-apis",
+      "nextjs/removed-apis",
+      "nextjs/deprecated-apis",
+      "nextjs/proxy",
+      "nextjs/image-config",
+      "nextjs/lint"
+    ]
+  },
+  "https://nextjs.org/support-policy": {
+    "sha256": "586926d0965ab0b89c6668d84ca7e8c582e750a1b3e28a7c728255a4e3169e86",
+    "checked_at": "2026-11-21T12:16:50.002Z",
+    "items": [
+      "nextjs/framework-current"
+    ]
+  },
   "https://ogp.me/#metadata": {
-    "sha256": "dec61da3f0b7643fc54bd0e79311e160b52ac285cf8cbb5f55a50930f64e4989",
-    "checked_at": "2026-11-21T12:07:57.385Z",
+    "sha256": "0c5617576bf0d1cfc36ba6dc1b4480ccc8cb284886b4c4b53d9a074924a79025",
+    "checked_at": "2026-11-21T12:16:25.001Z",
     "items": [
       "sharing/og-complete",
       "website/og-image"
     ]
   },
   "https://ogp.me/#structured": {
-    "sha256": "dec61da3f0b7643fc54bd0e79311e160b52ac285cf8cbb5f55a50930f64e4989",
-    "checked_at": "2026-11-21T12:07:57.652Z",
+    "sha256": "0c5617576bf0d1cfc36ba6dc1b4480ccc8cb284886b4c4b53d9a074924a79025",
+    "checked_at": "2026-11-21T12:16:25.018Z",
     "items": [
       "sharing/og-image-size",
       "website/og-video"
+    ]
+  },
+  "https://ossf.github.io/osv-schema/": {
+    "sha256": "f665ae140a7a6c000acf55c2cc728d6f1b2fcf08f99a7428a8db9bda4949faf7",
+    "checked_at": "2026-11-21T12:16:47.477Z",
+    "items": [
+      "scanners/dependency-vulns"
     ]
   },
   "https://raw.githubusercontent.com/dequelabs/axe-core/develop/doc/rule-descriptions.md": {
@@ -678,8 +941,8 @@
     ]
   },
   "https://schema.org/AutoRental": {
-    "sha256": "3e6d870038be903fa93540eae2bd7f7ae6444fcec2be2a72fb9c6e286b48b34b",
-    "checked_at": "2026-11-21T12:08:16.972Z",
+    "sha256": "8890ed01511918a4638c12979806cf51522e0302f2d27e314223d8da9a5c7cf8",
+    "checked_at": "2026-11-21T12:16:44.551Z",
     "items": [
       "local-business/locations-schema"
     ]
@@ -706,15 +969,15 @@
     ]
   },
   "https://schema.org/LocalBusiness": {
-    "sha256": "9bd9cdaac3f2089af89ec85bca7c3f9ac14f4e82838148ac54b4a7ec6d3a910f",
-    "checked_at": "2026-11-21T12:08:17.141Z",
+    "sha256": "2fd66c9d73d1ae04588bb55b9a44d6138fe1575abab6f192d542acbb67febf35",
+    "checked_at": "2026-11-21T12:16:44.734Z",
     "items": [
       "local-business/locations-schema"
     ]
   },
   "https://schema.org/Organization": {
-    "sha256": "7cd161bc43ddfdbd55c331704ce322ed5d1a3ec3be133cc32a937e689cc76081",
-    "checked_at": "2026-11-21T12:08:09.142Z",
+    "sha256": "565f156fddb66cbee46c51fbe7fa1de64c971ac249c3e95fec187a5e58f72bb6",
+    "checked_at": "2026-11-21T12:16:36.940Z",
     "items": [
       "website/structured-data"
     ]
@@ -765,10 +1028,17 @@
     ]
   },
   "https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler": {
-    "sha256": "d780145c2f8f6888cb794e7551a6f411e831b8d7af841141bcec714d0274bf31",
-    "checked_at": "2026-11-21T12:07:58.180Z",
+    "sha256": "a0357d0a17938e1c2f1fd38482fa37f7cc7ed2eba4952f2660689ab23b02dec5",
+    "checked_at": "2026-11-21T12:16:26.135Z",
     "items": [
       "ai-visibility/ai-crawlers"
+    ]
+  },
+  "https://validator.github.io/validator/": {
+    "sha256": "a0bee80310a5cbfacf44d60b2e1f1e43426b2202406bb9353d4e26e3a3922153",
+    "checked_at": "2026-11-21T12:16:46.038Z",
+    "items": [
+      "scanners/html-valid"
     ]
   },
   "https://web.dev/articles/add-manifest": {
@@ -786,8 +1056,8 @@
     ]
   },
   "https://web.dev/articles/http-cache": {
-    "sha256": "caa688ace587032bc49ac163db2007b3f648c33f04348fdc50ff5258fc09333c",
-    "checked_at": "2026-11-21T12:08:27.433Z",
+    "sha256": "5c615b4219f94f39ead4192e5eda3b6210d81a62915fad55075e2be3007ff22d",
+    "checked_at": "2026-11-21T12:16:59.636Z",
     "items": [
       "performance/static-cache"
     ]
@@ -842,8 +1112,8 @@
     ]
   },
   "https://wstg.owasp.org/latest/05-Information_Gathering/02-Fingerprint_Web_Server/": {
-    "sha256": "04ec152dcec2ad288dfef7e13ccc5e04db9dc1814c928a5445e5dbed0f42b285",
-    "checked_at": "2026-11-21T12:08:04.390Z",
+    "sha256": "0bbcbd72676857ed9cb1e7032d1d9f81d545222dfc4208fc920d23bb20e73bad",
+    "checked_at": "2026-11-21T12:16:32.154Z",
     "items": [
       "security/server-leak"
     ]
@@ -869,6 +1139,13 @@
       "eu-consumer/cookie-consent"
     ]
   },
+  "https://www.first.org/cvss/v3-1/specification-document": {
+    "sha256": "e3de6df433a81a65a239b59dcd4477d95ea021e4e21018dbd095d958bb44ec4f",
+    "checked_at": "2026-11-21T12:16:47.525Z",
+    "items": [
+      "scanners/dependency-vulns"
+    ]
+  },
   "https://www.google.com/about/company/user-consent-policy/": {
     "sha256": "a53cb53ad4175088ca12dfbca98f0488679b2a92f32b1000255197192fa1f4ce",
     "checked_at": "2026-11-21T12:08:24.396Z",
@@ -877,8 +1154,8 @@
     ]
   },
   "https://www.icann.org/en/contracted-parties/consensus-policies/expired-registration-recovery-policy/expired-registration-recovery-policy-28-02-2013-en": {
-    "sha256": "d93bde5d2f2fd325c933971cddf421af2fcedb75c4c83dfd6c8289050e7cfdce",
-    "checked_at": "2026-11-21T12:08:14.411Z",
+    "sha256": "25cdcf5b7c9aee9da77e897e4b08e437323c03c7156af073416a9539faeb2368",
+    "checked_at": "2026-11-21T12:16:42.692Z",
     "items": [
       "website/domain-expiry"
     ]
@@ -891,22 +1168,22 @@
     ]
   },
   "https://www.rfc-editor.org/rfc/rfc7208.html": {
-    "sha256": "a257e6934f1b664e775cdc4fbe258fdbbd13f95f9bfb9391b03475ca0b4dda62",
-    "checked_at": "2026-11-21T12:08:22.022Z",
+    "sha256": "a6508c2eb2f4641a37eab75fb34818278ed0f2ba427691a7db2e655905ea609b",
+    "checked_at": "2026-11-21T12:16:54.662Z",
     "items": [
       "eu-consumer/email-auth"
     ]
   },
   "https://www.rfc-editor.org/rfc/rfc7489.html": {
-    "sha256": "552d8542d152c63f0dbb923c6d2cb60ab7cd36b3a70e0ef31da1f59a46d3184d",
-    "checked_at": "2026-11-21T12:08:22.199Z",
+    "sha256": "ca81f9ed7e5d11b23d9d3a97f38329a3b8146bd5ee0160381ad4bc317316dc26",
+    "checked_at": "2026-11-21T12:16:54.950Z",
     "items": [
       "eu-consumer/email-auth"
     ]
   },
   "https://www.rfc-editor.org/rfc/rfc9110.html#status.404": {
-    "sha256": "53a20a70b6199386dca092cf62101ff96f0a07235e54639f8feda9d404f6b415",
-    "checked_at": "2026-11-21T12:08:11.709Z",
+    "sha256": "a154d47bd964c40995d96629b8bf50059f9fe459e139723a244b09d6e69da4fb",
+    "checked_at": "2026-11-21T12:16:39.729Z",
     "items": [
       "website/not-found",
       "i18n/unknown-locale"
@@ -940,6 +1217,20 @@
       "website/robots-sitemap"
     ]
   },
+  "https://www.typescriptlang.org/docs/handbook/compiler-options.html": {
+    "sha256": "6c0402dccf5482d0c20fe84e48d20d143892759d03ea4831e610e90db4f12ef0",
+    "checked_at": "2026-11-21T12:16:49.187Z",
+    "items": [
+      "scanners/typecheck-clean"
+    ]
+  },
+  "https://www.typescriptlang.org/tsconfig/": {
+    "sha256": "eb288fed644777183a3d89c8ce603fb3a337e6174790d47c4e92a49b7982904f",
+    "checked_at": "2026-11-21T12:16:49.237Z",
+    "items": [
+      "scanners/typecheck-clean"
+    ]
+  },
   "https://www.w3.org/International/questions/qa-html-language-declarations": {
     "sha256": "437aee0db91fc48bb9518d54e9b017eab9503e7205b5bad324b5a945e674a9c2",
     "checked_at": "2026-11-21T12:08:12.307Z",
@@ -949,8 +1240,8 @@
     ]
   },
   "https://www.w3.org/TR/WCAG22/": {
-    "sha256": "05a5b90e74eabcf6a3a60ce6f040f295b1c04ad275e16ca34ea24276f4b6f531",
-    "checked_at": "2026-11-21T12:08:36.063Z",
+    "sha256": "f5e5f8d7052bb6a6dc14c00461acbb4f25e3741bb8a502ebd780527e9780c43d",
+    "checked_at": "2026-11-21T12:17:08.803Z",
     "items": [
       "accessibility/axe"
     ]

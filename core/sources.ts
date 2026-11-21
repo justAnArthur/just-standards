@@ -17,8 +17,11 @@ export interface SourceChange {
   url: string
   title: string
   items: string[]
-  /** `new`: not in the lock yet; `changed`: its text differs; `gone`: it didn't answer 200; `same`. */
-  state: 'new' | 'changed' | 'gone' | 'same'
+  /**
+   * `new`: not in the lock yet; `changed`: its text differs; `blocked`: a firewall answered (202, 403, 429, 503) and the
+   * lock keeps what it had; `gone`: any other answer than 200; `same`.
+   */
+  state: 'new' | 'changed' | 'blocked' | 'gone' | 'same'
   status?: number
 }
 
@@ -77,7 +80,8 @@ export async function checkSources(ws: Workspace, { update = false, lockFile = L
   for (const [url, { title, items }] of sourcesOf(ws)) {
     const page = await read(url.replace(/#.*$/, ''))
     if (!page.hash) {
-      changes.push({ url, title, items, state: 'gone', status: page.status })
+      const blocked = [202, 403, 429, 503].includes(page.status)
+      changes.push({ url, title, items, state: blocked ? 'blocked' : 'gone', status: page.status })
       continue
     }
     const hash = page.hash
