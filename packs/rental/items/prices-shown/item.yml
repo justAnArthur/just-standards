@@ -7,5 +7,12 @@ applies_to: [website]
 category: conversion
 severity: should
 owner_role: content
+sources:
+  - title: 'Price Indication Directive 98/6/EC (consolidated), Article 2: the selling price is the final price including VAT'
+    url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:01998L0006-20220528#art_2'
+  - title: 'Consumer Rights Directive 2011/83/EU (consolidated), Article 6(1)(e): total price inclusive of taxes'
+    url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02011L0083-20260927#art_6'
+  - title: 'Zákon č. 108/2024 Z. z. o ochrane spotrebiteľa, § 5 Všeobecné informačné povinnosti obchodníka'
+    url: 'https://static.slov-lex.sk/static/SK/ZZ/2024/108/20260927.html#paragraf-5'
 check:
   kind: script

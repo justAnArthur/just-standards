@@ -1,5 +1,5 @@
 ## Done when
-The check passes on the PR's preview, and the home page (and every page the framework makes cheap) carries its language on `<html lang>`, a title of 10–70 characters, a description of 50–170 characters and an absolute canonical URL on the production domain.
+The check passes on the PR's preview, and the home page (and every page the framework makes cheap) carries its language on `<html lang>`, a title of 10–70 characters, a description of 50–170 characters (Google sets no length limit for either and cuts both to fit the device; these are this standard's budgets) and an absolute canonical URL on the production domain.
 
 - **Title:** what the page is, then the brand: `Car rental software for independent fleets · Camasys`.
 - **Description:** one plain sentence about what a visitor gets.

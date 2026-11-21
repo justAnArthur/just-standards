@@ -8,6 +8,11 @@ category: performance
 severity: must
 preview: false
 owner_role: engineering
+sources:
+  - title: 'web.dev: Web Vitals'
+    url: 'https://web.dev/articles/vitals'
+  - title: 'Google Search Central: Understanding Core Web Vitals and Google search results'
+    url: 'https://developers.google.com/search/docs/appearance/core-web-vitals'
 check:
   kind: psi
   strategy: mobile

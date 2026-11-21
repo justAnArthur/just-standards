@@ -1,5 +1,6 @@
 ## Done when
 The check passes on the PR's preview, and every page that exists in several languages links each version, itself included, with `<link rel="alternate" hreflang>`: valid codes, an `x-default`, every target answering 200 and linking back. A single-language site passes without any.
+Google only recommends `x-default` (a fallback for unmatched languages); this standard requires it, so add it.
 
 ## Make what is missing
 - **One map per page, used in both directions:** for each document, its URL in every locale where a translation exists. Every version renders the whole map plus `x-default` (the default locale's version, or a language picker page), so A→B always comes with B→A.

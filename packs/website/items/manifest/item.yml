@@ -7,5 +7,10 @@ applies_to: [website, webapp]
 category: brand
 severity: should
 owner_role: engineering
+sources:
+  - title: 'MDN: Web application manifest'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest'
+  - title: 'web.dev: Add a web app manifest'
+    url: 'https://web.dev/articles/add-manifest'
 check:
   kind: script

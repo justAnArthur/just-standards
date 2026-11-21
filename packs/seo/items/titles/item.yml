@@ -7,6 +7,9 @@ applies_to: [website]
 category: seo
 severity: must
 owner_role: seo
+sources:
+  - title: 'Google Search Central: Influencing your title links in search results'
+    url: 'https://developers.google.com/search/docs/appearance/title-link'
 check:
   kind: crawl
   expect:

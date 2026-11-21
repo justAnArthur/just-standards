@@ -9,6 +9,13 @@ applies_to: [website, webapp]
 category: performance
 severity: should
 owner_role: engineering
+sources:
+  - title: 'web.dev: Choose the right image format'
+    url: 'https://web.dev/articles/choose-the-right-image-format'
+  - title: 'Chrome for Developers (Lighthouse): Serve images in modern formats'
+    url: 'https://developer.chrome.com/docs/lighthouse/performance/uses-webp-images'
+  - title: 'Chrome for Developers (Lighthouse): Properly size images'
+    url: 'https://developer.chrome.com/docs/lighthouse/performance/uses-responsive-images'
 check:
   kind: browser
   pages: [/]

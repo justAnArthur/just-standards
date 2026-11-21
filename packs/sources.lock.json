@@ -1,0 +1,1042 @@
+{
+  "https://12factor.net/config": {
+    "sha256": "ac56f9c96914746f12884175d30cccda6f6c65378f40226dcb880bbaaacdfe1a",
+    "checked_at": "2026-11-21T12:08:16.141Z",
+    "items": [
+      "ai-ready/env-example",
+      "repo/no-env"
+    ]
+  },
+  "https://agents.md/": {
+    "sha256": "110baaa0229c5b9bf7a0f64acfc86671216599c6719f7f0d16746275b4c119cc",
+    "checked_at": "2026-11-21T12:08:15.876Z",
+    "items": [
+      "ai-ready/agents-md"
+    ]
+  },
+  "https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html": {
+    "sha256": "6fe623af3a5d724aa0c17340aaa7d35895c23f06de0d751677c0075ae2615873",
+    "checked_at": "2026-11-21T12:08:03.969Z",
+    "items": [
+      "security/frame-protection"
+    ]
+  },
+  "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html": {
+    "sha256": "a85dd66e54df8c26ae71315df5bc048691e2984b61049fc2393c5a0e634df334",
+    "checked_at": "2026-11-21T12:08:03.867Z",
+    "items": [
+      "security/csp"
+    ]
+  },
+  "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#permissions-policy-formerly-feature-policy": {
+    "sha256": "e54c4d7a64e7fc7e3a5f3d5833e5b797e87408ef3736a00a280f5de2a463a5a2",
+    "checked_at": "2026-11-21T12:08:04.239Z",
+    "items": [
+      "security/permissions-policy"
+    ]
+  },
+  "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#referrer-policy": {
+    "sha256": "e54c4d7a64e7fc7e3a5f3d5833e5b797e87408ef3736a00a280f5de2a463a5a2",
+    "checked_at": "2026-11-21T12:08:04.048Z",
+    "items": [
+      "security/referrer-policy"
+    ]
+  },
+  "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#server": {
+    "sha256": "e54c4d7a64e7fc7e3a5f3d5833e5b797e87408ef3736a00a280f5de2a463a5a2",
+    "checked_at": "2026-11-21T12:08:04.314Z",
+    "items": [
+      "security/server-leak"
+    ]
+  },
+  "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#strict-transport-security-hsts": {
+    "sha256": "e54c4d7a64e7fc7e3a5f3d5833e5b797e87408ef3736a00a280f5de2a463a5a2",
+    "checked_at": "2026-11-21T12:08:09.305Z",
+    "items": [
+      "website/security-headers"
+    ]
+  },
+  "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html": {
+    "sha256": "c78aac61dc9b47849d385b51879b6671d68d27706c1c4c01e5c0489542761b19",
+    "checked_at": "2026-11-21T12:08:37.778Z",
+    "items": [
+      "repo/no-env"
+    ]
+  },
+  "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#cookies": {
+    "sha256": "243ec69ef173aefee16ec6ad5c86d24350eb99ba65e721f142dcb7ee23793af0",
+    "checked_at": "2026-11-21T12:08:04.128Z",
+    "items": [
+      "security/cookie-flags"
+    ]
+  },
+  "https://choosealicense.com/": {
+    "sha256": "9d7bf18c4a65804db8411b87f1aa5c1ad1e7695ca68153d3763770e29fec9190",
+    "checked_at": "2026-11-21T12:08:37.492Z",
+    "items": [
+      "repo/license"
+    ]
+  },
+  "https://code.claude.com/docs/en/memory": {
+    "sha256": "34971285d9aca20445713be92df6519714940f315e088cf62a205de4aa6c6cec",
+    "checked_at": "2026-11-21T12:08:15.983Z",
+    "items": [
+      "ai-ready/agents-md"
+    ]
+  },
+  "https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html": {
+    "sha256": "98b0c7ce29dfb3ed6acc7f8b3f26789ea1a8c7cd66bf11c19ebc38f25d988bfa",
+    "checked_at": "2026-11-21T12:08:06.907Z",
+    "items": [
+      "website/icons"
+    ]
+  },
+  "https://developer.chrome.com/docs/lighthouse/best-practices/errors-in-console": {
+    "sha256": "0fb18e28e7f9d92fc9587ed98a7e0e66c271231d9aae5ca9ec00c73cef35a736",
+    "checked_at": "2026-11-21T12:08:29.419Z",
+    "items": [
+      "performance/no-console-errors"
+    ]
+  },
+  "https://developer.chrome.com/docs/lighthouse/performance/performance-scoring": {
+    "sha256": "f75f81fceefeb79dd762a214df83fa3b60f96d2fc9675d3c168d834a750fba27",
+    "checked_at": "2026-11-21T12:08:25.887Z",
+    "items": [
+      "performance/lighthouse"
+    ]
+  },
+  "https://developer.chrome.com/docs/lighthouse/performance/render-blocking-resources": {
+    "sha256": "47018e6a2a3a4d0111e19a176ee84c6033e0c964a1ffec60066bb9a291198388",
+    "checked_at": "2026-11-21T12:08:30.257Z",
+    "items": [
+      "performance/third-party"
+    ]
+  },
+  "https://developer.chrome.com/docs/lighthouse/performance/total-byte-weight": {
+    "sha256": "ed8ecfb18b7145c307369ac068dce7fccfaaf90abf511d427b6cddf875f05536",
+    "checked_at": "2026-11-21T12:08:28.739Z",
+    "items": [
+      "performance/page-weight"
+    ]
+  },
+  "https://developer.chrome.com/docs/lighthouse/performance/uses-long-cache-ttl": {
+    "sha256": "eeb2afb5bd906b4cd51d90ee4b4f2269ca40eeba49778970983dc3bb36a00049",
+    "checked_at": "2026-11-21T12:08:27.972Z",
+    "items": [
+      "performance/static-cache"
+    ]
+  },
+  "https://developer.chrome.com/docs/lighthouse/performance/uses-responsive-images": {
+    "sha256": "e09b55293e0d0589adab20b112b406b0a26b2846092ff94f4fa6fb883c0b3935",
+    "checked_at": "2026-11-21T12:08:31.868Z",
+    "items": [
+      "performance/modern-images"
+    ]
+  },
+  "https://developer.chrome.com/docs/lighthouse/performance/uses-text-compression": {
+    "sha256": "91d6b175e56bed58b935b65b3ee0efe4e2d261fe786762fc56ded934d307311c",
+    "checked_at": "2026-11-21T12:08:28.296Z",
+    "items": [
+      "performance/static-cache"
+    ]
+  },
+  "https://developer.chrome.com/docs/lighthouse/performance/uses-webp-images": {
+    "sha256": "c634e2f98b51f3bb10608bc1cb4b34882c683730f611a12321b5734a41698aa5",
+    "checked_at": "2026-11-21T12:08:31.454Z",
+    "items": [
+      "performance/modern-images"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion": {
+    "sha256": "b4704237a5d4c7b78b280fd610d13757d7064a84b0d0dd975f20c28f8ec40619",
+    "checked_at": "2026-11-21T12:08:36.853Z",
+    "items": [
+      "accessibility/reduced-motion"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta/name/theme-color": {
+    "sha256": "c6dd919744a79f6241da7d471b803c1fe85248b36ea037f9aeeffb9d0385dc06",
+    "checked_at": "2026-11-21T12:08:14.432Z",
+    "items": [
+      "website/theme-color"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta/name/viewport": {
+    "sha256": "cb8044333be69acf6e3471d87374502bc7bdf6a72f5d9cb5d1f40deffb7546d6",
+    "checked_at": "2026-11-21T12:08:12.349Z",
+    "items": [
+      "website/viewport"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta#charset": {
+    "sha256": "17a877b1d647973d935eae0b12d15159253907f90b1e90b71033ac3dc340d591",
+    "checked_at": "2026-11-21T12:08:13.233Z",
+    "items": [
+      "website/charset"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/lang": {
+    "sha256": "8da38c9caff53b569b91a9a3c4203b47c3935e6da7990f5682ca13cf6b6cbee1",
+    "checked_at": "2026-11-21T12:08:12.328Z",
+    "items": [
+      "website/html-lang"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP": {
+    "sha256": "d14c5e8b5350ced96046b2c8ca6d4e9ed7200783f5a1046c7f4c85edef4a9a13",
+    "checked_at": "2026-11-21T12:08:03.340Z",
+    "items": [
+      "security/csp"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/frame-ancestors": {
+    "sha256": "150933c7c3b7fa98ced498be5e08749ae0c3225b456b9afbf2875cbae0c2ab38",
+    "checked_at": "2026-11-21T12:08:03.892Z",
+    "items": [
+      "security/frame-protection"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy": {
+    "sha256": "08373cf76bf4202c727e838b6daad4e62e2932014c1a7f3913e4f7f4a4a75db1",
+    "checked_at": "2026-11-21T12:08:04.150Z",
+    "items": [
+      "security/permissions-policy"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy": {
+    "sha256": "3b80071bee832bfa1fe7f5db275db7507538187c303aa0c968b5fc2a611257db",
+    "checked_at": "2026-11-21T12:08:03.989Z",
+    "items": [
+      "security/referrer-policy"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie": {
+    "sha256": "8ea98a2f2c1bfd3fc0aa35a26d3f1d47c48258502bc6bca6cae381e62cb12aa7",
+    "checked_at": "2026-11-21T12:08:04.070Z",
+    "items": [
+      "security/cookie-flags"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security": {
+    "sha256": "1de1ace05809f795f970dba4e500c98fabd21a70639bd5462299c2fde23d0c17",
+    "checked_at": "2026-11-21T12:08:09.225Z",
+    "items": [
+      "website/security-headers"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Content-Type-Options": {
+    "sha256": "a7407d0aeb5dfd95c6636b3cb9d901ca762ad4d9a4ccca9229023dd276d02fed",
+    "checked_at": "2026-11-21T12:08:09.244Z",
+    "items": [
+      "website/security-headers"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Frame-Options": {
+    "sha256": "cd769816abfed66fc026d411c623ee96418a46cf647ed813601bd080122a761e",
+    "checked_at": "2026-11-21T12:08:03.915Z",
+    "items": [
+      "security/frame-protection"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest": {
+    "sha256": "ed2b9f294661646185fb98fc8e65114e515a2d1e229d7ffbfe51e1e6b11473a9",
+    "checked_at": "2026-11-21T12:08:13.249Z",
+    "items": [
+      "website/manifest"
+    ]
+  },
+  "https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Mixed_content": {
+    "sha256": "9b32bf36abc7b36be207e507a5c8b7c7a3aba46e826952c073960b67ff69dec1",
+    "checked_at": "2026-11-21T12:08:11.727Z",
+    "items": [
+      "website/tls"
+    ]
+  },
+  "https://developers.google.com/crawling/docs/robots-txt/robots-txt-spec": {
+    "sha256": "b14b3b3a0c0dabcfe0db316ddce78b0f6e6d06a4c9032f0e50a285b17f6faf25",
+    "checked_at": "2026-11-21T12:08:07.455Z",
+    "items": [
+      "website/robots-sitemap"
+    ]
+  },
+  "https://developers.google.com/crawling/docs/troubleshooting/http-status-codes": {
+    "sha256": "fe0851d578fce74d34eb05fd3ada0999d166f9367d313195f323ad7bb82966ad",
+    "checked_at": "2026-11-21T12:08:11.462Z",
+    "items": [
+      "website/not-found",
+      "i18n/unknown-locale"
+    ]
+  },
+  "https://developers.google.com/maps/documentation/urls/get-started": {
+    "sha256": "ffa2e9ed8fa2713e98226717768098784a83f53bd16635cf92f1fc295515a657",
+    "checked_at": "2026-11-21T12:08:17.636Z",
+    "items": [
+      "local-business/map-link"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/ai-features": {
+    "sha256": "85dafc414ce497dba9e78f918b317f656cb5d831d9ec71e03fa60aeaa6edb1ac",
+    "checked_at": "2026-11-21T12:08:03.252Z",
+    "items": [
+      "ai-visibility/answers"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/core-web-vitals": {
+    "sha256": "d6e4bf38459d2dadbf5960589c393429ada43abff9d127a288afbc654de9bb39",
+    "checked_at": "2026-11-21T12:08:25.533Z",
+    "items": [
+      "performance/cwv-field"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/favicon-in-search": {
+    "sha256": "697c7bb6d8b6a3fbde864cf8dbec8bec5ff9e0382016ad5b0ef15d3462513b8a",
+    "checked_at": "2026-11-21T12:08:06.758Z",
+    "items": [
+      "website/icons"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/google-images": {
+    "sha256": "e1f909b184f4e0d1e53f4f03dc5515d5f03b1e0847f937a2b8bdf1eb5062fc23",
+    "checked_at": "2026-11-21T12:08:33.574Z",
+    "items": [
+      "seo/image-alt"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/snippet#meta-descriptions": {
+    "sha256": "c4e557dc2a99bb286c80bee7073cc2189b362fde9ec26f83532cce6b8c7c5ab5",
+    "checked_at": "2026-11-21T12:08:05.537Z",
+    "items": [
+      "website/meta-basics",
+      "seo/descriptions"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/structured-data/breadcrumb": {
+    "sha256": "7f6e4e7bf7793de6ad6168bca16c286da2698007a24b6cdbededb8c10789b5c4",
+    "checked_at": "2026-11-21T12:08:35.268Z",
+    "items": [
+      "seo/breadcrumbs"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data": {
+    "sha256": "555af0ccc1b2ba95e5d36e54a9b24f807f6e6cf784c967216d9d545ee9e11115",
+    "checked_at": "2026-11-21T12:08:09.096Z",
+    "items": [
+      "website/structured-data"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/structured-data/local-business": {
+    "sha256": "49504db56ebfc8ccb9bf8c41b55f61a1c5f7ab5bd032ad79263dea04dd552ade",
+    "checked_at": "2026-11-21T12:07:59.909Z",
+    "items": [
+      "ai-visibility/entity-facts",
+      "local-business/location-pages",
+      "local-business/hours-current"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/structured-data/local-business#structured-data-type-definitions": {
+    "sha256": "49504db56ebfc8ccb9bf8c41b55f61a1c5f7ab5bd032ad79263dea04dd552ade",
+    "checked_at": "2026-11-21T12:08:16.919Z",
+    "items": [
+      "local-business/locations-schema"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/structured-data/organization": {
+    "sha256": "282772a282be81a2a381a766355aace8c54a6c4881207a47b7d92c91b2c7717a",
+    "checked_at": "2026-11-21T12:08:08.638Z",
+    "items": [
+      "website/structured-data"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/structured-data/product": {
+    "sha256": "db99929d908486d84979310b6239759a9f012f7ebc36e374c880efd69bc72a7f",
+    "checked_at": "2026-11-21T12:07:56.145Z",
+    "items": [
+      "rental/fleet-data"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/structured-data/sd-policies": {
+    "sha256": "6014fde502c53383a43ea841ef707cc87ae61dc93ca480707079a6c699bab5f8",
+    "checked_at": "2026-11-21T12:08:01.170Z",
+    "items": [
+      "ai-visibility/entity-facts",
+      "local-business/nap-consistent"
+    ]
+  },
+  "https://developers.google.com/search/docs/appearance/title-link": {
+    "sha256": "447b653842767a3f7327db439c06f5985ff89de93a6444f8984c1e645dd5e043",
+    "checked_at": "2026-11-21T12:08:04.844Z",
+    "items": [
+      "website/meta-basics",
+      "seo/titles",
+      "seo/one-h1"
+    ]
+  },
+  "https://developers.google.com/search/docs/crawling-indexing/301-redirects": {
+    "sha256": "5b2db6ec52ab835988d75e855821591818a782ea71eba96d8e3429182c516431",
+    "checked_at": "2026-11-21T12:08:10.941Z",
+    "items": [
+      "website/canonical-host",
+      "seo/internal-links"
+    ]
+  },
+  "https://developers.google.com/search/docs/crawling-indexing/block-indexing": {
+    "sha256": "99f58b6d53565f68511ffc3ae9f8067c87335d66ce0e13e2aba926f473501ee3",
+    "checked_at": "2026-11-21T12:08:34.766Z",
+    "items": [
+      "seo/indexable"
+    ]
+  },
+  "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls": {
+    "sha256": "c65b49f3c659c86e57b96a088e0934a7f10e286b9888d27f97d6a3dd3e5453da",
+    "checked_at": "2026-11-21T12:08:05.964Z",
+    "items": [
+      "website/meta-basics",
+      "website/canonical-host",
+      "seo/canonical-self",
+      "seo/url-hygiene"
+    ]
+  },
+  "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics": {
+    "sha256": "19ece7ffc7c68b70ad45953d14151aea06d79f6ae7e65735213be0d2dcc9c3e0",
+    "checked_at": "2026-11-21T12:07:58.738Z",
+    "items": [
+      "ai-visibility/server-rendered"
+    ]
+  },
+  "https://developers.google.com/search/docs/crawling-indexing/links-crawlable": {
+    "sha256": "fdd5b10012f5272a84a0ad9e6a9bf19e35a26d96932ea6b11031ec43dcf33141",
+    "checked_at": "2026-11-21T12:08:33.142Z",
+    "items": [
+      "seo/internal-links"
+    ]
+  },
+  "https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag": {
+    "sha256": "e60de5b81bbbeac44173dc702dce0c6d2823a220437ef31b30d27bbb997cdf5a",
+    "checked_at": "2026-11-21T12:08:33.966Z",
+    "items": [
+      "seo/indexable"
+    ]
+  },
+  "https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap": {
+    "sha256": "9457ce76371f5dfdf3df06d317179db1e6dd060c0e8f734f60dafa56ffca7db4",
+    "checked_at": "2026-11-21T12:08:09.731Z",
+    "items": [
+      "website/sitemap-health"
+    ]
+  },
+  "https://developers.google.com/search/docs/crawling-indexing/url-structure": {
+    "sha256": "86afc14058e9a855772d38b31db2ed2c97e2b8ae70ce6686f2cfbc65c0e161c0",
+    "checked_at": "2026-11-21T12:08:36.013Z",
+    "items": [
+      "seo/url-hygiene"
+    ]
+  },
+  "https://developers.google.com/search/docs/fundamentals/creating-helpful-content": {
+    "sha256": "4d9cc9717185593abc2969675359293ba601856c4d183d661415f36be0ab10f6",
+    "checked_at": "2026-11-21T12:08:02.488Z",
+    "items": [
+      "ai-visibility/answers"
+    ]
+  },
+  "https://developers.google.com/search/docs/specialty/international/localized-versions": {
+    "sha256": "fc99c2b32819372f716cf4497ec72ba0ea7136512cc42836c2f4e3a4306225aa",
+    "checked_at": "2026-11-21T12:08:32.279Z",
+    "items": [
+      "i18n/locales-reachable",
+      "seo/hreflang"
+    ]
+  },
+  "https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites": {
+    "sha256": "6ffddccd44fa9ca6f6094209d9bbb581976d37f9555ad4795254e9a6b1e343cd",
+    "checked_at": "2026-11-21T12:08:32.692Z",
+    "items": [
+      "i18n/copy-language",
+      "i18n/switcher-keeps-page"
+    ]
+  },
+  "https://developers.google.com/speed/docs/insights/v5/about": {
+    "sha256": "65ba1c0e6a9a768123efce9e7ecbb8fb6435e8eb865656e945a26bd527281b6b",
+    "checked_at": "2026-11-21T12:08:26.639Z",
+    "items": [
+      "performance/lighthouse"
+    ]
+  },
+  "https://developers.google.com/tag-platform/security/concepts/consent-mode": {
+    "sha256": "139b25d37dc5c986958249d2bd46007bb013aca95f39feb22e9d57b16a4acb2c",
+    "checked_at": "2026-11-21T12:08:24.224Z",
+    "items": [
+      "eu-consumer/consent-mode"
+    ]
+  },
+  "https://developers.google.com/tag-platform/security/guides/consent": {
+    "sha256": "cc92f25bbc2fc20ece7f065ff179c808f7c3a41422b1da5797bde6960b0dd560",
+    "checked_at": "2026-11-21T12:08:23.852Z",
+    "items": [
+      "eu-consumer/consent-mode"
+    ]
+  },
+  "https://developers.openai.com/api/docs/bots": {
+    "sha256": "d1190f6bbc68bc44be5328daf3a1508c30bf6d16861e7e064305b03f31d4a711",
+    "checked_at": "2026-11-21T12:07:57.799Z",
+    "items": [
+      "ai-visibility/ai-crawlers"
+    ]
+  },
+  "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository": {
+    "sha256": "e1f09f3905167ef368c24f471f5dcb36c1027acc0148b08e8d4163dbc15d5f0b",
+    "checked_at": "2026-11-21T12:08:37.695Z",
+    "items": [
+      "repo/no-env"
+    ]
+  },
+  "https://docs.github.com/en/get-started/git-basics/ignoring-files": {
+    "sha256": "094de32199b44cb561aec26f1eb996d5064f6708f22c291f4ac9a1950cbc0291",
+    "checked_at": "2026-11-21T12:08:37.545Z",
+    "items": [
+      "repo/gitignore"
+    ]
+  },
+  "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes": {
+    "sha256": "bdcc91b77f415cc58b5b32010d2ad2ae8f414b9920cec2ec9cea9e42069a86fd",
+    "checked_at": "2026-11-21T12:08:37.360Z",
+    "items": [
+      "repo/readme"
+    ]
+  },
+  "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/classifying-your-repository-with-topics": {
+    "sha256": "32693b15771948bd477dc94b196dec597c3c061325a2fc5fddcde4c20e43dbd3",
+    "checked_at": "2026-11-21T12:08:37.377Z",
+    "items": [
+      "repo/topics"
+    ]
+  },
+  "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository": {
+    "sha256": "9d0a16e9461608c17a6fdb9de54abd4a83cabcd9e0ec0fa252c14504c9291469",
+    "checked_at": "2026-11-21T12:08:37.397Z",
+    "items": [
+      "repo/license"
+    ]
+  },
+  "https://docs.perplexity.ai/docs/resources/perplexity-crawlers": {
+    "sha256": "2a86fda0aefee7c3fe725a358d5ffdea803186bfee275b154bb421d72404d467",
+    "checked_at": "2026-11-21T12:07:58.343Z",
+    "items": [
+      "ai-visibility/ai-crawlers"
+    ]
+  },
+  "https://ec.europa.eu/newsroom/article29/items/622227": {
+    "sha256": "5c79e6ce1285f4d44a1073736ecedae3269f93fbf8903cccebb6ee171784023b",
+    "checked_at": "2026-11-21T12:08:21.008Z",
+    "items": [
+      "eu-consumer/privacy-policy"
+    ]
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:01998L0006-20220528#art_2": {
+    "sha256": "942bec2c994c7b49809be1865a9fe64fce2da658c3471a245fe35677147e561f",
+    "checked_at": "2026-11-21T12:07:57.033Z",
+    "items": [
+      "rental/prices-shown"
+    ]
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02000L0031-20240217": {
+    "sha256": "597fe634e523931a886c3b71e49c82125867efb6f6a7f08d0bea8185a81d5b5f",
+    "checked_at": "2026-11-21T12:08:15.536Z",
+    "items": [
+      "content/contact-reachable",
+      "eu-consumer/terms",
+      "eu-consumer/company-identity"
+    ]
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02002L0058-20091219#art_5": {
+    "sha256": "82ec515ca024e3d8957be8fef1ff496463afa486cdcce67e7c3f855812e2fb41",
+    "checked_at": "2026-11-21T12:08:22.634Z",
+    "items": [
+      "eu-consumer/cookie-consent"
+    ]
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02005L0029-20260927#art_6": {
+    "sha256": "ec10f2f226d33ed13f280d583a3457cfe54541557aeee608237b6f0e3166ba38",
+    "checked_at": "2026-11-21T12:08:15.071Z",
+    "items": [
+      "content/promo-freshness"
+    ]
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02011L0083-20260927#art_6": {
+    "sha256": "4dc3c2eb59457458b57924e1643f5fdf88d1cbe1ae1b8b9834b2f01e11b29b1a",
+    "checked_at": "2026-11-21T12:07:56.741Z",
+    "items": [
+      "rental/rental-terms",
+      "rental/prices-shown",
+      "eu-consumer/terms"
+    ]
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32013L0011#art_13": {
+    "sha256": "817739358ce7f555013cb4949e26ae8d9dc408fd4b4417131694056979cbc843",
+    "checked_at": "2026-11-21T12:08:21.382Z",
+    "items": [
+      "eu-consumer/adr-info"
+    ]
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R0679#art_12": {
+    "sha256": "1e167c810f6c552262b89360241c240eb25c9dc375488fada493f4acf18470fd",
+    "checked_at": "2026-11-21T12:08:18.347Z",
+    "items": [
+      "eu-consumer/privacy-policy"
+    ]
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R0679#art_13": {
+    "sha256": "1e167c810f6c552262b89360241c240eb25c9dc375488fada493f4acf18470fd",
+    "checked_at": "2026-11-21T12:08:18.722Z",
+    "items": [
+      "eu-consumer/privacy-policy"
+    ]
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32019L0882#anx_I": {
+    "sha256": "4c4a81a00b60cada21f33037a7b50e6a383f70a2fe727d3424521a7d4d4ba597",
+    "checked_at": "2026-11-21T12:08:36.557Z",
+    "items": [
+      "accessibility/axe"
+    ]
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32019L0882#anx_V": {
+    "sha256": "4c4a81a00b60cada21f33037a7b50e6a383f70a2fe727d3424521a7d4d4ba597",
+    "checked_at": "2026-11-21T12:08:37.176Z",
+    "items": [
+      "accessibility/accessibility-statement"
+    ]
+  },
+  "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32024R3228": {
+    "sha256": "afebf132210b55d072efeedf02c6ad2c4e861ad04264f77ba25c379b7a915ca7",
+    "checked_at": "2026-11-21T12:08:21.652Z",
+    "items": [
+      "eu-consumer/adr-info"
+    ]
+  },
+  "https://europa.eu/youreurope/citizens/travel/driving-abroad/car-rental-abroad/index_en.htm": {
+    "sha256": "41133aca281a16f3fd8091d3f9d78cef19c30d05e9aa0ee51b8f3a7254a41f01",
+    "checked_at": "2026-11-21T12:07:56.338Z",
+    "items": [
+      "rental/rental-terms"
+    ]
+  },
+  "https://git-scm.com/docs/gitignore": {
+    "sha256": "ee96188becd8f75bd958a93ea13f0cac54a3b1ff543cc3727155046b8472f568",
+    "checked_at": "2026-11-21T12:08:37.529Z",
+    "items": [
+      "repo/gitignore"
+    ]
+  },
+  "https://hstspreload.org/": {
+    "sha256": "9b433d07620fb5d000d04d579be8121222242b5efd1060b7c3b3e65eebd4980d",
+    "checked_at": "2026-11-21T12:08:11.157Z",
+    "items": [
+      "website/canonical-host"
+    ]
+  },
+  "https://html.spec.whatwg.org/multipage/semantics.html#charset": {
+    "sha256": "c88936c7b0af51b90604aa632a2e26f1e6e8029e557429e69c836a35c6cfd2e0",
+    "checked_at": "2026-11-21T12:08:13.218Z",
+    "items": [
+      "website/charset"
+    ]
+  },
+  "https://html.spec.whatwg.org/multipage/semantics.html#meta-theme-color": {
+    "sha256": "c88936c7b0af51b90604aa632a2e26f1e6e8029e557429e69c836a35c6cfd2e0",
+    "checked_at": "2026-11-21T12:08:14.783Z",
+    "items": [
+      "website/theme-color"
+    ]
+  },
+  "https://llmstxt.org/": {
+    "sha256": "44bf998f641d273412c1f61be33f2ed0aaa54e855c35e067d108c6d136961b0b",
+    "checked_at": "2026-11-21T12:08:09.203Z",
+    "items": [
+      "website/llms-txt"
+    ]
+  },
+  "https://ogp.me/#metadata": {
+    "sha256": "dec61da3f0b7643fc54bd0e79311e160b52ac285cf8cbb5f55a50930f64e4989",
+    "checked_at": "2026-11-21T12:07:57.385Z",
+    "items": [
+      "sharing/og-complete",
+      "website/og-image"
+    ]
+  },
+  "https://ogp.me/#structured": {
+    "sha256": "dec61da3f0b7643fc54bd0e79311e160b52ac285cf8cbb5f55a50930f64e4989",
+    "checked_at": "2026-11-21T12:07:57.652Z",
+    "items": [
+      "sharing/og-image-size",
+      "website/og-video"
+    ]
+  },
+  "https://raw.githubusercontent.com/dequelabs/axe-core/develop/doc/rule-descriptions.md": {
+    "sha256": "57a8a4dcead7350a23f43992aa4ba45a845b115d96f56837072d0a9ba1ff5f4f",
+    "checked_at": "2026-11-21T12:08:36.107Z",
+    "items": [
+      "accessibility/axe"
+    ]
+  },
+  "https://schema.org/AutoRental": {
+    "sha256": "3e6d870038be903fa93540eae2bd7f7ae6444fcec2be2a72fb9c6e286b48b34b",
+    "checked_at": "2026-11-21T12:08:16.972Z",
+    "items": [
+      "local-business/locations-schema"
+    ]
+  },
+  "https://schema.org/BreadcrumbList": {
+    "sha256": "60c5a1862b177e55d2854c87ad30e94afd561111dd089d831b008cdd1e9c24fe",
+    "checked_at": "2026-11-21T12:08:35.411Z",
+    "items": [
+      "seo/breadcrumbs"
+    ]
+  },
+  "https://schema.org/Car": {
+    "sha256": "9ec5af4a9aa61a96f11809cae894eab80f0aa4e6a244d29a9201f19e9cd6df3c",
+    "checked_at": "2026-11-21T12:07:55.778Z",
+    "items": [
+      "rental/fleet-data"
+    ]
+  },
+  "https://schema.org/FAQPage": {
+    "sha256": "db77b0e62f7942e5eef644e5b0882811726864cb48c6f7a406e05eb67b92eb6d",
+    "checked_at": "2026-11-21T12:07:56.200Z",
+    "items": [
+      "rental/faq-schema"
+    ]
+  },
+  "https://schema.org/LocalBusiness": {
+    "sha256": "9bd9cdaac3f2089af89ec85bca7c3f9ac14f4e82838148ac54b4a7ec6d3a910f",
+    "checked_at": "2026-11-21T12:08:17.141Z",
+    "items": [
+      "local-business/locations-schema"
+    ]
+  },
+  "https://schema.org/Organization": {
+    "sha256": "7cd161bc43ddfdbd55c331704ce322ed5d1a3ec3be133cc32a937e689cc76081",
+    "checked_at": "2026-11-21T12:08:09.142Z",
+    "items": [
+      "website/structured-data"
+    ]
+  },
+  "https://schema.org/specialOpeningHoursSpecification": {
+    "sha256": "296d90d152a612aeb73fcc0871d3b78f9ce6547a597b30c17432298073a63d99",
+    "checked_at": "2026-11-21T12:08:17.786Z",
+    "items": [
+      "local-business/hours-current"
+    ]
+  },
+  "https://senders.yahooinc.com/best-practices/": {
+    "sha256": "4b1300578420814b2fb304ee14e195bc5daef4e644c8b4fa374c6ffc0899a406",
+    "checked_at": "2026-11-21T12:08:22.406Z",
+    "items": [
+      "eu-consumer/email-auth"
+    ]
+  },
+  "https://static.slov-lex.sk/static/SK/ZZ/2004/22/20250628.html#paragraf-4": {
+    "sha256": "fd750f90d83b9f3c74db0c86aa7956a5278c8e0f7c05f2923bc67bd6f4f449b3",
+    "checked_at": "2026-11-21T12:08:15.596Z",
+    "items": [
+      "content/contact-reachable",
+      "eu-consumer/company-identity"
+    ]
+  },
+  "https://static.slov-lex.sk/static/SK/ZZ/2022/351/20260530.html#paragraf-6": {
+    "sha256": "59d5a54799886c3edd5e23a247d2cdd1e419fa0ac4438db8d2960ad300c79243",
+    "checked_at": "2026-11-21T12:08:37.237Z",
+    "items": [
+      "accessibility/accessibility-statement"
+    ]
+  },
+  "https://static.slov-lex.sk/static/SK/ZZ/2024/108/20260927.html#paragraf-10": {
+    "sha256": "c6e31304e50cd8e8e8c3ded95e74a10eaf34cac8c8e5aad5af644dbebdc9fbef",
+    "checked_at": "2026-11-21T12:08:15.286Z",
+    "items": [
+      "content/promo-freshness"
+    ]
+  },
+  "https://static.slov-lex.sk/static/SK/ZZ/2024/108/20260927.html#paragraf-5": {
+    "sha256": "c6e31304e50cd8e8e8c3ded95e74a10eaf34cac8c8e5aad5af644dbebdc9fbef",
+    "checked_at": "2026-11-21T12:07:57.344Z",
+    "items": [
+      "rental/prices-shown",
+      "eu-consumer/terms",
+      "eu-consumer/adr-info"
+    ]
+  },
+  "https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler": {
+    "sha256": "d780145c2f8f6888cb794e7551a6f411e831b8d7af841141bcec714d0274bf31",
+    "checked_at": "2026-11-21T12:07:58.180Z",
+    "items": [
+      "ai-visibility/ai-crawlers"
+    ]
+  },
+  "https://web.dev/articles/add-manifest": {
+    "sha256": "e5df5311dd51aa8ac5d595a2a1f9710b6d320ade638cd57a43930123816af619",
+    "checked_at": "2026-11-21T12:08:13.725Z",
+    "items": [
+      "website/manifest"
+    ]
+  },
+  "https://web.dev/articles/choose-the-right-image-format": {
+    "sha256": "c9ea6aa84dc05c6a3aa7777e437ac4f6128a21c2922b530b80df2b6a2dde3dbf",
+    "checked_at": "2026-11-21T12:08:31.052Z",
+    "items": [
+      "performance/modern-images"
+    ]
+  },
+  "https://web.dev/articles/http-cache": {
+    "sha256": "caa688ace587032bc49ac163db2007b3f648c33f04348fdc50ff5258fc09333c",
+    "checked_at": "2026-11-21T12:08:27.433Z",
+    "items": [
+      "performance/static-cache"
+    ]
+  },
+  "https://web.dev/articles/optimizing-content-efficiency-loading-third-party-javascript": {
+    "sha256": "1ebbcd5e905dce26a0b91fa334f1b5356888bf327d6572d07402961079b97c7b",
+    "checked_at": "2026-11-21T12:08:30.715Z",
+    "items": [
+      "performance/third-party"
+    ]
+  },
+  "https://web.dev/articles/performance-budgets-101": {
+    "sha256": "2efcaa82152370f2d23a69cde1b181cabac69d4e4f6fc92e8f4a47158684d698",
+    "checked_at": "2026-11-21T12:08:29.092Z",
+    "items": [
+      "performance/page-weight"
+    ]
+  },
+  "https://web.dev/articles/rendering-on-the-web": {
+    "sha256": "aa8bb303fd2c3542227a42a1eeb36a4dfb6153effc95b89a5482f6c2badccc9c",
+    "checked_at": "2026-11-21T12:07:59.436Z",
+    "items": [
+      "ai-visibility/server-rendered"
+    ]
+  },
+  "https://web.dev/articles/strict-csp": {
+    "sha256": "5d62b33571ae0cde5aaccbe7a536a2441527c153470d71e44b464ea9f9767f53",
+    "checked_at": "2026-11-21T12:08:03.751Z",
+    "items": [
+      "security/csp"
+    ]
+  },
+  "https://web.dev/articles/ttfb": {
+    "sha256": "24dff626b1171a52c219da588e89eda2fd67a4701d96c7b8b3bf043c6bd5d568",
+    "checked_at": "2026-11-21T12:08:27.019Z",
+    "items": [
+      "performance/ttfb"
+    ]
+  },
+  "https://web.dev/articles/vitals": {
+    "sha256": "a02bf47907d6fc068f32a2a6e2cd0b13e968a0f687fa392d7982924b3e7639bd",
+    "checked_at": "2026-11-21T12:08:24.767Z",
+    "items": [
+      "performance/cwv-field"
+    ]
+  },
+  "https://web.dev/articles/what-is-mixed-content": {
+    "sha256": "d69b74239444ca1c223302ea2c46ba17b75277448e3fd470e9c1fd0c729410ee",
+    "checked_at": "2026-11-21T12:08:12.137Z",
+    "items": [
+      "website/tls"
+    ]
+  },
+  "https://wstg.owasp.org/latest/05-Information_Gathering/02-Fingerprint_Web_Server/": {
+    "sha256": "04ec152dcec2ad288dfef7e13ccc5e04db9dc1814c928a5445e5dbed0f42b285",
+    "checked_at": "2026-11-21T12:08:04.390Z",
+    "items": [
+      "security/server-leak"
+    ]
+  },
+  "https://wstg.owasp.org/latest/06-Configuration_and_Deployment_Management/03-Review_Old_Backup_and_Unreferenced_Files_for_Sensitive_Information/": {
+    "sha256": "73eb747b245b6fdc5a304021f0a556f9b85ecdbe5d1f9890ed9a649ccbef0372",
+    "checked_at": "2026-11-21T12:08:04.439Z",
+    "items": [
+      "security/exposed-files"
+    ]
+  },
+  "https://www.edpb.europa.eu/documents/guideline/guidelines-052020-on-consent-under-regulation-2016679_en": {
+    "sha256": "2e854012ad9078c1b2753022dbe7ef508efe6995348e97dcf9f6cdff8b92113e",
+    "checked_at": "2026-11-21T12:08:22.778Z",
+    "items": [
+      "eu-consumer/cookie-consent"
+    ]
+  },
+  "https://www.edpb.europa.eu/documents/task-force-report/report-of-the-work-undertaken-by-the-cookie-banner-taskforce_en": {
+    "sha256": "754f15a05a9ee4c434e58dc25b73e06c7646a70a68f87f8431636fb420bb6409",
+    "checked_at": "2026-11-21T12:08:22.755Z",
+    "items": [
+      "eu-consumer/cookie-consent"
+    ]
+  },
+  "https://www.google.com/about/company/user-consent-policy/": {
+    "sha256": "a53cb53ad4175088ca12dfbca98f0488679b2a92f32b1000255197192fa1f4ce",
+    "checked_at": "2026-11-21T12:08:24.396Z",
+    "items": [
+      "eu-consumer/consent-mode"
+    ]
+  },
+  "https://www.icann.org/en/contracted-parties/consensus-policies/expired-registration-recovery-policy/expired-registration-recovery-policy-28-02-2013-en": {
+    "sha256": "d93bde5d2f2fd325c933971cddf421af2fcedb75c4c83dfd6c8289050e7cfdce",
+    "checked_at": "2026-11-21T12:08:14.411Z",
+    "items": [
+      "website/domain-expiry"
+    ]
+  },
+  "https://www.rfc-editor.org/rfc/rfc3966.html": {
+    "sha256": "5f582459ff84f52fa9e91feb9759fde9dd3e0304e1114251312e2905f35891fb",
+    "checked_at": "2026-11-21T12:08:15.781Z",
+    "items": [
+      "content/contact-reachable"
+    ]
+  },
+  "https://www.rfc-editor.org/rfc/rfc7208.html": {
+    "sha256": "a257e6934f1b664e775cdc4fbe258fdbbd13f95f9bfb9391b03475ca0b4dda62",
+    "checked_at": "2026-11-21T12:08:22.022Z",
+    "items": [
+      "eu-consumer/email-auth"
+    ]
+  },
+  "https://www.rfc-editor.org/rfc/rfc7489.html": {
+    "sha256": "552d8542d152c63f0dbb923c6d2cb60ab7cd36b3a70e0ef31da1f59a46d3184d",
+    "checked_at": "2026-11-21T12:08:22.199Z",
+    "items": [
+      "eu-consumer/email-auth"
+    ]
+  },
+  "https://www.rfc-editor.org/rfc/rfc9110.html#status.404": {
+    "sha256": "53a20a70b6199386dca092cf62101ff96f0a07235e54639f8feda9d404f6b415",
+    "checked_at": "2026-11-21T12:08:11.709Z",
+    "items": [
+      "website/not-found",
+      "i18n/unknown-locale"
+    ]
+  },
+  "https://www.rfc-editor.org/rfc/rfc9116.html": {
+    "sha256": "aca3021a81b4c8e834e6df1730418dfacfb5fb4c696b306587a579e68dacdc9c",
+    "checked_at": "2026-11-21T12:08:21.826Z",
+    "items": [
+      "eu-consumer/security-txt"
+    ]
+  },
+  "https://www.rfc-editor.org/rfc/rfc9309.html": {
+    "sha256": "b1f30c7caa61895cd9a19007a829fb91f4e6d2f3caa7a825da93e10c4cea900a",
+    "checked_at": "2026-11-21T12:08:07.117Z",
+    "items": [
+      "website/robots-sitemap"
+    ]
+  },
+  "https://www.sitemaps.org/protocol.html#location": {
+    "sha256": "803e80d58813e6aa1c551c58df33f215ea140e5fd1b08fa450f4c66dd203f537",
+    "checked_at": "2026-11-21T12:08:10.356Z",
+    "items": [
+      "website/sitemap-health"
+    ]
+  },
+  "https://www.sitemaps.org/protocol.html#submit_robots": {
+    "sha256": "803e80d58813e6aa1c551c58df33f215ea140e5fd1b08fa450f4c66dd203f537",
+    "checked_at": "2026-11-21T12:08:08.168Z",
+    "items": [
+      "website/robots-sitemap"
+    ]
+  },
+  "https://www.w3.org/International/questions/qa-html-language-declarations": {
+    "sha256": "437aee0db91fc48bb9518d54e9b017eab9503e7205b5bad324b5a945e674a9c2",
+    "checked_at": "2026-11-21T12:08:12.307Z",
+    "items": [
+      "website/html-lang",
+      "i18n/copy-language"
+    ]
+  },
+  "https://www.w3.org/TR/WCAG22/": {
+    "sha256": "05a5b90e74eabcf6a3a60ce6f040f295b1c04ad275e16ca34ea24276f4b6f531",
+    "checked_at": "2026-11-21T12:08:36.063Z",
+    "items": [
+      "accessibility/axe"
+    ]
+  },
+  "https://www.w3.org/WAI/planning/statements/": {
+    "sha256": "0e0ff27fe7ca9573d4a472509f751811c75f807785c6d748490b53acff69cc21",
+    "checked_at": "2026-11-21T12:08:37.261Z",
+    "items": [
+      "accessibility/accessibility-statement"
+    ]
+  },
+  "https://www.w3.org/WAI/tutorials/page-structure/headings/": {
+    "sha256": "f9a3130cd69b0b4e30c7f8cf6fc8a44aee3007aacfe35683b55b4b32013f91d2",
+    "checked_at": "2026-11-21T12:08:32.715Z",
+    "items": [
+      "seo/one-h1"
+    ]
+  },
+  "https://www.w3.org/WAI/WCAG22/Techniques/general/G1": {
+    "sha256": "065e4b8440c2389b40d6bd488733ccc5c399759efa9bac0bb65266e0beef3e4c",
+    "checked_at": "2026-11-21T12:08:36.784Z",
+    "items": [
+      "accessibility/skip-link"
+    ]
+  },
+  "https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html": {
+    "sha256": "0d6761a57f92ae4ef9d8e796c97be44c927e18959854652e148b94910c20dbd1",
+    "checked_at": "2026-11-21T12:08:36.809Z",
+    "items": [
+      "accessibility/reduced-motion"
+    ]
+  },
+  "https://www.w3.org/WAI/WCAG22/Understanding/bypass-blocks.html": {
+    "sha256": "585130164b0064170e34740b01b2036e031712f1b1f8619bb81d3edcc6a2e8e3",
+    "checked_at": "2026-11-21T12:08:36.652Z",
+    "items": [
+      "accessibility/skip-link"
+    ]
+  },
+  "https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html": {
+    "sha256": "3983757e65328b349dde4bb5e21d8f8723207532977cf4416c0f2dfe7cf44d09",
+    "checked_at": "2026-11-21T12:08:36.622Z",
+    "items": [
+      "accessibility/keyboard-nav"
+    ]
+  },
+  "https://www.w3.org/WAI/WCAG22/Understanding/keyboard.html": {
+    "sha256": "e114493ff75b71100f7b0399b2a581b88aac891c4d56bf2197e3692881ff4f22",
+    "checked_at": "2026-11-21T12:08:36.583Z",
+    "items": [
+      "accessibility/keyboard-nav"
+    ]
+  },
+  "https://www.w3.org/WAI/WCAG22/Understanding/language-of-page.html": {
+    "sha256": "666f4ef6c85f78bc898783a4638bca8944ccc90a7d12fa1cce0ae76db951444f",
+    "checked_at": "2026-11-21T12:08:12.179Z",
+    "items": [
+      "website/html-lang"
+    ]
+  },
+  "https://www.w3.org/WAI/WCAG22/Understanding/no-keyboard-trap.html": {
+    "sha256": "3864764cd8b0d9e3417652c40fe0ad8fa209418b99e286e50d850c763d608a49",
+    "checked_at": "2026-11-21T12:08:36.602Z",
+    "items": [
+      "accessibility/keyboard-nav"
+    ]
+  },
+  "https://www.w3.org/WAI/WCAG22/Understanding/non-text-content.html": {
+    "sha256": "64d8239a2e7e3da4580e2bc0daac926b96d606a60be16b94843c261439c3afc5",
+    "checked_at": "2026-11-21T12:08:33.170Z",
+    "items": [
+      "seo/image-alt"
+    ]
+  },
+  "https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html": {
+    "sha256": "4641424480223dbbc8c26bec6504c36ece070ffeb9c5f9b568667cc742fa4ff8",
+    "checked_at": "2026-11-21T12:08:36.830Z",
+    "items": [
+      "accessibility/reduced-motion"
+    ]
+  },
+  "https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html": {
+    "sha256": "6998596aac92e69db8a28af4498989392b6fbaa1127c893a60d838341a1b84e5",
+    "checked_at": "2026-11-21T12:08:12.375Z",
+    "items": [
+      "website/viewport"
+    ]
+  }
+}

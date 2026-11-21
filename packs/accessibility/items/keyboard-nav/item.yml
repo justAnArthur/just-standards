@@ -9,6 +9,13 @@ applies_to: [website, webapp]
 category: accessibility
 severity: must
 owner_role: engineering
+sources:
+  - title: 'W3C: Understanding WCAG 2.2 SC 2.1.1 Keyboard'
+    url: 'https://www.w3.org/WAI/WCAG22/Understanding/keyboard.html'
+  - title: 'W3C: Understanding WCAG 2.2 SC 2.1.2 No Keyboard Trap'
+    url: 'https://www.w3.org/WAI/WCAG22/Understanding/no-keyboard-trap.html'
+  - title: 'W3C: Understanding WCAG 2.2 SC 2.4.7 Focus Visible'
+    url: 'https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html'
 check:
   kind: browser
   pages: [/]

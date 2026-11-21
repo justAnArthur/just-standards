@@ -1,5 +1,6 @@
 ## Done when
 The check passes on the PR's preview, and every page in the sitemap has its own `<title>` in `<head>`, 10–70 characters: what the page is first, then the brand (`Škoda Octavia Combi rental · Avis`), never the same text as another page.
+Google sets no length limit and cuts the title link to fit the device; the 70 characters are this standard's budget so the subject and the brand survive the cut, so keep to them.
 
 ## Make what is missing
 - **Static pages** (contact, about, fleet): write the title from the page's own `h1` and first paragraph.

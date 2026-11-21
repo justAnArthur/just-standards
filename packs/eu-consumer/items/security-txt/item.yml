@@ -7,5 +7,8 @@ applies_to: [website, webapp]
 category: security
 severity: should
 owner_role: engineering
+sources:
+  - title: 'RFC 9116: A File Format to Aid in Security Vulnerability Disclosure'
+    url: 'https://www.rfc-editor.org/rfc/rfc9116.html'
 check:
   kind: script

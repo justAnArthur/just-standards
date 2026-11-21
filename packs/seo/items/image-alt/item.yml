@@ -8,5 +8,10 @@ applies_to: [website]
 category: accessibility
 severity: should
 owner_role: seo
+sources:
+  - title: 'W3C: Understanding WCAG 2.2 SC 1.1.1 Non-text Content'
+    url: 'https://www.w3.org/WAI/WCAG22/Understanding/non-text-content.html'
+  - title: 'Google Search Central: Google image SEO best practices (descriptive alt text)'
+    url: 'https://developers.google.com/search/docs/appearance/google-images'
 check:
   kind: script

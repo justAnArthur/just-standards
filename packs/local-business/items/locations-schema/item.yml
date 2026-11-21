@@ -7,5 +7,12 @@ applies_to: [website]
 category: seo
 severity: must
 owner_role: seo
+sources:
+  - title: 'Google Search Central: Local business structured data, required and recommended properties'
+    url: 'https://developers.google.com/search/docs/appearance/structured-data/local-business#structured-data-type-definitions'
+  - title: 'schema.org: AutoRental'
+    url: 'https://schema.org/AutoRental'
+  - title: 'schema.org: LocalBusiness'
+    url: 'https://schema.org/LocalBusiness'
 check:
   kind: script

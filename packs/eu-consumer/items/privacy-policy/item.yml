@@ -7,5 +7,12 @@ applies_to: [website, webapp]
 category: privacy
 severity: must
 owner_role: legal
+sources:
+  - title: 'GDPR (Regulation 2016/679), Article 12: transparent information'
+    url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R0679#art_12'
+  - title: 'GDPR (Regulation 2016/679), Article 13: information to be provided where personal data are collected from the data subject'
+    url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R0679#art_13'
+  - title: 'Article 29 Working Party (endorsed by the EDPB): Guidelines on transparency under Regulation 2016/679'
+    url: 'https://ec.europa.eu/newsroom/article29/items/622227'
 check:
   kind: script

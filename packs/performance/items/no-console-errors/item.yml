@@ -8,6 +8,9 @@ applies_to: [website, webapp]
 category: performance
 severity: should
 owner_role: engineering
+sources:
+  - title: 'Chrome for Developers (Lighthouse): Browser errors were logged to the console'
+    url: 'https://developer.chrome.com/docs/lighthouse/best-practices/errors-in-console'
 check:
   kind: browser
   pages: [/]

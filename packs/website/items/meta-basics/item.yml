@@ -7,6 +7,13 @@ applies_to: [website, webapp]
 category: seo
 severity: must
 owner_role: seo
+sources:
+  - title: 'Google Search Central: Influencing your title links in search results'
+    url: 'https://developers.google.com/search/docs/appearance/title-link'
+  - title: 'Google Search Central: Control your snippets in search results, meta descriptions'
+    url: 'https://developers.google.com/search/docs/appearance/snippet#meta-descriptions'
+  - title: 'Google Search Central: How to specify a canonical URL'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls'
 check:
   kind: http
   requests:

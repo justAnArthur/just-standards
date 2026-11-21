@@ -7,6 +7,9 @@ applies_to: [repo]
 category: docs
 severity: nice
 owner_role: engineering
+sources:
+  - title: 'GitHub Docs: Classifying your repository with topics'
+    url: 'https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/classifying-your-repository-with-topics'
 check:
   kind: github
   expect:

@@ -7,6 +7,11 @@ applies_to: [repo]
 category: code
 severity: should
 owner_role: engineering
+sources:
+  - title: 'Git documentation: gitignore'
+    url: 'https://git-scm.com/docs/gitignore'
+  - title: 'GitHub Docs: Ignoring files'
+    url: 'https://docs.github.com/en/get-started/git-basics/ignoring-files'
 check:
   kind: repo
   expect:

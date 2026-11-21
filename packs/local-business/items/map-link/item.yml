@@ -7,5 +7,8 @@ applies_to: [website]
 category: conversion
 severity: nice
 owner_role: web
+sources:
+  - title: 'Google Maps Platform: Get started with Maps URLs'
+    url: 'https://developers.google.com/maps/documentation/urls/get-started'
 check:
   kind: script

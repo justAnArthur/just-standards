@@ -7,5 +7,10 @@ applies_to: [website, webapp]
 category: legal
 severity: must
 owner_role: legal
+sources:
+  - title: 'Zákon č. 22/2004 Z. z. o elektronickom obchode, § 4 Všeobecné informačné povinnosti'
+    url: 'https://static.slov-lex.sk/static/SK/ZZ/2004/22/20250628.html#paragraf-4'
+  - title: 'E-Commerce Directive 2000/31/EC, Article 5: general information to be provided'
+    url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02000L0031-20240217'
 check:
   kind: script

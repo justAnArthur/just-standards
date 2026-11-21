@@ -7,5 +7,10 @@ applies_to: [website]
 category: ai
 severity: should
 owner_role: content
+sources:
+  - title: 'Google Search Central: Creating helpful, reliable, people-first content'
+    url: 'https://developers.google.com/search/docs/fundamentals/creating-helpful-content'
+  - title: 'Google Search Central: AI features and your website'
+    url: 'https://developers.google.com/search/docs/appearance/ai-features'
 check:
   kind: script

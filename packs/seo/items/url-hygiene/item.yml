@@ -7,5 +7,10 @@ applies_to: [website]
 category: seo
 severity: nice
 owner_role: seo
+sources:
+  - title: 'Google Search Central: URL structure best practices for Google'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/url-structure'
+  - title: 'Google Search Central: How to specify a canonical URL'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls'
 check:
   kind: script

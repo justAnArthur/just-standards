@@ -7,5 +7,10 @@ applies_to: [website]
 category: ops
 severity: must
 owner_role: engineering
+sources:
+  - title: 'Google Crawling Infrastructure: How HTTP status codes affect Google''s crawlers (soft 404)'
+    url: 'https://developers.google.com/crawling/docs/troubleshooting/http-status-codes'
+  - title: 'RFC 9110: HTTP Semantics, 404 Not Found'
+    url: 'https://www.rfc-editor.org/rfc/rfc9110.html#status.404'
 check:
   kind: script

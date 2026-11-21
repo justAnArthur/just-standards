@@ -7,6 +7,9 @@ applies_to: [website]
 category: seo
 severity: must
 owner_role: seo
+sources:
+  - title: 'Google Search Central: How to specify a canonical URL with rel="canonical" and other methods'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls'
 check:
   kind: crawl
   expect:

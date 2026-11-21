@@ -7,6 +7,11 @@ applies_to: [website, webapp]
 category: security
 severity: nice
 owner_role: engineering
+sources:
+  - title: 'MDN: Permissions-Policy'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy'
+  - title: 'OWASP HTTP Headers Cheat Sheet: Permissions-Policy'
+    url: 'https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#permissions-policy-formerly-feature-policy'
 check:
   kind: http
   requests:

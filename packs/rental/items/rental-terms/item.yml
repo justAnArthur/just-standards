@@ -7,5 +7,10 @@ applies_to: [website]
 category: content
 severity: must
 owner_role: content
+sources:
+  - title: 'Your Europe: Car rental in the EU'
+    url: 'https://europa.eu/youreurope/citizens/travel/driving-abroad/car-rental-abroad/index_en.htm'
+  - title: 'Consumer Rights Directive 2011/83/EU (consolidated), Article 6: information requirements'
+    url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02011L0083-20260927#art_6'
 check:
   kind: script

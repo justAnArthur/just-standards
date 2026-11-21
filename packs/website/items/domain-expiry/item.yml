@@ -8,5 +8,8 @@ category: ops
 severity: should
 preview: false
 owner_role: engineering
+sources:
+  - title: 'ICANN: Expired Registration Recovery Policy'
+    url: 'https://www.icann.org/en/contracted-parties/consensus-policies/expired-registration-recovery-policy/expired-registration-recovery-policy-28-02-2013-en'
 check:
   kind: script

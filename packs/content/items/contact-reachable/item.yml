@@ -7,5 +7,12 @@ applies_to: [website]
 category: conversion
 severity: must
 owner_role: content
+sources:
+  - title: 'E-Commerce Directive 2000/31/EC, Article 5: general information to be provided (incl. e-mail address)'
+    url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02000L0031-20240217'
+  - title: 'Zákon č. 22/2004 Z. z. o elektronickom obchode, § 4 Všeobecné informačné povinnosti'
+    url: 'https://static.slov-lex.sk/static/SK/ZZ/2004/22/20250628.html#paragraf-4'
+  - title: 'RFC 3966: The tel URI for Telephone Numbers'
+    url: 'https://www.rfc-editor.org/rfc/rfc3966.html'
 check:
   kind: script

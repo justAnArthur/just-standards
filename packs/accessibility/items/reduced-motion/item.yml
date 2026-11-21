@@ -9,6 +9,13 @@ applies_to: [website, webapp]
 category: accessibility
 severity: nice
 owner_role: engineering
+sources:
+  - title: 'W3C: Understanding WCAG 2.2 SC 2.3.3 Animation from Interactions'
+    url: 'https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html'
+  - title: 'W3C: Understanding WCAG 2.2 SC 2.2.2 Pause, Stop, Hide'
+    url: 'https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html'
+  - title: 'MDN: prefers-reduced-motion'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion'
 check:
   kind: browser
   pages: [/]

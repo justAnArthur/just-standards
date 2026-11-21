@@ -9,6 +9,11 @@ applies_to: [website, webapp]
 category: performance
 severity: should
 owner_role: engineering
+sources:
+  - title: 'Chrome for Developers (Lighthouse): Avoid enormous network payloads'
+    url: 'https://developer.chrome.com/docs/lighthouse/performance/total-byte-weight'
+  - title: 'web.dev: Performance budgets 101'
+    url: 'https://web.dev/articles/performance-budgets-101'
 check:
   kind: browser
   pages: [/]

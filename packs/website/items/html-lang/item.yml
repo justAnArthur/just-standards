@@ -7,6 +7,13 @@ applies_to: [website, webapp]
 category: i18n
 severity: must
 owner_role: engineering
+sources:
+  - title: 'W3C: Understanding WCAG 2.2 SC 3.1.1 Language of Page'
+    url: 'https://www.w3.org/WAI/WCAG22/Understanding/language-of-page.html'
+  - title: 'W3C Internationalization: Declaring language in HTML'
+    url: 'https://www.w3.org/International/questions/qa-html-language-declarations'
+  - title: 'MDN: lang global attribute'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/lang'
 check:
   kind: http
   requests:

@@ -7,5 +7,10 @@ applies_to: [website]
 category: ai
 severity: should
 owner_role: content
+sources:
+  - title: 'Google Search Central: Local business (LocalBusiness) structured data'
+    url: 'https://developers.google.com/search/docs/appearance/structured-data/local-business'
+  - title: 'Google Search Central: General structured data guidelines (content must be visible on the page)'
+    url: 'https://developers.google.com/search/docs/appearance/structured-data/sd-policies'
 check:
   kind: script

@@ -7,6 +7,11 @@ applies_to: [website, webapp]
 category: accessibility
 severity: should
 owner_role: engineering
+sources:
+  - title: 'W3C: Understanding WCAG 2.2 SC 2.4.1 Bypass Blocks'
+    url: 'https://www.w3.org/WAI/WCAG22/Understanding/bypass-blocks.html'
+  - title: 'W3C WCAG technique G1: adding a link at the top of each page that goes directly to the main content'
+    url: 'https://www.w3.org/WAI/WCAG22/Techniques/general/G1'
 check:
   kind: browser
   pages: [/]

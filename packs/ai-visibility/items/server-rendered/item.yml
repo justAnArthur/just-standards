@@ -7,5 +7,10 @@ applies_to: [website]
 category: ai
 severity: must
 owner_role: engineering
+sources:
+  - title: 'Google Search Central: Understand JavaScript SEO basics'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics'
+  - title: 'web.dev: Rendering on the Web'
+    url: 'https://web.dev/articles/rendering-on-the-web'
 check:
   kind: script

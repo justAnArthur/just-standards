@@ -1,5 +1,6 @@
 ## Done when
 The check passes on the PR's preview, and every page in the sitemap has a `<meta name="description">` of 70–160 characters that says what that page offers, different from every other page's.
+Google sets no length limit and cuts the snippet to fit the device; the 70–160 characters are this standard's budget for a description that is shown whole, so keep to them.
 
 ## Make what is missing
 - Write each from the page's own content: one or two plain sentences on what a visitor finds or can do there, in the page's language.

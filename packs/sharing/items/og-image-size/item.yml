@@ -7,5 +7,8 @@ applies_to: [website, webapp]
 category: sharing
 severity: should
 owner_role: seo
+sources:
+  - title: 'The Open Graph protocol: structured properties (og:image:width, og:image:height)'
+    url: 'https://ogp.me/#structured'
 check:
   kind: script

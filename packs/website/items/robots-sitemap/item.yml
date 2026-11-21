@@ -7,6 +7,13 @@ applies_to: [website]
 category: seo
 severity: must
 owner_role: seo
+sources:
+  - title: 'RFC 9309: Robots Exclusion Protocol'
+    url: 'https://www.rfc-editor.org/rfc/rfc9309.html'
+  - title: 'Google Crawling Infrastructure: How Google interprets the robots.txt specification'
+    url: 'https://developers.google.com/crawling/docs/robots-txt/robots-txt-spec'
+  - title: 'sitemaps.org: Specifying the sitemap location in your robots.txt file'
+    url: 'https://www.sitemaps.org/protocol.html#submit_robots'
 check:
   kind: http
   requests:

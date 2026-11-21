@@ -60,7 +60,8 @@ export async function checkSources(ws: Workspace, { update = false, lockFile = L
       changes.push({ url, title, items, state: 'gone', status: 0 })
       continue
     }
-    if (!response.ok) {
+    // 200 only: a 202 is a bot challenge (EUR-Lex's WAF answers one with an empty body), not the page
+    if (response.status !== 200) {
       await response.body?.cancel()
       changes.push({ url, title, items, state: 'gone', status: response.status })
       continue

@@ -7,6 +7,13 @@ applies_to: [repo]
 category: security
 severity: must
 owner_role: engineering
+sources:
+  - title: 'GitHub Docs: Removing sensitive data from a repository'
+    url: 'https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository'
+  - title: 'OWASP Secrets Management Cheat Sheet'
+    url: 'https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html'
+  - title: 'The Twelve-Factor App: III. Config'
+    url: 'https://12factor.net/config'
 check:
   kind: repo
   expect:

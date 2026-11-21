@@ -7,6 +7,11 @@ applies_to: [website]
 category: seo
 severity: must
 owner_role: seo
+sources:
+  - title: 'Google Search Central: Robots meta tag, data-nosnippet, and X-Robots-Tag specifications'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag'
+  - title: 'Google Search Central: Block search indexing with noindex'
+    url: 'https://developers.google.com/search/docs/crawling-indexing/block-indexing'
 check:
   kind: crawl
   expect:

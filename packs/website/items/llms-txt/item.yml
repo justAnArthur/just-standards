@@ -7,6 +7,9 @@ applies_to: [website]
 category: ai
 severity: should
 owner_role: seo
+sources:
+  - title: 'llms.txt: a proposal to standardise on using an /llms.txt file'
+    url: 'https://llmstxt.org/'
 check:
   kind: http
   requests:

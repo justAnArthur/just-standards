@@ -7,6 +7,11 @@ applies_to: [website, webapp]
 category: brand
 severity: should
 owner_role: engineering
+sources:
+  - title: 'Google Search Central: Define a favicon to show in search results'
+    url: 'https://developers.google.com/search/docs/appearance/favicon-in-search'
+  - title: 'Apple Safari Web Content Guide: Configuring web applications (apple-touch-icon)'
+    url: 'https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html'
 check:
   kind: http
   requests:

@@ -8,5 +8,8 @@ category: security
 severity: must
 intrusive: true
 owner_role: engineering
+sources:
+  - title: 'OWASP WSTG: Review old backup and unreferenced files for sensitive information'
+    url: 'https://wstg.owasp.org/latest/06-Configuration_and_Deployment_Management/03-Review_Old_Backup_and_Unreferenced_Files_for_Sensitive_Information/'
 check:
   kind: script

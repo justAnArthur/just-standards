@@ -7,5 +7,12 @@ applies_to: [website, webapp]
 category: security
 severity: should
 owner_role: engineering
+sources:
+  - title: 'MDN: Content-Security-Policy frame-ancestors'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/frame-ancestors'
+  - title: 'MDN: X-Frame-Options'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Frame-Options'
+  - title: 'OWASP Clickjacking Defense Cheat Sheet'
+    url: 'https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html'
 check:
   kind: script

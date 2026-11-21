@@ -7,5 +7,10 @@ applies_to: [website]
 category: seo
 severity: should
 owner_role: seo
+sources:
+  - title: 'Google Search Central: Breadcrumb (BreadcrumbList) structured data'
+    url: 'https://developers.google.com/search/docs/appearance/structured-data/breadcrumb'
+  - title: 'schema.org: BreadcrumbList'
+    url: 'https://schema.org/BreadcrumbList'
 check:
   kind: script

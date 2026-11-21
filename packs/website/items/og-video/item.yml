@@ -9,6 +9,9 @@ severity: should
 requires: [ai-ready/brand-assets]
 tools: [ffmpeg]
 owner_role: content
+sources:
+  - title: 'The Open Graph protocol: structured properties (og:video, og:video:type, og:video:width)'
+    url: 'https://ogp.me/#structured'
 check:
   kind: http
   requests:

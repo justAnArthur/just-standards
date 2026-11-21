@@ -7,5 +7,10 @@ applies_to: [website]
 category: conversion
 severity: must
 owner_role: marketing
+sources:
+  - title: 'Unfair Commercial Practices Directive 2005/29/EC (consolidated), Article 6: misleading actions'
+    url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02005L0029-20260927#art_6'
+  - title: 'Zákon č. 108/2024 Z. z. o ochrane spotrebiteľa, § 10 Klamlivé konanie'
+    url: 'https://static.slov-lex.sk/static/SK/ZZ/2024/108/20260927.html#paragraf-10'
 check:
   kind: script

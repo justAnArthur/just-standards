@@ -7,6 +7,11 @@ applies_to: [website, webapp]
 category: security
 severity: should
 owner_role: engineering
+sources:
+  - title: 'MDN: Referrer-Policy'
+    url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy'
+  - title: 'OWASP HTTP Headers Cheat Sheet: Referrer-Policy'
+    url: 'https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#referrer-policy'
 check:
   kind: http
   requests:

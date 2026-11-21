@@ -7,6 +7,9 @@ applies_to: [website]
 category: seo
 severity: should
 owner_role: seo
+sources:
+  - title: 'Google Search Central: Control your snippets in search results, meta descriptions'
+    url: 'https://developers.google.com/search/docs/appearance/snippet#meta-descriptions'
 check:
   kind: crawl
   expect:
