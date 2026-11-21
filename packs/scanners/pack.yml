@@ -1,0 +1,19 @@
+id: scanners
+version: 1
+title: Scanners
+description: >-
+  Well-known external tools, one item each, held to a stated threshold: Mozilla HTTP Observatory and the W3C Nu Html
+  Checker for websites; OSV, gitleaks, the repo's own linter and typechecker for repos. A tool that is slow, down or
+  missing gives an error with the reason, never a pass. The repo items need the asset's local `path`; lint-clean and
+  typecheck-clean install the locked dependencies in a temporary worktree (`.worktrees/std-scan-*`, removed after).
+items:
+  - observatory
+  - html-valid
+  - dependency-vulns
+  - secrets-history
+  - lint-clean
+  - typecheck-clean
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: First version.
