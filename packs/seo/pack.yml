@@ -1,0 +1,19 @@
+id: seo
+version: 1
+title: SEO
+description: What a site that lives on search carries on every page, checked on the home page and a sample of the sitemap (one crawl shared by every item).
+items:
+  - titles
+  - descriptions
+  - canonical-self
+  - one-h1
+  - hreflang
+  - internal-links
+  - image-alt
+  - indexable
+  - breadcrumbs
+  - url-hygiene
+changelog:
+  - version: 1
+    date: 2026-11-21
+    notes: "First version: titles, descriptions, canonical-self, one-h1, hreflang, internal-links, image-alt, indexable, breadcrumbs, url-hygiene."

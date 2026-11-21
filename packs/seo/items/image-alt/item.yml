@@ -1,0 +1,12 @@
+id: image-alt
+version: 1
+title: Images have alt text
+label: image alt
+why: alt text is what a screen reader says and what image search and AI read instead of the picture; an image without it is a blank to all three
+applies_to: [website]
+# accessibility rather than seo: alt text is WCAG 1.1.1 and an EAA obligation first; image search is the side effect
+category: accessibility
+severity: should
+owner_role: seo
+check:
+  kind: script

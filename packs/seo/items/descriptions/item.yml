@@ -1,0 +1,17 @@
+id: descriptions
+version: 1
+title: Every page has its own description
+label: descriptions
+why: search engines show the description under the title when it fits the query; a missing or shared one gets replaced by a random snippet
+applies_to: [website]
+category: seo
+severity: should
+owner_role: seo
+check:
+  kind: crawl
+  expect:
+    - select: meta[name="description"]
+      attr: content
+      min_length: 70
+      max_length: 160
+      unique: true

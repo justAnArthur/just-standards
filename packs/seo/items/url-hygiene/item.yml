@@ -1,0 +1,11 @@
+id: url-hygiene
+version: 1
+title: Sitemap URLs are clean and consistent
+label: url hygiene
+why: mixed case, two trailing-slash styles and query strings make several URLs of one page, which split its ranking and waste crawls
+applies_to: [website]
+category: seo
+severity: nice
+owner_role: seo
+check:
+  kind: script

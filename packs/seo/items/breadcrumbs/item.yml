@@ -1,0 +1,11 @@
+id: breadcrumbs
+version: 1
+title: Inner pages carry breadcrumbs
+label: breadcrumbs
+why: a BreadcrumbList shows the page's place in the site in search results instead of a raw URL, and tells crawlers how pages relate
+applies_to: [website]
+category: seo
+severity: should
+owner_role: seo
+check:
+  kind: script
