@@ -1,5 +1,5 @@
 id: website
-version: 2
+version: 3
 title: Website
 description: What every public website I run carries, so it previews well, gets indexed and is readable by AI tools.
 items:
@@ -13,7 +13,14 @@ items:
   - security-headers
   - { id: sitemap-health, since: 2 }
   - { id: hero, since: 2 }
+  - { id: canonical-host, since: 3 }
+  - { id: not-found, since: 3 }
+  - { id: tls, since: 3 }
+  - { id: html-lang, since: 3 }
 changelog:
+  - version: 3
+    date: 2026-11-21
+    notes: "Added canonical-host (one host answers 200, the other and http:// redirect to it permanently), not-found (an unknown path answers 404 with a page that links home), tls (the certificate is valid 21 more days, no http:// subresources) and html-lang. Every recipe follows packs/RECIPE.md; og-video's worker now makes the video from what the repo has."
   - version: 2
     date: 2026-11-19
     notes: "robots-sitemap v2 also fails a site-wide Disallow. Added sitemap-health (every sampled sitemap URL answers 200 on the site's own host) and hero (an AI reads the first screen)."

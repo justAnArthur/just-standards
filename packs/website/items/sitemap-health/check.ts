@@ -1,42 +1,30 @@
 import type { Context } from '../../../../core/checks/context.ts'
-import { resolve } from '../../../../core/checks/http.ts'
+import { hostOf, sitemapOf, sitemapPages, spread } from '../../../../core/crawl.ts'
 import { get } from '../../../../core/expect.ts'
 import type { Outcome } from '../../../../core/schema.ts'
 
 const SAMPLE = 20
-const CHILD_SITEMAPS = 5
-
-const host = (url: string) => new URL(url).hostname.replace(/^www\./, '')
-
-async function text(url: string) {
-  const response = await get(url)
-  return response.ok ? response.text() : undefined
-}
-
-const locs = (xml: string) => [...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/g)].map(match => (match[1] as string).replaceAll('&amp;', '&'))
-
-/** The page URLs of a sitemap, following an index into its first few children. */
-async function pages(sitemap: string) {
-  const xml = await text(sitemap)
-  if (!xml) return undefined
-  if (!xml.includes('<sitemapindex')) return locs(xml)
-  const children = await Promise.all(locs(xml).slice(0, CHILD_SITEMAPS).map(text))
-  return children.flatMap(child => (child ? locs(child) : []))
-}
-
-/** Spread the sample over the whole list, so it isn't only the first section of the site. */
-const sample = (urls: string[]) => (urls.length <= SAMPLE ? urls : Array.from({ length: SAMPLE }, (_, i) => urls[Math.floor((i * urls.length) / SAMPLE)] as string))
 
 export default async function sitemapHealth({ asset }: Context): Promise<Outcome> {
   if (!asset.url) return { state: 'error', evidence: `asset ${asset.id} has no url` }
-  const robots = (await text(resolve('/robots.txt', asset.url))) ?? ''
-  const sitemap = robots.match(/^sitemap:\s*(\S+)/im)?.[1] ?? resolve('/sitemap.xml', asset.url)
-  const urls = await pages(sitemap)
-  if (!urls) return { state: 'fail', evidence: `no sitemap at ${sitemap}` }
+  const sitemap = await sitemapOf(asset.url)
+  const urls = await sitemapPages(sitemap)
+  if (!urls) {
+    // the shared helpers read a site that doesn't answer as one without a sitemap
+    const answers = await get(asset.url).then(
+      async response => {
+        await response.body?.cancel()
+        return true
+      },
+      () => false,
+    )
+    if (!answers) return { state: 'error', evidence: `${asset.url} did not answer` }
+    return { state: 'fail', evidence: `no sitemap at ${sitemap}` }
+  }
   if (urls.length === 0) return { state: 'fail', evidence: `${sitemap} lists no URLs` }
 
-  const foreign = urls.filter(url => host(url) !== host(asset.url as string))
-  const checked = sample(urls.filter(url => !foreign.includes(url)))
+  const foreign = urls.filter(url => hostOf(url) !== hostOf(asset.url as string))
+  const checked = spread(urls.filter(url => !foreign.includes(url)), SAMPLE)
   const statuses = await Promise.all(
     checked.map(async url => {
       try {

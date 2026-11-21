@@ -1,0 +1,11 @@
+id: not-found
+version: 1
+title: Unknown pages answer 404 with a page that links home
+label: "404"
+why: a soft 404 (200 for a page that isn't there) gets junk URLs indexed, a 500 looks like an outage, and a dead end without a link home loses the visitor
+applies_to: [website]
+category: ops
+severity: must
+owner_role: engineering
+check:
+  kind: script

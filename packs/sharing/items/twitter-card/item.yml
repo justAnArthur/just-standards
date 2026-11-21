@@ -1,0 +1,17 @@
+id: twitter-card
+version: 1
+title: X shows a large image card
+label: twitter:card
+why: without `summary_large_image`, a link on X shows a small square thumbnail beside the text instead of a full-width picture
+applies_to: [website, webapp]
+category: sharing
+severity: should
+owner_role: seo
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        - select: meta[name="twitter:card"]
+          attr: content
+          equals: summary_large_image

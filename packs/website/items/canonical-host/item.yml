@@ -1,0 +1,11 @@
+id: canonical-host
+version: 1
+title: One canonical host, the others redirect to it
+label: canonical host
+why: a site that answers on both www and the bare domain, or on http://, splits its ranking and its share counts between copies; a missing www record loses everyone who types it
+applies_to: [website]
+category: seo
+severity: must
+owner_role: engineering
+check:
+  kind: script

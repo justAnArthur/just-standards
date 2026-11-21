@@ -1,0 +1,31 @@
+id: og-complete
+version: 1
+title: The full Open Graph set
+label: og complete
+why: a share card takes its title, text, link, site name and language from Open Graph; a missing tag leaves the platform guessing from the page, or shows a bare URL
+applies_to: [website, webapp]
+category: sharing
+severity: must
+owner_role: seo
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        - select: meta[property="og:title"]
+          attr: content
+        - select: meta[property="og:description"]
+          attr: content
+        # absolute, and the home page's own URL, so shares of every spelling count for one page
+        - select: meta[property="og:url"]
+          attr: content
+          absolute_url: true
+          self: true
+        - select: meta[property="og:type"]
+          attr: content
+        - select: meta[property="og:site_name"]
+          attr: content
+        # language_TERRITORY, as Open Graph spells it: sk_SK, en_GB
+        - select: meta[property="og:locale"]
+          attr: content
+          matches: '^[a-z]{2,3}_[a-z]{2}$'
