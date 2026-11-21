@@ -44,6 +44,8 @@ test('a fix prompt names the sources an item follows', async () => {
 
 test('sources: new, then the same despite noise in scripts, then changed when the text changes; a 404 is gone', async () => {
   const ws = await loadWorkspace(dir)
+  // only this test's pack: the bundled packs cite real pages
+  ws.packs = new Map([...ws.packs].filter(([id]) => id === 'fw'))
   const lockFile = join(dir, 'sources.lock.json')
   const states = async (update = true) => Object.fromEntries((await checkSources(ws, { update, lockFile })).map(c => [new URL(c.url).pathname, c.state]))
   expect(await states()).toEqual({ '/checklist': 'new', '/gone': 'gone' })
