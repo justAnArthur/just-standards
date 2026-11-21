@@ -102,7 +102,11 @@ function printResult(result: Result) {
 async function check(ws: Workspace, ids: string[]) {
   for (const business of pick(ws, ids)) {
     const cells = cellsOf(business, ws).filter(
-      cell => (!flags.item || cell.item.key === flags.item) && (!flags.asset || cell.asset.id === flags.asset),
+      cell =>
+        (!flags.item || cell.item.key === flags.item) &&
+        (!flags.asset || cell.asset.id === flags.asset) &&
+        // A probe a firewall reads as an attack runs only when named, or where the business allows it.
+        (!cell.item.intrusive || business.intrusive || flags.item === cell.item.key),
     )
     if (!json) console.log(`\n${business.name} · ${cells.length} checks`)
     await checkBusiness(ws, business, cells, printResult)

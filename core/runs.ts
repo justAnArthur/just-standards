@@ -44,7 +44,7 @@ export async function listRuns(ws: Workspace, businesses: string[] = []) {
   )
   return records
     .filter((record): record is RunRecord => !!record && (businesses.length === 0 || businesses.includes(record.business)))
-    .sort((a, b) => b.started_at.localeCompare(a.started_at))
+    .sort((a, b) => b.started_at.localeCompare(a.started_at) || b.id.localeCompare(a.id))
 }
 
 export function transcriptOf(ws: Workspace, id: string) {

@@ -53,7 +53,10 @@ const name = (stop: Focus) => `"${stop.text || stop.href || stop.tag}" (${stop.t
 function trapOf(stops: Focus[], tabbable: number) {
   for (let i = 2; i < stops.length; i++) {
     const [a, b, c] = [stops[i - 2]!, stops[i - 1]!, stops[i]!]
-    if (!a.none && a.key === b.key && b.key === c.key) return `focus stays on ${name(a)}`
+    if (a.none || a.key !== b.key || b.key !== c.key) continue
+    // A native date or time input takes a Tab per part (day, month, year): three in a row is normal there, four is a trap.
+    if (a.tag === 'input' && stops[i + 1]?.key !== a.key) continue
+    return `focus stays on ${name(a)}`
   }
   const tail = stops.slice(-20)
   const keys = new Set(tail.map(stop => stop.key))

@@ -11,7 +11,8 @@ export async function htmlPages({ asset }: Context): Promise<Page[] | Outcome> {
   const pages = await crawl(asset.url, PAGES)
   const home = pages[0]
   if (!home || home.status === 0) return { state: 'error', evidence: `${asset.url} did not respond${home?.error ? ` (${home.error})` : ''}` }
-  if (home.status >= 500) return { state: 'error', evidence: `${home.url} answered ${home.status}` }
+  // 401, 403 and 429 are a firewall turning the checker away: no page was read, so nothing can pass.
+  if (home.status >= 500 || [401, 403, 429].includes(home.status)) return { state: 'error', evidence: `${home.url} answered ${home.status}` }
   return pages.filter(page => page.status < 400 && page.html)
 }
 

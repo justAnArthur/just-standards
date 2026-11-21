@@ -7,6 +7,8 @@ assets:
   - { id: site, kind: website, url: http://localhost:3102, stack: next }
   - { id: code, kind: repo, path: examples/rental-after, stack: next }
 packs: [ai-ready, ai-visibility, analytics, eu-consumer, nextjs, performance, seo, sharing, website]
+# localhost has no firewall: probe /.env and /.git too
+intrusive: true
 # The same waivers for before and after: what only the production domain can show.
 waivers:
   - { item: website/tls, asset: site, reason: "localhost serves plain HTTP; the certificate belongs to the production host" }

@@ -218,6 +218,8 @@ export const Item = z.object({
   severity: Severity.default('should'),
   /** Items that must pass first, on this asset or one sharing its repo: a fix starts from what they provide (brand assets, a design system). */
   requires: z.array(ItemKey).default([]),
+  /** It requests paths a firewall reads as an attack (`/.env`, `/.git/HEAD`): only checked when asked for by name, or for a business that allows it. */
+  intrusive: z.boolean().default(false),
   /** Whether a PR's preview can show it: `false` for what only production has (the TLS certificate, DNS, field data, the CDN). */
   preview: z.boolean().default(true),
   /** Programs a worker needs to fix it (`ffmpeg`, `rsvg-convert`); a fix run checks they are installed before it starts. */
@@ -259,6 +261,8 @@ export const Business = z.object({
   /** `website` follows the latest version, `website@1` stays on it */
   packs: z.array(z.string().regex(/^[a-z0-9-]+(@\d+)?$/)),
   worker: z.string().optional(),
+  /** Run intrusive items (probes of `/.env` and the like) in every check: only for sites whose firewall lets the checker through. */
+  intrusive: z.boolean().optional(),
   waivers: z
     .array(z.object({ item: z.string(), asset: z.string().optional(), reason: z.string(), until: z.iso.date().optional() }))
     .default([]),

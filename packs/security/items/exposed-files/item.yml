@@ -6,6 +6,7 @@ why: a served .git folder hands out the source and its history, a served .env or
 applies_to: [website, webapp]
 category: security
 severity: must
+intrusive: true
 owner_role: engineering
 check:
   kind: script

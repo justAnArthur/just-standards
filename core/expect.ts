@@ -66,8 +66,32 @@ export function local(url: string) {
   }
 }
 
-export function get(url: string, init: RequestInit = {}) {
+/** At most this many requests to one origin at a time: a burst reads as an attack to a site's firewall. */
+const PER_ORIGIN = Number(process.env.STANDARDS_PER_ORIGIN ?? 4)
+const queues = new Map<string, { active: number; waiting: (() => void)[] }>()
+
+async function slot(origin: string) {
+  const queue = queues.get(origin) ?? { active: 0, waiting: [] }
+  queues.set(origin, queue)
+  if (queue.active >= PER_ORIGIN) await new Promise<void>(resolve => queue.waiting.push(resolve))
+  queue.active++
+  return () => {
+    queue.active--
+    queue.waiting.shift()?.()
+  }
+}
+
+export async function get(url: string, init: RequestInit = {}) {
   const target = local(url)
+  const release = await slot(new URL(target).origin)
+  try {
+    return await send(target, init)
+  } finally {
+    release()
+  }
+}
+
+function send(target: string, init: RequestInit) {
   return fetch(target, {
     redirect: 'follow',
     ...init,
