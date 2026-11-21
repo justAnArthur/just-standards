@@ -14,10 +14,18 @@ if (!available) console.warn('core/browser.test.ts: skipped, no Chromium could b
 // collect endpoint (`/g/collect?tid=G-…` is Google Analytics on any host, server-side tagging included).
 const big = `/* ${'x'.repeat(60_000)} */`
 let bypassSeen = ''
+let loadingNow = 0
+let mostAtOnce = 0
 const server = Bun.serve({
   port: 0,
-  fetch(request) {
+  async fetch(request) {
     const { pathname, port } = new URL(request.url)
+    if (pathname === '/slow') {
+      mostAtOnce = Math.max(mostAtOnce, ++loadingNow)
+      await Bun.sleep(300)
+      loadingNow--
+      return new Response('<!doctype html><title>slow</title>', { headers: { 'content-type': 'text/html' } })
+    }
     const html = (body: string) => new Response(`<!doctype html><html lang="en"><head><title>t</title></head><body>${body}</body></html>`, { headers: { 'content-type': 'text/html' } })
     if (pathname === '/big.js') return new Response(big, { headers: { 'content-type': 'text/javascript' } })
     if (pathname === '/g/collect') return new Response(new Uint8Array([71, 73, 70]), { headers: { 'content-type': 'image/gif' } })
@@ -82,6 +90,11 @@ describe.skipIf(!available)('visit', () => {
       unalias()
       authorize(base, {})
     }
+  })
+
+  test('loads at most two pages of one site at once', async () => {
+    await Promise.all(Array.from({ length: 5 }, () => visit(`${base}/slow`, { viewport: 'mobile' })))
+    expect(mostAtOnce).toBe(2)
   })
 
   test('a page that does not answer is an error, not a throw', async () => {

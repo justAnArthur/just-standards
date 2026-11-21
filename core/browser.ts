@@ -23,6 +23,8 @@ export type Viewport = keyof typeof VIEWPORTS
 
 const IDLE_MS = 1500
 const MAX_CONTEXTS = 4
+/** Pages of one site loading at once: firewalls (Vercel's, Cloudflare's) challenge bursts from one address. */
+const PER_SITE = 2
 const GOTO_TIMEOUT_MS = 30_000
 const IDLE_TIMEOUT_MS = 8000
 /** After the network is quiet: consent banners and tags that start on a timer. */
@@ -140,8 +142,9 @@ export async function closeBrowser() {
 /** Runs `fn` in a fresh incognito context (no cookies, no cache) of the shared browser, at most MAX_CONTEXTS at once. */
 async function withContext<T>(options: (browser: Browser) => Parameters<Browser['newContext']>[0], fn: (context: BrowserContext) => Promise<T>) {
   clearTimeout(idle)
+  // a closed context hands its place to the next waiting one
   if (open >= MAX_CONTEXTS) await new Promise<void>(go => waiting.push(go))
-  open++
+  else open++
   try {
     const shared = await browser()
     const context = await shared.newContext(options(shared))
@@ -151,10 +154,9 @@ async function withContext<T>(options: (browser: Browser) => Parameters<Browser[
       await context.close().catch(() => {})
     }
   } finally {
-    open--
     const next = waiting.shift()
     if (next) next()
-    else if (open === 0) {
+    else if (--open === 0) {
       idle = setTimeout(() => void closeBrowser(), IDLE_MS)
       // the browser's pipes keep the process alive until it closes; the timer itself must not
       idle.unref?.()
@@ -270,8 +272,31 @@ const hostOf = (url: string) => {
   }
 }
 
+const loading = new Map<string, { open: number; waiting: (() => void)[] }>()
+
+/** Runs `fn` with at most PER_SITE others on the same site. */
+async function politely<T>(url: string, fn: () => Promise<T>) {
+  const key = siteOf(hostOf(url))
+  const slot = loading.get(key) ?? { open: 0, waiting: [] }
+  loading.set(key, slot)
+  // a finished visit hands its place to the next waiting one, so the count never drops between them
+  if (slot.open >= PER_SITE) await new Promise<void>(go => slot.waiting.push(go))
+  else slot.open++
+  try {
+    return await fn()
+  } finally {
+    const next = slot.waiting.shift()
+    if (next) next()
+    else if (--slot.open === 0) loading.delete(key)
+  }
+}
+
 /** Loads `url` in a fresh context and collects what `options` asks for. Never throws: a page that fails to load has `error`. */
-export async function visit(url: string, options: VisitOptions): Promise<Visit> {
+export function visit(url: string, options: VisitOptions): Promise<Visit> {
+  return politely(url, () => visitNow(url, options))
+}
+
+async function visitNow(url: string, options: VisitOptions): Promise<Visit> {
   const device = VIEWPORTS[options.viewport]
   return withContext(
     shared => ({ ...device, userAgent: userAgent(shared.version(), options.viewport), reducedMotion: options.reducedMotion ? 'reduce' : 'no-preference' }),
