@@ -12,7 +12,8 @@ Standards for everything I run, written as packs. Each standard in a pack is a c
 core/           model, pack loader, check runners (http, repo, github, script, ai), fix prompts
 cli/            the `standards` CLI
 app/            the desktop app (just-apps: mounted at apps/standards there, builds only inside just-apps)
-packs/website/  og tags, og:video, icons, robots + sitemap, sitemap health (script), JSON-LD, llms.txt, security headers, hero copy (AI)
+packs/website/  og tags, og:video, icons, robots + sitemap, sitemap health (script), JSON-LD, llms.txt, security headers, hero copy (AI), canonical host, 404, TLS, lang
+packs/sharing/  the full Open Graph set, a 1200×630 share image, the X large-image card
 packs/repo/     README, banner, description, topics, homepage, license; its fixer is the repo-standard skill
 docs/           the MVP spec
 assets/         brand masters (logo, app icon, lockups) and social images

@@ -1,0 +1,11 @@
+id: tls
+version: 1
+title: A valid certificate and no mixed content
+label: TLS
+why: an expired certificate takes the whole site down behind a browser warning, and http:// scripts, styles or images on an HTTPS page are blocked or flagged as insecure
+applies_to: [website, webapp]
+category: security
+severity: must
+owner_role: engineering
+check:
+  kind: script

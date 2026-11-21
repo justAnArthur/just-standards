@@ -1,0 +1,18 @@
+id: html-lang
+version: 1
+title: The page declares its language
+label: lang
+why: screen readers pick the voice, browsers offer translation and search engines and AI tools match the audience from <html lang>
+applies_to: [website, webapp]
+category: i18n
+severity: must
+owner_role: engineering
+check:
+  kind: http
+  requests:
+    - path: /
+      expect:
+        # a BCP 47 tag: a 2–3 letter language, then optional subtags (sk, en-GB, zh-Hant-TW)
+        - select: html
+          attr: lang
+          matches: '^[a-z]{2,3}(-[a-z0-9]{2,8})*$'
