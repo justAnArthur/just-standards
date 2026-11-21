@@ -1,6 +1,6 @@
 {
   "name": "just-standards-app",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "properties": {
     "gitCommitScopeRelatedNames": "standards-app,app,ui,native"
