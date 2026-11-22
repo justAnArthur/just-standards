@@ -1,0 +1,19 @@
+id: public-api-only
+version: 1
+title: Only payload-www's public API is used
+label: Public API
+why: >-
+  a subpath missing from payload-www's exports, or a removed call shape (createWWWConfig with arguments, defaultPlugins),
+  fails at import or silently does nothing, and breaks on the next toolkit release
+applies_to: [repo]
+category: code
+severity: must
+sources:
+  - title: payload-www integration skill, The actual exports map
+    url: https://github.com/justAnArthur/payload-www/blob/main/.mavis/skills/payload-www/SKILL.md
+  - title: Node.js docs, Package entry points (exports)
+    url: https://nodejs.org/api/packages.html#package-entry-points
+applies_when: { dependency: '@justanarthur/payload-www' }
+owner_role: engineering
+check:
+  kind: script

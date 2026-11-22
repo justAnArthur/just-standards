@@ -1,0 +1,16 @@
+id: live-preview
+version: 1
+title: Editors see a live preview of what they edit
+label: Live preview
+why: >-
+  editors who can't see a page before publishing publish to check, and visitors see the drafts
+applies_to: [repo]
+category: content
+severity: nice
+sources:
+  - title: Payload docs, Live Preview
+    url: https://payloadcms.com/docs/live-preview/overview
+applies_when: { dependency: payload }
+owner_role: engineering
+check:
+  kind: script

@@ -1,0 +1,18 @@
+id: cms-not-found
+version: 1
+title: The 404 page is content from the CMS
+label: CMS 404
+why: >-
+  a hard-coded 404 says nothing in the visitor's language and offers no way on; editors should write it, with links to what people look for, like any other page
+applies_to: [repo]
+category: content
+severity: should
+sources:
+  - title: payload-www integration skill, Static pages
+    url: https://github.com/justAnArthur/payload-www/blob/main/.mavis/skills/payload-www/SKILL.md
+  - title: Next.js docs, not-found.js
+    url: https://nextjs.org/docs/app/api-reference/file-conventions/not-found
+applies_when: { dependency: "@justanarthur/payload-www" }
+owner_role: engineering
+check:
+  kind: script

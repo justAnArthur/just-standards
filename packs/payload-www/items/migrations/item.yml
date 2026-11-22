@@ -1,0 +1,18 @@
+id: migrations
+version: 1
+title: Schema changes ship as committed migrations
+label: Migrations
+why: >-
+  with push on, Payload alters the production database from whatever code booted, and a deploy can drop columns with content in them; committed migrations, run before the build, change it on purpose and the same way everywhere
+applies_to: [repo]
+category: ops
+severity: must
+sources:
+  - title: Payload docs, Migrations
+    url: https://payloadcms.com/docs/database/migrations
+  - title: Payload docs, Postgres (push)
+    url: https://payloadcms.com/docs/database/postgres
+applies_when: { dependency: payload }
+owner_role: engineering
+check:
+  kind: script

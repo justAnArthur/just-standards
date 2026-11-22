@@ -1,0 +1,18 @@
+id: design-tokens
+version: 1
+title: Blocks and components style themselves with theme tokens
+label: Design tokens
+why: >-
+  a colour written into a component can't follow the site's theme, a client's brand or dark mode, and every redesign has to hunt it down; tokens change in one place
+applies_to: [repo]
+category: brand
+severity: should
+sources:
+  - title: W3C Design Tokens Community Group, Format
+    url: https://www.designtokens.org/tr/drafts/format/
+  - title: Tailwind CSS docs, Theme variables
+    url: https://tailwindcss.com/docs/theme
+applies_when: { dependency: "@justanarthur/payload-www" }
+owner_role: engineering
+check:
+  kind: script

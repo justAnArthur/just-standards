@@ -1,0 +1,24 @@
+id: payload-www
+version: 1
+title: Built the payload-www way
+description: >-
+  How an org website is built: Payload CMS composed with @justanarthur/payload-www (github.com/justAnArthur/payload-www),
+  its plugins, committed migrations, object storage, redirects editors control, theme tokens and the generated import map.
+  Every item reads the asset's local checkout and applies only where it depends on payload (or on payload-www), so other
+  sites get none of them. Give the code asset `path` as the Next app's folder (`apps/www` in a monorepo).
+items:
+  - built-on-payload-www
+  - public-api-only
+  - toolkit-current
+  - org-plugins
+  - media-storage
+  - migrations
+  - import-map
+  - redirects
+  - cms-not-found
+  - design-tokens
+  - live-preview
+changelog:
+  - version: 1
+    date: 2026-11-22
+    notes: First version, from payload-www's integration skill and the camasys-web conventions.

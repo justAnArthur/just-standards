@@ -1,0 +1,19 @@
+id: toolkit-current
+version: 1
+title: The org toolkit is current and Payload packages match
+label: Toolkit current
+why: >-
+  payload-www and its plugins ship fixes for every org site together; a site a minor behind misses them, and
+  @payloadcms/* packages on a different version than payload break the admin and the build
+applies_to: [repo]
+category: code
+severity: should
+sources:
+  - title: payload-www README, Packages
+    url: https://github.com/justAnArthur/payload-www#packages
+  - title: Payload docs, Installation (keep all @payloadcms packages on the same version)
+    url: https://payloadcms.com/docs/getting-started/installation
+applies_when: { dependency: payload }
+owner_role: engineering
+check:
+  kind: script

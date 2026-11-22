@@ -29,6 +29,7 @@ packs/local-business/ LocalBusiness JSON-LD per location, location pages, NAP, m
 packs/rental/         booking entry, fleet data, FAQPage, rental terms, prices with VAT
 packs/scanners/       Mozilla Observatory, W3C Nu checker, OSV for dependencies, gitleaks, the repo's lint and typecheck
 packs/nextjs/         no segment config under cacheComponents, next/image, next/font, the Metadata API, a current Next
+packs/payload-www/    Payload sites built on payload-www: public API, current toolkit, org plugins, S3 media, migrations, import map, redirects, CMS 404, theme tokens
 packs/ai-ready/       AGENTS.md, a design system, brand assets, .env.example, content source, sites map
 packs/repo/           README, banner, description, topics, homepage, license, .gitignore, no .env; its fixer is the repo-standard skill
 docs/           the MVP spec, the milestones, the M8 plan

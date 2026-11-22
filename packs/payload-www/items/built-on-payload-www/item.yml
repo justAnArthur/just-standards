@@ -1,0 +1,19 @@
+id: built-on-payload-www
+version: 1
+title: The site is composed with payload-www
+label: payload-www
+why: >-
+  payload-www gives every org site the same pages, posts, header, footer, SEO, sitemap, JSON-LD, hreflang and
+  revalidation; a site that rebuilds them by hand drifts, and fixes made once in the toolkit never reach it
+applies_to: [repo]
+category: code
+severity: must
+sources:
+  - title: payload-www README, Integrating into a host app
+    url: https://github.com/justAnArthur/payload-www#integrating-into-a-host-app
+  - title: Payload docs, Configuration
+    url: https://payloadcms.com/docs/configuration/overview
+applies_when: { dependency: payload }
+owner_role: engineering
+check:
+  kind: script

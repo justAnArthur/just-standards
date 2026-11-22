@@ -1,0 +1,21 @@
+id: org-plugins
+version: 1
+title: SEO, image placeholders and translation come from the org plugins
+label: Org plugins
+why: >-
+  the org's SEO plugin generates meta from content, imagehash gives every image a placeholder against layout shift, and
+  the translator fills locales; a second SEO plugin next to it writes two meta fields that disagree
+applies_to: [repo]
+category: code
+severity: should
+sources:
+  - title: payload-www README, Packages
+    url: https://github.com/justAnArthur/payload-www#packages
+  - title: payload-plugin-seo README
+    url: https://github.com/justAnArthur/payload-www/tree/main/plugins/seo
+  - title: payload-imagehash-plugin README
+    url: https://github.com/justAnArthur/payload-www/tree/main/plugins/imagehash
+applies_when: { dependency: '@justanarthur/payload-www' }
+owner_role: engineering
+check:
+  kind: script

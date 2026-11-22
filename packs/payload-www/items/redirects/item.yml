@@ -1,0 +1,18 @@
+id: redirects
+version: 1
+title: Editors can redirect moved URLs from the CMS
+label: Redirects
+why: >-
+  pages get renamed and sites get migrated; without redirects editors can add, old links and backlinks end on a 404 and their ranking is lost
+applies_to: [repo]
+category: seo
+severity: should
+sources:
+  - title: Payload docs, Redirects Plugin
+    url: https://payloadcms.com/docs/plugins/redirects
+  - title: Google Search Central, Redirects and Google Search
+    url: https://developers.google.com/search/docs/crawling-indexing/301-redirects
+applies_when: { dependency: payload }
+owner_role: engineering
+check:
+  kind: script

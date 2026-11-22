@@ -1,0 +1,18 @@
+id: import-map
+version: 1
+title: Every block render path is in the generated import map
+label: Import map
+why: >-
+  payload-www renders a block through the path in its custom config, looked up in the generated import map; a block added without regenerating it renders nothing on the live site
+applies_to: [repo]
+category: code
+severity: must
+sources:
+  - title: Payload docs, Custom Components (import map)
+    url: https://payloadcms.com/docs/custom-components/overview
+  - title: payload-www integration skill
+    url: https://github.com/justAnArthur/payload-www/blob/main/.mavis/skills/payload-www/SKILL.md
+applies_when: { dependency: "@justanarthur/payload-www" }
+owner_role: engineering
+check:
+  kind: script
