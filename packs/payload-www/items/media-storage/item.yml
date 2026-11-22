@@ -3,7 +3,7 @@ version: 1
 title: Uploads go to object storage, not the server's disk
 label: Media storage
 why: >-
-  a deployment's disk is thrown away on the next deploy (on Vercel it is read-only), so media uploaded by editors vanish or fail; a storage adapter keeps them in S3 and serves them from its CDN
+  a deployment's disk is thrown away on the next deploy (on Vercel it is read-only), so media uploaded by editors vanish or fail; a storage adapter keeps them in object storage (Openinary for org sites) and serves them from there
 applies_to: [repo]
 category: ops
 severity: must
