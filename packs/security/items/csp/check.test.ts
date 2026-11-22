@@ -36,6 +36,15 @@ describe('csp', () => {
     const meta = `<head><meta http-equiv="content-security-policy" content="script-src 'nonce-x'"></head>`
     expect((await serve({}, csp, meta)).evidence).toBe('a <meta http-equiv> policy restricts scripts with nonces or hashes')
   })
+  test("fails a nonce policy whose page scripts carry no nonce: it blocks the site's own code", async () => {
+    const header = { 'content-security-policy': "script-src 'nonce-abc' 'strict-dynamic'" }
+    const ok = '<script nonce="abc" src="/app.js"></script><script nonce="abc">boot()</script><script type="application/ld+json">{}</script>'
+    expect((await serve(header, csp, ok)).state).toBe('pass')
+    const prerendered = '<script src="/_next/static/chunks/main.js" async></script><script>self.__next_f.push([1])</script>'
+    expect(await serve(header, csp, prerendered)).toEqual({ state: 'fail', evidence: expect.stringContaining("2 of the page's 2 scripts carry no matching nonce") })
+    // without 'strict-dynamic', an external script from an allowed source runs without the nonce
+    expect((await serve({ 'content-security-policy': "script-src 'self' 'nonce-abc'" }, csp, '<script src="/app.js"></script>')).state).toBe('pass')
+  })
   test('fails no policy, Report-Only alone, and a weak one', async () => {
     expect((await serve({}, csp)).evidence).toContain('sends no Content-Security-Policy')
     const reportOnly = await serve({ 'content-security-policy-report-only': "script-src 'self'" }, csp)

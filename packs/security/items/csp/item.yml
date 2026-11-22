@@ -1,5 +1,5 @@
 id: csp
-version: 1
+version: 2
 title: A Content-Security-Policy that holds scripts
 label: CSP
 why: a CSP that allows only the site's own or nonce-marked scripts turns an injected script (from a CMS field, a compromised tag, a third party) into a blocked request instead of a stolen session or a skimmed card
