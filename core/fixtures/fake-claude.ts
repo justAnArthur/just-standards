@@ -94,7 +94,8 @@ for (let message = await next(); message; message = await next()) {
   if (message.type !== 'user') continue
   turn++
   const text: string = message.message.content[0].text
-  say({ type: 'assistant', session_id, message: { role: 'assistant', content: [{ type: 'text', text: `Again: ${text.split('\n')[0]}` }] } })
+  // `heard` keeps the whole message, for tests to read what the worker was sent back with
+  say({ type: 'assistant', session_id, heard: text, message: { role: 'assistant', content: [{ type: 'text', text: `Again: ${text.split('\n')[0]}` }] } })
   if (process.env.FAKE_FIX) await Bun.write(process.env.FAKE_FIX, 'node_modules/\n')
   if (process.env.FAKE_FINISH) await callFinish(JSON.parse(process.env.FAKE_FINISH))
   say({ type: 'result', subtype: 'success', is_error: false, session_id, total_cost_usd: 0.0123 * turn, num_turns: 2 * turn, result: `Fixed it.\n${PR}` })

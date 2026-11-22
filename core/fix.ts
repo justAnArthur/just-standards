@@ -264,11 +264,12 @@ export async function fix(ws: Workspace, business: Business, assetId: string, it
     record.preview = await verify(ws, record, worktree, options.signal)
     failing = record.preview?.results.filter(r => r.state !== 'pass').map(r => r.item) ?? []
     await writeRecord(ws, record)
-    // Stop when it passes, can't be checked, the worker named what only a person can give, or the rounds are used up.
-    if (failing.length === 0 || record.missing?.length || round >= MAX_ROUNDS || stopped) break
+    // Stop when it passes, can't be checked, or the rounds are used up. Naming something `missing` doesn't stop it:
+    // workers put work there they could do (a nonce CSP, a soft 404), so they are sent back and asked again.
+    if (failing.length === 0 || round >= MAX_ROUNDS || stopped) break
     record.rounds = round + 1
     await unlink(finishFile(ws.dir, id)).catch(() => {})
-    send(JSON.stringify({ type: 'user', message: { role: 'user', content: [{ type: 'text', text: sendBack(record.preview!) }] }, parent_tool_use_id: null }))
+    send(JSON.stringify({ type: 'user', message: { role: 'user', content: [{ type: 'text', text: sendBack(record.preview!, record.missing) }] }, parent_tool_use_id: null }))
     result = await nextResult()
   }
   open = false
@@ -315,13 +316,23 @@ async function verify(ws: Workspace, record: RunRecord, worktree: string, signal
 const previewPollMs = () => Number(process.env.STANDARDS_PREVIEW_POLL_MS ?? PREVIEW_POLL_MS)
 
 /** The message that sends a worker back: what still fails on the preview, and what to do. */
-function sendBack(preview: NonNullable<RunRecord['preview']>) {
+function sendBack(preview: NonNullable<RunRecord['preview']>, missing: string[] = []) {
   const failing = preview.results.filter(r => r.state !== 'pass')
   return [
     `These standards still fail on the PR's preview (${preview.url ?? 'its worktree'}, commit ${preview.sha.slice(0, 7)}):`,
     '',
     ...failing.map(r => `- \`${r.item}\`: ${r.evidence}`),
     '',
-    'Fix them on the same branch, push, wait for the checks again, and call `finish` again with the same PR URL. If only a person can fix one (a secret, a paid account, a legal fact), say exactly what in `missing`.',
+    ...(missing.length
+      ? [
+          'You named these as missing:',
+          '',
+          ...missing.map(line => `- ${line}`),
+          '',
+          '`missing` is only for what a person must give: a secret, a paid account, a legal fact that is neither on the site nor in the business context. A change that is large, touches many files, needs a framework detail looked up, or "deserves a PR of its own" is work, not missing: do it now, in this PR.',
+          '',
+        ]
+      : []),
+    'Fix them on the same branch, push, wait for the checks again, and call `finish` again with the same PR URL. If only a person can fix one, say exactly what they must give in `missing`.',
   ].join('\n')
 }

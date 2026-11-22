@@ -12,13 +12,14 @@ export const BUNDLED_STACKS = join(import.meta.dir, '../stacks')
 const RULES = (branch: string) => `## How to work
 
 - You are in a git worktree of this asset, on the branch \`${branch}\`. Change files only here.
+- Do every standard below in this pull request. Size is not a reason to leave one out: a change that touches many files, needs a framework detail looked up, or seems to deserve a pull request of its own still belongs here.
 - Make the smallest change that makes each check pass. Follow the repo's own conventions (AGENTS.md, CLAUDE.md, linters) over the recipe where they differ.
 - Make what a standard needs from what the repo has: its design system, brand assets, content and docs. Don't leave a file for a person to add when you can make it.
 - Run the repo's own checks (typecheck, lint, tests) before committing, when it has them.
 - Commit with Conventional Commits (\`feat:\`, \`fix:\`, \`docs:\`, \`chore:\`). No \`Co-Authored-By\` trailer and no tool or AI credit in commits or the pull request.
 - Push the branch and open a pull request with \`gh pr create\`. Its body says what changed and how to verify each standard, including any check to run after merging.
 - When a standard needs something only a person can give (a secret, a paid account, a legal fact that is neither on the site nor in the business context), do the rest, open the pull request as a draft (\`gh pr create --draft\`), and say what is missing in its body.
-- Then wait for the pull request's checks: \`gh pr checks <number> --watch\`, with a 10-minute timeout on the command. When it reports no checks, go on. When one fails, read why (\`gh run view <run-id> --log-failed\` for a GitHub Actions run), fix it, push, and wait again. After two rounds of fixes, or when a failing check has no log you can read (a deploy preview), stop and report what still fails as missing.
+- Then wait for the pull request's checks: \`gh pr checks <number> --watch\`, with a 10-minute timeout on the command. When it reports no checks, go on. When one fails, read why (\`gh run view <run-id> --log-failed\` for a GitHub Actions run), fix it, push, and wait again. After two rounds of fixes, or when a failing check has no log you can read (a deploy preview), stop and say in the summary what still fails.
 - Never push to the default branch, never force-push, never merge.
 - End your last message with the pull request URL alone on its last line.
 - When you are done, call the \`finish\` tool (\`mcp__standards__finish\`) with the pull request URL, a short summary of what you changed, and \`missing\`: what a person must provide or fix before the pull request can merge (nothing else: checks to run after merging belong in the PR body). Then stop. Without a pull request, call it anyway, leave out the URL and say why in the summary.`

@@ -234,7 +234,7 @@ describe('standards fix', () => {
     expect(messages.find(m => m.type === 'user')?.message.content[0].content).toBe(PR7)
   })
 
-  test('a PR given to finish wins over the one in the result, its summary and missing are recorded, and missing makes it a draft', async () => {
+  test('a PR given to finish wins over the one in the result, its summary and missing are recorded, missing makes it a draft and does not stop the send-back', async () => {
     const finish = { pr_url: PR9, summary: 'Added a .gitignore for Bun.', missing: ['Rotate the leaked key'] }
     const { seen, code } = await standards(['fix', 'acme', 'widgets', 'repo/gitignore', '--worker', 'fake'], {
       FAKE_FINISH: JSON.stringify(finish),
@@ -245,10 +245,14 @@ describe('standards fix', () => {
     expect(run).toMatchObject({ state: 'done', pr: { url: PR9, number: 9, state: 'open', draft: true }, summary: finish.summary, missing: finish.missing })
     expect(await Bun.file(join(dir, 'gh.log')).text()).toContain(`pr ready ${PR9} --undo`)
     expect(await Bun.file(join(dir, 'gh.log')).text()).toContain(`label create std:repo/gitignore\npr edit ${PR9} --add-label std:repo/gitignore`)
-    // a repo asset's items are checked on the run's worktree: no .gitignore yet, and the worker named what is missing, so no send-back
+    // a repo asset's items are checked on the run's worktree: no .gitignore yet. Naming something missing doesn't end the
+    // run: the worker is sent back with what it named, until the rounds are used up.
     expect(run.preview).toMatchObject({ sha: 'abc1234def', results: [{ item: 'repo/gitignore', state: 'fail' }] })
-    expect(run).toMatchObject({ verified: false, unverified: ['repo/gitignore'] })
-    expect(run.rounds).toBeUndefined()
+    expect(run).toMatchObject({ verified: false, unverified: ['repo/gitignore'], rounds: 2 })
+    const sentBack = claudeLines(seen).filter(m => m.heard?.startsWith('These standards still fail'))
+    expect(sentBack).toHaveLength(2)
+    expect(sentBack[0].heard).toContain('- Rotate the leaked key')
+    expect(sentBack[0].heard).toContain('is work, not missing')
     expect(await Bun.file(join(ws, '.state/runs', run.id, 'finish.json')).json()).toEqual(finish)
     const result = claudeLines(seen).find(m => m.type === 'user' && m.message.content[0].tool_use_id === 'toolu_2')
     expect(result.message.content[0].content).toContain('Recorded')
